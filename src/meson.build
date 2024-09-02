@@ -24,7 +24,6 @@ phosh_resources = gnome.compile_resources(
   'phosh.gresources.xml',
 
   c_name: 'phosh',
-  extra_args: '--manual-register',
 )
 
 phosh_enum_headers = files(
@@ -137,7 +136,6 @@ libphosh_tool_headers = files(
   'overview.h',
   'password-entry.h',
   'osd-window.h',
-  'phosh-main.h',
   'plugin-loader.h',
   'power-menu.h',
   'power-menu-manager.h',
@@ -210,7 +208,6 @@ libphosh_tool_sources = files(
   'overview.c',
   'password-entry.c',
   'osd-window.c',
-  'phosh-main.c',
   'plugin-loader.c',
   'power-menu.c',
   'power-menu-manager.c',
