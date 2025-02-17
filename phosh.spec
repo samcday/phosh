@@ -3,7 +3,7 @@
 %global libphosh_version 0.45
 
 Name:		phosh
-Version:	0.45~rc1
+Version:	0.45.0
 Release:	%autorelease
 Summary:	Graphical shell for mobile devices
 License:	GPL-3.0-or-later
