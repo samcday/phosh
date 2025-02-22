@@ -15,13 +15,17 @@
 #include "bt-status-page.h"
 #include "feedback-status-page.h"
 #include "plugin-loader.h"
+#include "proxied-quick-setting.h"
 #include "quick-setting.h"
 #include "quick-settings-box.h"
 #include "shell-priv.h"
+#include "util.h"
 #include "wifi-status-page.h"
 
 #define CUSTOM_QUICK_SETTINGS_SCHEMA "sm.puri.phosh.plugins"
 #define CUSTOM_QUICK_SETTINGS_KEY "quick-settings"
+
+#define DBUS_PREFIX "dbus:"
 
 /**
  * PhoshQuickSettings:
@@ -43,6 +47,9 @@ struct _PhoshQuickSettings {
   GSettings *plugin_settings;
   PhoshPluginLoader *plugin_loader;
   GHashTable *custom_quick_settings;
+
+  GDBusConnection *session_bus;
+  GCancellable    *cancel;
 };
 
 G_DEFINE_TYPE (PhoshQuickSettings, phosh_quick_settings, GTK_TYPE_BIN);
@@ -224,6 +231,26 @@ unload_custom_quick_setting (GtkWidget *quick_setting)
 }
 
 
+static PhoshProxiedQuickSetting*
+configure_dbus_quick_setting (PhoshQuickSettings *self, const char *plugin_name)
+{
+  g_auto (GStrv) name_parts = NULL;
+
+  name_parts = g_strsplit (plugin_name, ";", 2);
+  if (g_strv_length (name_parts) != 2 || !strlen (name_parts[0]) || !strlen (name_parts[1])) {
+    g_warning ("Invalid DBus QS name: %s (should be dbus:<bus>:<name>)", plugin_name);
+    return NULL;
+  }
+
+  if (!self->session_bus) {
+    g_warning ("Can't connect to DBus QS %s on %s, no session bus", name_parts[0], name_parts[1]);
+    return NULL;
+  }
+
+  return phosh_proxied_quick_setting_new (self->session_bus, name_parts[0], name_parts[1]);
+}
+
+
 static void
 load_custom_quick_settings (PhoshQuickSettings *self,
                             G_GNUC_UNUSED GSettings *settings,
@@ -267,7 +294,10 @@ load_custom_quick_settings (PhoshQuickSettings *self,
       continue;
     }
 
-    widget = phosh_plugin_loader_load_plugin (self->plugin_loader, plugins[i]);
+    if (g_str_has_prefix (plugins[i], DBUS_PREFIX))
+      widget = GTK_WIDGET (configure_dbus_quick_setting (self, plugins[i]+strlen(DBUS_PREFIX)));
+    else
+      widget = phosh_plugin_loader_load_plugin (self->plugin_loader, plugins[i]);
 
     if (widget == NULL) {
       g_warning ("Custom quick setting '%s' not found", plugins[i]);
@@ -277,6 +307,25 @@ load_custom_quick_settings (PhoshQuickSettings *self,
                            g_object_ref (GTK_WIDGET (widget)));
     }
   }
+}
+
+
+static void
+on_bus_get_finished (GObject            *source_object,
+                     GAsyncResult       *res,
+                     PhoshQuickSettings *self)
+{
+  g_autoptr (GError) err = NULL;
+
+  g_signal_connect_object (self->plugin_settings, "changed::" CUSTOM_QUICK_SETTINGS_KEY,
+                           G_CALLBACK (load_custom_quick_settings), self, G_CONNECT_SWAPPED);
+
+  self->session_bus = g_bus_get_finish (res, &err);
+
+  if (self->session_bus == NULL)
+    phosh_async_error_warn (err, "Failed to attach to session bus");
+
+  load_custom_quick_settings (self, NULL, NULL);
 }
 
 
@@ -330,10 +379,11 @@ static void
 phosh_quick_settings_init (PhoshQuickSettings *self)
 {
   const char *plugin_dirs[] = { PHOSH_PLUGINS_DIR, NULL};
+  PhoshShell *shell = phosh_shell_get_default ();
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  g_object_bind_property (phosh_shell_get_default (), "locked",
+  g_object_bind_property (shell, "locked",
                           self->box, "can-show-status",
                           G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
 
@@ -344,10 +394,10 @@ phosh_quick_settings_init (PhoshQuickSettings *self)
   self->custom_quick_settings = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
                                                        (GDestroyNotify) unload_custom_quick_setting);
 
-  g_signal_connect_object (self->plugin_settings, "changed::" CUSTOM_QUICK_SETTINGS_KEY,
-                           G_CALLBACK (load_custom_quick_settings), self, G_CONNECT_SWAPPED);
-
-  load_custom_quick_settings (self, NULL, NULL);
+  g_bus_get (G_BUS_TYPE_SESSION,
+             self->cancel,
+             (GAsyncReadyCallback) on_bus_get_finished,
+             self);
 }
 
 
