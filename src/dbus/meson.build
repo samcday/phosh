@@ -15,6 +15,13 @@ dbus_inc_dir = lib_inc_dir / 'dbus'
 dbus_client_protos = [
   # Sorted by xml filename:
   [
+    'quick-setting-dbus',
+    'mobi.phosh.shell.QuickSetting.xml',
+    'mobi.phosh.shell',
+    false,
+    false,
+  ],
+  [
     'iio-sensor-proxy-dbus',
     'net.hadess.SensorProxy.xml',
     'net.hadess',
