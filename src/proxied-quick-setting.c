@@ -9,6 +9,7 @@
 #include "proxied-quick-setting.h"
 
 #include "dbus/quick-setting-dbus.h"
+#include "proxied-status-page.h"
 #include "quick-setting.h"
 #include "status-icon.h"
 #include "util.h"
@@ -158,6 +159,33 @@ on_long_pressed (PhoshProxiedQuickSetting *self)
 }
 
 
+static gboolean
+transform_can_show_status (GBinding *binding, const GValue *from_value, GValue *to_value,
+                           PhoshProxiedQuickSetting *self)
+{
+  g_value_set_boolean (to_value, !!g_value_get_object (from_value));
+  return TRUE;
+}
+
+
+static gboolean
+transform_status_page (GBinding *binding, const GValue *from_value, GValue *to_value,
+                       PhoshProxiedQuickSetting *self)
+{
+  g_autoptr (PhoshProxiedStatusPage) status_page = NULL;
+  const char *object_path = g_value_get_string (from_value);
+
+  if (object_path != NULL)
+    status_page = phosh_proxied_status_page_new (self->connection,
+                                                 self->bus_name,
+                                                 object_path);
+
+  g_value_set_object (to_value, g_steal_pointer (&status_page));
+
+  return TRUE;
+}
+
+
 static void
 dbus_init_cb (GObject               *source_object,
               GAsyncResult          *res,
@@ -176,6 +204,11 @@ dbus_init_cb (GObject               *source_object,
   g_object_bind_property (self->proxy, "icon", self->status_icon, "icon-name", G_BINDING_SYNC_CREATE);
   g_signal_connect_object (self->proxy, "notify::g-name-owner",
                            (GCallback) name_owner_changed_cb, self, G_CONNECT_SWAPPED);
+
+  g_object_bind_property_full (self->proxy, "status", self, "status-page", G_BINDING_SYNC_CREATE,
+                               (GBindingTransformFunc)transform_status_page, NULL, self, NULL);
+  g_object_bind_property_full (self, "status-page", self, "can-show-status", G_BINDING_SYNC_CREATE,
+                               (GBindingTransformFunc)transform_can_show_status, NULL, self, NULL);
   name_owner_changed_cb (self, NULL);
 }
 

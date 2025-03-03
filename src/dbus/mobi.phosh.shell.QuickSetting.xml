@@ -8,5 +8,6 @@
     <property name="Active" type="b" access="read" />
     <property name="Label" type="s" access="read" />
     <property name="Icon" type="s" access="read" />
+    <property name="Status" type="o" access="read" />
   </interface>
 </node>
