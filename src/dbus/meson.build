@@ -22,6 +22,13 @@ dbus_client_protos = [
     false,
   ],
   [
+    'qs-status-dbus',
+    'mobi.phosh.shell.qs.Status.xml',
+    'mobi.phosh.shell.qs',
+    false,
+    false,
+  ],
+  [
     'iio-sensor-proxy-dbus',
     'net.hadess.SensorProxy.xml',
     'net.hadess',
