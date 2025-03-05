@@ -14,10 +14,18 @@ dbus_inc_dir = lib_inc_dir / 'dbus'
 #
 dbus_client_protos = [
   # Sorted by xml filename:
+<<<<<<< HEAD
   [
     'quick-setting-dbus',
     'mobi.phosh.shell.QuickSetting.xml',
     'mobi.phosh.shell',
+    false,
+    false,
+  ],
+  [
+    'qs-placeholder-status-dbus',
+    'mobi.phosh.shell.qs.PlaceholderStatus.xml',
+    'mobi.phosh.shell.qs',
     false,
     false,
   ],
@@ -123,6 +131,19 @@ dbus_client_protos = [
   ['mpris-dbus', 'org.mpris.MediaPlayer2.xml', 'org.mpris', false, false],
   ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
   ['phosh-osk0-dbus', 'sm.puri.OSK0.xml', 'sm.puri', false, false],
+=======
+  ['quick-setting-dbus', 'mobi.phosh.shell.QuickSetting.xml', 'mobi.phosh.shell', false],
+  ['qs-status-dbus', 'mobi.phosh.shell.qs.Status.xml', 'mobi.phosh.shell.qs', false],
+  ['qs-placeholder-status-dbus', 'mobi.phosh.shell.qs.PlaceholderStatus.xml', 'mobi.phosh.shell.qs', false],
+  ['iio-sensor-proxy-dbus', 'net.hadess.SensorProxy.xml', 'net.hadess', false],
+  ['hostname1-dbus', 'org.freedesktop.hostname1.xml', 'org.freedesktop', false],
+  ['portal-dbus', 'org.freedesktop.impl.portal.xml', 'org.freedesktop', false],
+  ['login1-manager-dbus', 'org.freedesktop.login1.Manager.xml','org.freedesktop.login1', false],
+  ['login1-session-dbus', 'org.freedesktop.login1.Session.xml', 'org.freedesktop.login1', false],
+  ['gsd-color-dbus', 'org.gnome.SettingsDaemon.Color.xml', 'org.gnome.SettingsDaemon', false],
+  ['gnome-session-dbus', 'org.gnome.SessionManager.xml', 'org.gnome', false],
+  ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false],
+>>>>>>> 0d2524d3 (dbus: Add mobi.phosh.shell.qs.PlaceholderStatus interface)
 ]
 
 #
