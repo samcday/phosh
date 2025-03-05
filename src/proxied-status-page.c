@@ -8,6 +8,7 @@
 
 #include "proxied-status-page.h"
 
+#include "proxied-placeholder.h"
 #include "dbus/qs-status-dbus.h"
 #include "util.h"
 
@@ -108,6 +109,26 @@ name_owner_changed_cb (PhoshProxiedStatusPage *self, gpointer data)
   g_debug ("%s on bus %s is now %s", self->object_path, self->bus_name,
            self->connected ? "connected" : "disconnected");
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_CONNECTED]);
+}
+
+
+static gboolean
+transform_content (GBinding *binding, const GValue *from_value, GValue *to_value,
+                   PhoshProxiedStatusPage *self)
+{
+  const char *type = g_value_get_string (from_value);
+  GtkWidget *content = NULL;
+
+  if (strcmp (type, "placeholder") == 0)
+    content = GTK_WIDGET (phosh_proxied_placeholder_new (self->connection, self->bus_name,
+                                                         self->object_path));
+
+  if (content == NULL)
+    g_warning ("Unknown status page type '%s'", type);
+
+  g_value_set_object (to_value, content);
+
+  return TRUE;
 }
 
 static gboolean
@@ -283,6 +304,9 @@ dbus_init_cb (GObject *source_object, GAsyncResult *res, PhoshProxiedStatusPage 
 
   update_footer (self, NULL);
   update_header (self, NULL);
+
+  g_object_bind_property_full (self->proxy, "type", self, "content", G_BINDING_SYNC_CREATE,
+    (GBindingTransformFunc)transform_content, NULL, self, NULL);
 
   g_signal_connect_object (self->proxy, "notify::g-name-owner",
                            (GCallback) name_owner_changed_cb, self, G_CONNECT_SWAPPED);
