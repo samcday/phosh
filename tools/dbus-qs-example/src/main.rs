@@ -144,6 +144,32 @@ impl QuickSettingStatus {
     }
 }
 
+
+struct QuickSettingPlaceholder {}
+
+#[zbus::interface(name = "mobi.phosh.shell.qs.PlaceholderStatus")]
+impl QuickSettingPlaceholder {
+    #[zbus(property)]
+    async fn title(&self) -> &str {
+        "I'm a placeholder! Wow!"
+    }
+
+    #[zbus(property)]
+    async fn icon_name(&self) -> &str {
+        "face-kiss"
+    }
+
+    #[zbus(property)]
+    async fn button_label(&self) -> &str {
+        "Do a Thing"
+    }
+
+    async fn activated(&self) {
+        println!("yep");
+    }
+}
+
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let connection = Connection::session().await?;
@@ -162,6 +188,7 @@ async fn main() -> anyhow::Result<()> {
         header_activatable: true,
         footer_count: 0,
     }).await?;
+    connection.object_server().at(&path, QuickSettingPlaceholder{}).await?;
     connection.request_name("com.samcday.QSDemo").await?;
 
     let qs_ref = connection.object_server().interface::<_, QuickSetting>(&path).await?;
