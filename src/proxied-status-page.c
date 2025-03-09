@@ -8,6 +8,7 @@
 
 #include "proxied-status-page.h"
 
+#include "proxied-list-status.h"
 #include "proxied-placeholder.h"
 #include "dbus/qs-status-dbus.h"
 #include "util.h"
@@ -121,6 +122,9 @@ transform_content (GBinding *binding, const GValue *from_value, GValue *to_value
 
   if (strcmp (type, "placeholder") == 0)
     content = GTK_WIDGET (phosh_proxied_placeholder_new (self->connection, self->bus_name,
+                                                         self->object_path));
+  else if (strcmp (type, "list") == 0)
+    content = GTK_WIDGET (phosh_proxied_list_status_new (self->connection, self->bus_name,
                                                          self->object_path));
 
   if (content == NULL)
