@@ -1,0 +1,8 @@
+<!DOCTYPE node PUBLIC
+          "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+          "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="mobi.phosh.shell.qs.ListStatus">
+    <property name="Items" type="a(ssbb)" access="read" />
+  </interface>
+</node>

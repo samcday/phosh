@@ -133,6 +133,7 @@ dbus_client_protos = [
   ['phosh-osk0-dbus', 'sm.puri.OSK0.xml', 'sm.puri', false, false],
 =======
   ['quick-setting-dbus', 'mobi.phosh.shell.QuickSetting.xml', 'mobi.phosh.shell', false],
+  ['qs-list-status-dbus', 'mobi.phosh.shell.qs.ListStatus.xml', 'mobi.phosh.shell.qs', false],
   ['qs-status-dbus', 'mobi.phosh.shell.qs.Status.xml', 'mobi.phosh.shell.qs', false],
   ['qs-placeholder-status-dbus', 'mobi.phosh.shell.qs.PlaceholderStatus.xml', 'mobi.phosh.shell.qs', false],
   ['iio-sensor-proxy-dbus', 'net.hadess.SensorProxy.xml', 'net.hadess', false],
