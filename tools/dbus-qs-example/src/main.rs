@@ -1,5 +1,6 @@
+use serde::{Deserialize, Serialize};
 use zbus::object_server::SignalEmitter;
-use zbus::zvariant::{ObjectPath, OwnedObjectPath};
+use zbus::zvariant::{ObjectPath, OwnedObjectPath, Type, Value};
 use zbus::Connection;
 
 struct QuickSetting {
@@ -86,7 +87,7 @@ impl QuickSettingStatus {
 
     #[zbus(property, name = "Type")]
     async fn type_(&self) -> &str {
-        "placeholder"
+        "list"
     }
 
     #[zbus(property)]
@@ -169,6 +170,36 @@ impl QuickSettingPlaceholder {
     }
 }
 
+#[derive(Deserialize, Serialize, Type, Value, PartialEq, Debug)]
+struct ListStatusItem {
+    icon: String,
+    label: String,
+    spinner: bool,
+    active: bool,
+}
+
+struct QuickSettingList {}
+
+#[zbus::interface(name = "mobi.phosh.shell.qs.ListStatus")]
+impl QuickSettingList {
+    #[zbus(property)]
+    async fn items(&self) -> Vec<ListStatusItem> {
+        vec![
+            ListStatusItem {
+                icon: "starred".to_string(),
+                label: "foo".to_string(),
+                spinner: true,
+                active: true,
+            },
+            ListStatusItem {
+                icon: "starred".to_string(),
+                label: "quux".to_string(),
+                spinner: false,
+                active: true,
+            }
+        ]
+    }
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -189,6 +220,7 @@ async fn main() -> anyhow::Result<()> {
         footer_count: 0,
     }).await?;
     connection.object_server().at(&path, QuickSettingPlaceholder{}).await?;
+    connection.object_server().at(&path, QuickSettingList{}).await?;
     connection.request_name("com.samcday.QSDemo").await?;
 
     let qs_ref = connection.object_server().interface::<_, QuickSetting>(&path).await?;
