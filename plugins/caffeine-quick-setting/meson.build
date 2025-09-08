@@ -19,7 +19,7 @@ phosh_caffeine_quick_setting_plugin = shared_module(
     '-DG_LOG_DOMAIN="phosh-plugin-@0@"'.format(name),
     '-DPLUGIN_NAME="@0@"'.format(name),
   ],
-  dependencies: plugin_dep,
+  dependencies: [plugin_dep, libcall_ui_dep],
   include_directories: phosh_inc,
   install: true,
   install_dir: plugins_dir,
