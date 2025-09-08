@@ -253,6 +253,47 @@ on_logout_action (GSimpleAction *action,
 
 
 static void
+open_settings_panel (PhoshTopPanel *self, gboolean mobile, const char *panel)
+{
+  if (self->on_lockscreen)
+    return;
+
+  if (mobile)
+    phosh_util_open_mobile_settings_panel (panel);
+  else
+    phosh_util_open_settings_panel (panel);
+
+  phosh_top_panel_fold (self);
+}
+
+
+static void
+on_launch_panel_activated (GSimpleAction *action, GVariant *param, gpointer data)
+{
+  PhoshTopPanel *self = PHOSH_TOP_PANEL (data);
+  const char *panel;
+
+  panel = g_variant_get_string (param, NULL);
+
+  open_settings_panel (self, FALSE, panel);
+  phosh_settings_hide_details (PHOSH_SETTINGS (self->settings));
+}
+
+
+static void
+on_launch_mobile_panel_activated (GSimpleAction *action, GVariant *param, gpointer data)
+{
+  PhoshTopPanel *self = PHOSH_TOP_PANEL (data);
+  const char *panel;
+
+  panel = g_variant_get_string (param, NULL);
+
+  open_settings_panel (self, TRUE, panel);
+  phosh_settings_hide_details (PHOSH_SETTINGS (self->settings));
+}
+
+
+static void
 wall_clock_notify_cb (PhoshTopPanel  *self,
                       GParamSpec     *pspec,
                       PhoshWallClock *wall_clock)
@@ -554,6 +595,10 @@ static GActionEntry entries[] = {
   { .name = "suspend", .activate = on_suspend_action },
   { .name = "lockscreen", .activate = on_lockscreen_action },
   { .name = "logout", .activate = on_logout_action },
+  { .name = "launch-panel", .activate = on_launch_panel_activated, .parameter_type = "s" },
+  { .name = "launch-mobile-panel",
+    .activate = on_launch_mobile_panel_activated,
+    .parameter_type = "s" },
 };
 
 
@@ -564,6 +609,7 @@ phosh_top_panel_constructed (GObject *object)
   GdkDisplay *display = gdk_display_get_default ();
   PhoshWallClock *wall_clock = phosh_wall_clock_get_default ();
   PhoshShell *shell = phosh_shell_get_default ();
+  GAction *action;
 
   g_autoptr (GSettings) phosh_settings = g_settings_new ("sm.puri.phosh");
 
@@ -620,7 +666,7 @@ phosh_top_panel_constructed (GObject *object)
                                    entries, G_N_ELEMENTS (entries),
                                    self);
   if (!phosh_shell_started_by_display_manager (phosh_shell_get_default ())) {
-    GAction *action = g_action_map_lookup_action (G_ACTION_MAP (self->actions), "logout");
+    action = g_action_map_lookup_action (G_ACTION_MAP (self->actions), "logout");
     g_simple_action_set_enabled (G_SIMPLE_ACTION (action), FALSE);
   }
 
@@ -629,6 +675,16 @@ phosh_top_panel_constructed (GObject *object)
                    g_action_map_lookup_action (G_ACTION_MAP (self->actions), "suspend"),
                    "enabled",
                    G_SETTINGS_BIND_GET);
+
+  action = g_action_map_lookup_action (G_ACTION_MAP (self->actions), "launch-panel");
+  g_object_bind_property (self, "on-lockscreen",
+                          action, "enabled",
+                          G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
+
+  action = g_action_map_lookup_action (G_ACTION_MAP (self->actions), "launch-mobile-panel");
+  g_object_bind_property (self, "on-lockscreen",
+                          action, "enabled",
+                          G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
 
 
   self->interface_settings = g_settings_new ("org.gnome.desktop.interface");
