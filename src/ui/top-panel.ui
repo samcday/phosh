@@ -343,18 +343,18 @@
               <object class="GtkBox">
                 <property name="visible">1</property>
                 <child type="center">
-              <object class="PhoshArrow" id="arrow">
-                <property name="visible">1</property>
-                <property name="vexpand">1</property>
-                <property name="valign">end</property>
-                <property name="margin-bottom">6</property>
-                <!-- place initial focus -->
-                <property name="has-focus">1</property>
-                <property name="can-focus">1</property>
-              </object>
-              <packing>
-                <property name="name">arrow</property>
-              </packing>
+                  <object class="PhoshArrow" id="arrow">
+                    <property name="visible">1</property>
+                    <property name="vexpand">1</property>
+                    <property name="valign">end</property>
+                    <property name="margin-bottom">6</property>
+                    <!-- place initial focus -->
+                    <property name="has-focus">1</property>
+                    <property name="can-focus">1</property>
+                  </object>
+                  <packing>
+                    <property name="name">arrow</property>
+                  </packing>
                 </child>
                 <child>
                   <object class="GtkRevealer" id="launch_settings_revealer">
