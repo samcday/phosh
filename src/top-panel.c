@@ -78,6 +78,7 @@ typedef struct _PhoshTopPanel {
 
   GtkWidget *stack;
   GtkWidget *arrow;
+  GtkWidget *launch_settings_revealer;
 
   GtkWidget *top_bar_bin;
   GtkWidget *box_top_bar;
@@ -536,6 +537,9 @@ on_drag_state_changed (PhoshTopPanel *self)
   if (self->state == PHOSH_TOP_PANEL_STATE_FOLDED)
     phosh_settings_hide_details (PHOSH_SETTINGS (self->settings));
 
+  gtk_revealer_set_reveal_child (GTK_REVEALER (self->launch_settings_revealer),
+                                 progress <= 0.0);
+
   phosh_layer_surface_set_kbd_interactivity (PHOSH_LAYER_SURFACE (self), kbd_interactivity);
   phosh_layer_surface_wl_surface_commit (PHOSH_LAYER_SURFACE (self));
 }
@@ -686,6 +690,10 @@ phosh_top_panel_constructed (GObject *object)
                           action, "enabled",
                           G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
 
+  g_object_bind_property (self, "on-lockscreen",
+                          self->launch_settings_revealer,
+                          "visible",
+                          G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
 
   self->interface_settings = g_settings_new ("org.gnome.desktop.interface");
   g_settings_bind (self->interface_settings,
@@ -846,6 +854,7 @@ phosh_top_panel_class_init (PhoshTopPanelClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, btn_lock);
   gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, btn_power);
   gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, click_gesture);
+  gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, launch_settings_revealer);
   gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, lbl_clock);
   gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, lbl_clock2);
   gtk_widget_class_bind_template_child (widget_class, PhoshTopPanel, lbl_date);
