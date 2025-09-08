@@ -581,6 +581,11 @@ phosh_settings_init (PhoshSettings *self)
                           action, "enabled",
                           G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
 
+  action = g_action_map_lookup_action (map, "launch-mobile-panel");
+  g_object_bind_property (self, "on-lockscreen",
+                          action, "enabled",
+                          G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
+
   g_signal_connect (self, "size-allocate", G_CALLBACK (on_size_allocate), NULL);
 }
 
