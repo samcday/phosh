@@ -18,6 +18,7 @@
 #define OBJECT_PATH "/org/freedesktop/login1/session/auto"
 
 #define BACKLIGHT_SUBSYSTEM "backlight"
+#define LEDS_SUBSYSTEM "leds"
 
 /**
  * PhoshUdevManager:
@@ -136,7 +137,7 @@ phosh_udev_manager_class_init (PhoshUdevManagerClass *klass)
 static void
 phosh_udev_manager_init (PhoshUdevManager *self)
 {
-  const char * const subsystems[] = { BACKLIGHT_SUBSYSTEM, NULL };
+  const char * const subsystems[] = { BACKLIGHT_SUBSYSTEM, LEDS_SUBSYSTEM, NULL };
   g_autoptr (GError) err = NULL;
 
   self->udev_client = g_udev_client_new (subsystems);
@@ -216,6 +217,34 @@ phosh_udev_manager_find_backlight (PhoshUdevManager *self, const char *connector
     device = phosh_backlight_sysfs_udev_get_type (devices, "raw");
 
   return device;
+}
+
+/**
+ * phosh_udev_manager_find_torches:
+ * @self: The udev maanger
+ *
+ * Get the torch devices in the the system
+ *
+ * Returns:(transfer full): The list of torch devices
+ */
+GList *
+phosh_udev_manager_find_torches (PhoshUdevManager *self, GError **err)
+{
+  g_autoptr (GUdevEnumerator) udev_enumerator = NULL;
+  g_autolist (GUdevDevice) device_list = NULL;
+
+  udev_enumerator = g_udev_enumerator_new (self->udev_client);
+  g_udev_enumerator_add_match_subsystem (udev_enumerator, LEDS_SUBSYSTEM);
+  g_udev_enumerator_add_match_name (udev_enumerator, "*:torch");
+  g_udev_enumerator_add_match_name (udev_enumerator, "*:flash");
+
+  device_list = g_udev_enumerator_execute (udev_enumerator);
+  if (!device_list) {
+    g_set_error (err, G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "Failed to enumerate LED devices");
+    return NULL;
+  }
+
+  return g_steal_pointer (&device_list);
 }
 
 /**
