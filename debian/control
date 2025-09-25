@@ -79,7 +79,7 @@ Recommends:
  fonts-cantarell,
  gnome-session-bin,
  gnome-session-common,
- gnome-settings-daemon,
+ gnome-settings-daemon (>= 49),
  iio-sensor-proxy,
  librsvg2-common,
  network-manager-config-connectivity-debian,
@@ -94,6 +94,7 @@ Provides:
 Breaks:
  gnome-calls (<< 42),
  gnome-control-center (<< 42),
+ gnome-settings-daemon (<< 49),
  libgtk-3-0 (<< 3.24.30),
  xdg-desktop-portal-phosh (<< 0.44~),
 Description: Pure Wayland shell for mobile devices
