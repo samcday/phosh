@@ -19,5 +19,4 @@ G_DECLARE_FINAL_TYPE (PhoshKeyboardEvents,
                       KEYBOARD_EVENTS,
                       GSimpleActionGroup)
 
-PhoshKeyboardEvents  *phosh_keyboard_events_new           (void);
-
+PhoshKeyboardEvents  *phosh_keyboard_events_new           (GError **err);

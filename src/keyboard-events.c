@@ -315,11 +315,10 @@ phosh_keyboard_events_init (PhoshKeyboardEvents *self)
 
 
 PhoshKeyboardEvents *
-phosh_keyboard_events_new (void)
+phosh_keyboard_events_new (GError **err)
 {
-  g_autoptr (GError) err = NULL;
   return g_initable_new (PHOSH_TYPE_KEYBOARD_EVENTS,
                          NULL,
-                         &err,
+                         err,
                          NULL);
 }
