@@ -1017,10 +1017,6 @@ phosh_shell_constructed (GObject *object)
 
   G_OBJECT_CLASS (phosh_shell_parent_class)->constructed (object);
 
-  /* We bind this early since a wl_display_roundtrip () would make us miss
-     existing toplevels */
-  priv->toplevel_manager = phosh_toplevel_manager_new ();
-
   priv->monitor_manager = phosh_monitor_manager_new (NULL);
   g_signal_connect_swapped (priv->monitor_manager,
                             "monitor-added",
@@ -1356,6 +1352,10 @@ phosh_shell_init (PhoshShell *self)
   priv->shell_state = PHOSH_STATE_SETTINGS;
   priv->action_map = g_simple_action_group_new ();
   priv->settings = g_settings_new ("sm.puri.phosh");
+
+  /* We bind this early since a wl_display_roundtrip () would make us miss
+     existing toplevels */
+  priv->toplevel_manager = phosh_toplevel_manager_new ();
 }
 
 /* }}} */
