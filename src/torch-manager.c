@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2025 Phosh.mobi e.V.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -89,11 +90,12 @@ apply_brightness (PhoshTorchManager *self)
   g_object_thaw_notify (G_OBJECT (self));
 }
 
+
 static void
-on_brightness_set (PhoshDBusLoginSession *proxy,
-                   GAsyncResult                       *res,
-                   PhoshTorchManager                  *self)
+on_brightness_set (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshDBusLoginSession *proxy = PHOSH_DBUS_LOGIN_SESSION (source_object);
+  PhoshTorchManager *self = PHOSH_TORCH_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_IS_TORCH_MANAGER (self));
@@ -123,7 +125,7 @@ set_brightness (PhoshTorchManager *self, int brightness)
                                                 g_udev_device_get_name (self->udev_device),
                                                 (guint) brightness,
                                                 NULL,
-                                                (GAsyncReadyCallback) on_brightness_set,
+                                                on_brightness_set,
                                                 self);
 }
 
