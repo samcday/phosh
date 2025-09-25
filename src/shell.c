@@ -92,6 +92,7 @@
 #include "top-panel-bg.h"
 #include "torch-manager.h"
 #include "torch-info.h"
+#include "udev-manager.h"
 #include "util.h"
 #include "vpn-info.h"
 #include "wifi-info.h"
@@ -144,6 +145,7 @@ typedef struct
 
   GtkWidget *notification_banner;
 
+  PhoshUdevManager *udev_manager;
   PhoshAppTracker *app_tracker;
   PhoshSessionManager *session_manager;
   PhoshBackgroundManager *background_manager;
@@ -588,6 +590,7 @@ phosh_shell_dispose (GObject *object)
   g_clear_object (&priv->suspend_manager);
   g_clear_object (&priv->layout_manager);
   g_clear_object (&priv->style_manager);
+  g_clear_object (&priv->udev_manager);
 
   /* sensors */
   g_clear_object (&priv->proximity);
@@ -1354,6 +1357,7 @@ phosh_shell_init (PhoshShell *self)
   /* We bind this early since a wl_display_roundtrip () would make us miss
      existing toplevels */
   priv->toplevel_manager = phosh_toplevel_manager_new ();
+  priv->udev_manager = phosh_udev_manager_get_default ();
 }
 
 /* }}} */
