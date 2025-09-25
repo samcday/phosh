@@ -10,8 +10,12 @@
 
 #include "phosh-config.h"
 
+#include "dbus/login1-session-dbus.h"
 #include "monitor/monitor.h"
 #include "udev-manager.h"
+
+#define BUS_NAME "org.freedesktop.login1"
+#define OBJECT_PATH "/org/freedesktop/login1/session/auto"
 
 #define BACKLIGHT_SUBSYSTEM "backlight"
 
@@ -31,6 +35,8 @@ struct _PhoshUdevManager {
   GObject                parent;
 
   GUdevClient           *udev_client;
+
+  PhoshDBusLoginSession *session_proxy;
 };
 
 G_DEFINE_TYPE (PhoshUdevManager, phosh_udev_manager, G_TYPE_OBJECT)
@@ -103,6 +109,7 @@ phosh_udev_manager_finalize (GObject *object)
 {
   PhoshUdevManager *self = PHOSH_UDEV_MANAGER (object);
 
+  g_clear_object (&self->session_proxy);
   g_clear_object (&self->udev_client);
 
   G_OBJECT_CLASS (phosh_udev_manager_parent_class)->finalize (object);
@@ -130,6 +137,7 @@ static void
 phosh_udev_manager_init (PhoshUdevManager *self)
 {
   const char * const subsystems[] = { BACKLIGHT_SUBSYSTEM, NULL };
+  g_autoptr (GError) err = NULL;
 
   self->udev_client = g_udev_client_new (subsystems);
   g_signal_connect_object (self->udev_client,
@@ -137,6 +145,17 @@ phosh_udev_manager_init (PhoshUdevManager *self)
                            G_CALLBACK (on_uevent),
                            self,
                            G_CONNECT_SWAPPED);
+
+  /* This happens before any UI is up so a sync call is o.k. */
+  self->session_proxy =
+    phosh_dbus_login_session_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
+                                                     G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
+                                                     BUS_NAME,
+                                                     OBJECT_PATH,
+                                                     NULL,
+                                                     &err);
+  if (!self->session_proxy)
+    g_debug ("Failed to get login1 session proxy: %s", err->message);
 }
 
 
@@ -197,4 +216,23 @@ phosh_udev_manager_find_backlight (PhoshUdevManager *self, const char *connector
     device = phosh_backlight_sysfs_udev_get_type (devices, "raw");
 
   return device;
+}
+
+/**
+ * phosh_udev_manager_get_session_proxy:
+ * @self: The manager
+ *
+ * Get Logind's session manager.
+ *
+ * Returns: (transfer full)(nullable): The session manager
+ */
+PhoshDBusLoginSession *
+phosh_udev_manager_get_session_proxy (PhoshUdevManager *self)
+{
+  g_return_val_if_fail (PHOSH_IS_UDEV_MANAGER (self), NULL);
+
+  if (self->session_proxy)
+    return g_object_ref (self->session_proxy);
+
+  return NULL;
 }

@@ -21,5 +21,6 @@ G_DECLARE_FINAL_TYPE (PhoshUdevManager, phosh_udev_manager, PHOSH, UDEV_MANAGER,
 PhoshUdevManager *     phosh_udev_manager_get_default (void);
 GUdevDevice *          phosh_udev_manager_find_backlight (PhoshUdevManager *self,
                                                           const char *connector_name);
+PhoshDBusLoginSession *phosh_udev_manager_get_session_proxy (PhoshUdevManager *self);
 
 G_END_DECLS
