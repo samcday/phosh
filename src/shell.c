@@ -27,6 +27,7 @@
 #include "phosh-config.h"
 #include "ambient.h"
 #include "background.h"
+#include "brightness-manager.h"
 #include "drag-surface.h"
 #include "shell-priv.h"
 #include "app-tracker.h"
@@ -195,6 +196,7 @@ typedef struct
   PhoshCellBroadcastManager *cell_broadcast_manager;
   PhoshConnectivityManager *connectivity_manager;
   PhoshMprisManager *mpris_manager;
+  PhoshBrightnessManager *brightness_manager;
 
   /* sensors */
   PhoshSensorProxyManager *sensor_proxy_manager;
@@ -556,6 +558,7 @@ phosh_shell_dispose (GObject *object)
   g_clear_pointer (&priv->notification_banner, phosh_cp_widget_destroy);
 
   /* dispose managers in opposite order of declaration */
+  g_clear_object (&priv->brightness_manager);
   g_clear_object (&priv->mpris_manager);
   g_clear_object (&priv->connectivity_manager);
   g_clear_object (&priv->cell_broadcast_manager);
@@ -863,6 +866,7 @@ setup_idle_cb (PhoshShell *self)
   priv->emergency_calls_manager = phosh_emergency_calls_manager_new ();
   priv->power_menu_manager = phosh_power_menu_manager_new ();
   priv->cell_broadcast_manager = phosh_cell_broadcast_manager_new ();
+  priv->brightness_manager = phosh_brightness_manager_new ();
 
   setup_primary_monitor_signal_handlers (self);
   /* Setup event hooks late so state changes in UI files don't trigger feedback */
