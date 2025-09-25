@@ -227,7 +227,7 @@ on_top_panel_activated (PhoshShell    *self,
   PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
 
   g_return_if_fail (PHOSH_IS_TOP_PANEL (priv->top_panel));
-  phosh_top_panel_toggle_fold (PHOSH_TOP_PANEL(priv->top_panel));
+  phosh_top_panel_toggle_fold (PHOSH_TOP_PANEL (priv->top_panel));
 }
 
 
@@ -450,7 +450,7 @@ panels_dispose (PhoshShell *self)
 static void
 set_locked (PhoshShell *self, gboolean locked)
 {
-  PhoshShellPrivate *priv = phosh_shell_get_instance_private(self);
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
 
   if (priv->locked == locked)
     return;
@@ -539,7 +539,7 @@ static void
 phosh_shell_dispose (GObject *object)
 {
   PhoshShell *self = PHOSH_SHELL (object);
-  PhoshShellPrivate *priv = phosh_shell_get_instance_private(self);
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
 
   g_clear_handle_id (&priv->startup_finished_id, g_source_remove);
 
@@ -616,7 +616,9 @@ phosh_shell_finalize (GObject *object)
 
 
 static void
-on_num_toplevels_changed (PhoshShell *self, GParamSpec *pspec, PhoshToplevelManager *toplevel_manager)
+on_num_toplevels_changed (PhoshShell           *self,
+                          GParamSpec           *pspec,
+                          PhoshToplevelManager *toplevel_manager)
 {
   PhoshShellPrivate *priv;
 
@@ -719,7 +721,8 @@ notify_compositor_up_state (PhoshShell *self, enum phosh_private_shell_state sta
   g_debug ("Notify compositor state: %d", state);
 
   phosh_private = phosh_wayland_get_phosh_private (phosh_wayland_get_default ());
-  if (phosh_private && phosh_private_get_version (phosh_private) >= PHOSH_PRIVATE_SET_SHELL_STATE_SINCE_VERSION)
+  if (phosh_private &&
+      phosh_private_get_version (phosh_private) >= PHOSH_PRIVATE_SET_SHELL_STATE_SINCE_VERSION)
     phosh_private_set_shell_state (phosh_private, state);
 }
 
@@ -1063,7 +1066,7 @@ phosh_shell_constructed (GObject *object)
                           self, "locked",
                           G_BINDING_BIDIRECTIONAL | G_BINDING_SYNC_CREATE);
 
-  priv->idle_manager = phosh_idle_manager_get_default();
+  priv->idle_manager = phosh_idle_manager_get_default ();
 
   priv->faders = g_ptr_array_new_with_free_func ((GDestroyNotify) (gtk_widget_destroy));
 
@@ -1202,7 +1205,8 @@ phosh_shell_remove_action (GActionMap *action_map, const char *action_name)
 }
 
 
-static void phosh_shell_action_map_iface_init (GActionMapInterface *iface)
+static void
+phosh_shell_action_map_iface_init (GActionMapInterface *iface)
 {
   iface->lookup_action = phosh_shell_lookup_action;
   iface->add_action = phosh_shell_add_action;
@@ -1291,7 +1295,6 @@ phosh_shell_class_init (PhoshShellClass *klass)
                         PHOSH_TYPE_SHELL_STATE_FLAGS,
                         PHOSH_STATE_NONE,
                         G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
-
   /**
    * PhoshShell:overview-visible:
    *
@@ -2123,11 +2126,11 @@ phosh_shell_get_usable_area (PhoshShell *self, int *x, int *y, int *width, int *
   g_return_if_fail (PHOSH_IS_SHELL (self));
 
   monitor = phosh_shell_get_primary_monitor (self);
-  g_return_if_fail(monitor);
+  g_return_if_fail (monitor);
   mode = phosh_monitor_get_current_mode (monitor);
   g_return_if_fail (mode != NULL);
 
-  scale = MAX(1.0, phosh_monitor_get_fractional_scale (monitor));
+  scale = MAX (1.0, phosh_monitor_get_fractional_scale (monitor));
 
   g_debug ("Primary monitor %p scale is %f, mode: %dx%d, transform is %d",
            monitor,
@@ -2136,7 +2139,7 @@ phosh_shell_get_usable_area (PhoshShell *self, int *x, int *y, int *width, int *
            mode->height,
            monitor->transform);
 
-  switch (phosh_monitor_get_transform(monitor)) {
+  switch (phosh_monitor_get_transform (monitor)) {
   case PHOSH_MONITOR_TRANSFORM_NORMAL:
   case PHOSH_MONITOR_TRANSFORM_180:
   case PHOSH_MONITOR_TRANSFORM_FLIPPED:
@@ -2273,7 +2276,7 @@ phosh_shell_enable_power_save (PhoshShell *self, gboolean enable)
  * Returns: %TRUE if we were started from a display manager. %FALSE otherwise.
  */
 gboolean
-phosh_shell_started_by_display_manager(PhoshShell *self)
+phosh_shell_started_by_display_manager (PhoshShell *self)
 {
   g_return_val_if_fail (PHOSH_IS_SHELL (self), FALSE);
 
@@ -2290,7 +2293,7 @@ phosh_shell_started_by_display_manager(PhoshShell *self)
  * Returns: %TRUE if the shell finished startup. %FALSE otherwise.
  */
 gboolean
-phosh_shell_is_startup_finished(PhoshShell *self)
+phosh_shell_is_startup_finished (PhoshShell *self)
 {
   PhoshShellPrivate *priv;
 
@@ -2302,10 +2305,10 @@ phosh_shell_is_startup_finished(PhoshShell *self)
 
 
 void
-phosh_shell_add_global_keyboard_action_entries (PhoshShell *self,
+phosh_shell_add_global_keyboard_action_entries (PhoshShell         *self,
                                                 const GActionEntry *entries,
-                                                gint n_entries,
-                                                gpointer user_data)
+                                                gint                n_entries,
+                                                gpointer            user_data)
 {
   PhoshShellPrivate *priv;
 
