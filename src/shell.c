@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2018 Purism SPC
- *               2023-2025 The Phosh Developers
+ *               2023-2024 The Phosh Developers
+ *               2025 Phosh.mobi e.V.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -60,6 +61,7 @@
 #include "monitor-manager.h"
 #include "monitor/monitor.h"
 #include "mount-manager.h"
+#include "osd-window.h"
 #include "power-menu-manager.h"
 #include "revealer.h"
 #include "settings.h"
@@ -104,6 +106,7 @@
 #include "phosh-settings-enums.h"
 
 #define WWAN_BACKEND_KEY "wwan-backend"
+#define OSD_HIDE_TIMEOUT 1 /* seconds */
 
 /**
  * PhoshShell:
@@ -142,6 +145,10 @@ typedef struct
   PhoshDragSurface *home;
   gboolean          overview_visible;
   GPtrArray *faders;              /* for final fade out */
+
+  PhoshOsdWindow   *osd;
+  gint              osd_timeoutid;
+  gboolean          osd_continue;
 
   GtkWidget *notification_banner;
 
@@ -712,6 +719,37 @@ on_fade_out_timeout (PhoshShell *self)
   return G_SOURCE_REMOVE;
 }
 
+
+/* {{{ OSD */
+
+static gboolean
+on_osd_timeout (PhoshShell *self)
+{
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+  gboolean ret;
+
+  ret = priv->osd_continue ? G_SOURCE_CONTINUE : G_SOURCE_REMOVE;
+  if (!priv->osd_continue) {
+    g_debug ("Closing osd");
+    priv->osd_timeoutid = 0;
+    if (priv->osd)
+      gtk_widget_destroy (GTK_WIDGET (priv->osd));
+  }
+  priv->osd_continue = FALSE;
+  return ret;
+}
+
+
+static void
+on_osd_destroyed (PhoshShell *self)
+{
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+
+  priv->osd = NULL;
+  g_clear_handle_id (&priv->osd_timeoutid, g_source_remove);
+}
+
+/* }}} */
 
 static void
 notify_compositor_up_state (PhoshShell *self, enum phosh_private_shell_state state)
@@ -2595,6 +2633,45 @@ phosh_shell_get_lockscreen_type (PhoshShell *self)
 {
   PhoshShellClass *klass = PHOSH_SHELL_GET_CLASS (self);
   return klass->get_lockscreen_type (self);
+}
+
+
+void
+phosh_shell_show_osd (PhoshShell *self,
+                      const char *connector,
+                      const char *icon,
+                      const char *label,
+                      double      level,
+                      double      max_level)
+{
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+
+  g_return_if_fail (PHOSH_IS_SHELL (self));
+
+  g_debug ("DBus show osd: connector: %s icon: %s, label: %s, level %f/%f",
+           connector, icon, label, level, max_level);
+
+  if (priv->osd) {
+    priv->osd_continue = TRUE;
+    g_object_set (priv->osd,
+                  "connector", connector,
+                  "label", label,
+                  "icon-name", icon,
+                  "level", level,
+                  "max-level", max_level,
+                  NULL);
+  } else {
+    priv->osd = PHOSH_OSD_WINDOW (phosh_osd_window_new (connector, label, icon, level, max_level));
+    g_signal_connect_swapped (priv->osd, "destroy", G_CALLBACK (on_osd_destroyed), self);
+    gtk_widget_set_visible (GTK_WIDGET (priv->osd), TRUE);
+  }
+
+  if (!priv->osd_timeoutid) {
+    priv->osd_timeoutid = g_timeout_add_seconds (OSD_HIDE_TIMEOUT,
+                                                 (GSourceFunc) on_osd_timeout,
+                                                 self);
+    g_source_set_name_by_id (priv->osd_timeoutid, "[phosh] osd-timeout");
+  }
 }
 
 /* }}} */
