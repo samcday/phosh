@@ -1017,8 +1017,6 @@ phosh_shell_constructed (GObject *object)
 
   G_OBJECT_CLASS (phosh_shell_parent_class)->constructed (object);
 
-  priv->settings = g_settings_new ("sm.puri.phosh");
-
   /* We bind this early since a wl_display_roundtrip () would make us miss
      existing toplevels */
   priv->toplevel_manager = phosh_toplevel_manager_new ();
@@ -1357,6 +1355,7 @@ phosh_shell_init (PhoshShell *self)
   priv->style_manager = phosh_style_manager_new ();
   priv->shell_state = PHOSH_STATE_SETTINGS;
   priv->action_map = g_simple_action_group_new ();
+  priv->settings = g_settings_new ("sm.puri.phosh");
 }
 
 /* }}} */
