@@ -203,16 +203,6 @@ initable_init (GInitable    *initable,
     return FALSE;
   }
 
-  if (phosh_private_get_version (phosh_private) < PHOSH_PRIVATE_GET_KEYBOARD_EVENT_SINCE_VERSION) {
-    g_warning ("Skipping grab manager due to mismatch of phosh_private protocol version");
-    g_set_error (error,
-                 G_IO_ERROR, G_IO_ERROR_FAILED,
-                 "Protocol version mismatch. Need %d, got %d",
-                 PHOSH_PRIVATE_GET_KEYBOARD_EVENT_SINCE_VERSION,
-                 phosh_private_get_version (phosh_private));
-    return FALSE;
-  }
-
   if ((self->kbevent = phosh_private_get_keyboard_event (phosh_private)) == NULL) {
     g_warning ("Skipping grab manager because of an unknown phosh_private protocol error");
     g_set_error (error,
