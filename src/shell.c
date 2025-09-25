@@ -1052,9 +1052,6 @@ phosh_shell_constructed (GObject *object)
     g_error ("Need at least one monitor");
   }
 
-  gtk_icon_theme_add_resource_path (gtk_icon_theme_get_default (),
-                                    "/mobi/phosh/icons");
-
   priv->calls_manager = phosh_calls_manager_new ();
   priv->launcher_entry_manager = phosh_launcher_entry_manager_new ();
 
@@ -1338,6 +1335,7 @@ phosh_shell_init (PhoshShell *self)
   PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
 
   cui_init (TRUE);
+  gtk_icon_theme_add_resource_path (gtk_icon_theme_get_default (), "/mobi/phosh/icons");
 
   priv->overview_visible = TRUE;
 
