@@ -28,7 +28,7 @@
 /**
  * PhoshTorchManager:
  *
- * Interacts with torch via UPower
+ * Interacts with torch via sysfs and logind
  *
  * #PhoshTorchManager tracks the torch status and
  * allows to set the brightness.
