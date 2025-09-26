@@ -559,8 +559,9 @@ on_mm_object_removed (PhoshWWanMM *self, GDBusObject *object, MMManager *manager
 
 
 static void
-on_mm_manager_ready (GObject *source_object, GAsyncResult *res, PhoshWWanMM  *self)
+on_mm_manager_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshWWanMM *self = PHOSH_WWAN_MM (user_data);
   g_autoptr (GError) err = NULL;
   g_autolist (GDBusObject) modems = NULL;
   MMManager *manager;
@@ -763,7 +764,7 @@ on_bus_get_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
   mm_manager_new (connection,
                   G_DBUS_OBJECT_MANAGER_CLIENT_FLAGS_DO_NOT_AUTO_START,
                   self->cancel,
-                  (GAsyncReadyCallback)on_mm_manager_ready,
+                  on_mm_manager_ready,
                   self);
 }
 
