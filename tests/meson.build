@@ -29,6 +29,8 @@ test_env_common.set('MALLOC_CHECK_', '2')
 test_env_common.set('NO_AT_BRIDGE', '1')
 # For GTK4 apps running in the tests:
 test_env_common.set('GTK_A11Y', 'none')
+# Make sure gvfs doesn't linger around
+test_env_common.set('GIO_USE_VFS', 'local')
 
 # For -Db_sanitize=address
 test_env_common.set(
