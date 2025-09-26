@@ -51,6 +51,7 @@ typedef struct _PhoshWWanMM {
 
   MMManager                      *manager;
   GCancellable                   *cancel;
+  GDBusConnection                *connection;
 
   guint                           signal_quality;
   const char                     *access_tec;
@@ -609,6 +610,8 @@ phosh_wwan_mm_dispose (GObject *object)
     g_clear_object (&self->manager);
   }
 
+  g_clear_object (&self->connection);
+
   G_OBJECT_CLASS (phosh_wwan_mm_parent_class)->dispose (object);
 }
 
@@ -761,7 +764,8 @@ on_bus_get_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
     return;
   }
 
-  mm_manager_new (connection,
+  self->connection = connection;
+  mm_manager_new (self->connection,
                   G_DBUS_OBJECT_MANAGER_CLIENT_FLAGS_DO_NOT_AUTO_START,
                   self->cancel,
                   on_mm_manager_ready,
