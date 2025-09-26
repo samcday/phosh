@@ -748,8 +748,9 @@ phosh_wwan_mm_interface_init (PhoshWWanInterface *iface)
 
 
 static void
-on_bus_get_ready (GObject *source_object, GAsyncResult *res, PhoshWWanMM *self)
+on_bus_get_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshWWanMM *self = PHOSH_WWAN_MM (user_data);
   g_autoptr (GError) err = NULL;
   GDBusConnection *connection;
 
@@ -774,7 +775,7 @@ phosh_wwan_mm_init (PhoshWWanMM *self)
 
   g_bus_get (G_BUS_TYPE_SYSTEM,
              self->cancel,
-             (GAsyncReadyCallback)on_bus_get_ready,
+             on_bus_get_ready,
              self);
 }
 
