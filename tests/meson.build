@@ -24,6 +24,8 @@ test_env_common.set(
   'GSETTINGS_SCHEMA_DIR',
   '@0@/data:@1@'.format(meson.project_build_root(), plugin_schema_path),
 )
+# Make sure we use Phosh's gsetting prefs
+test_env_common.set('XDG_CURRENT_DESKTOP', 'Phosh:GNOME')
 test_env_common.set('PYTHONDONTWRITEBYTECODE', 'yes')
 test_env_common.set('MALLOC_CHECK_', '2')
 test_env_common.set('NO_AT_BRIDGE', '1')
