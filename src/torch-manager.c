@@ -118,7 +118,7 @@ set_brightness (PhoshTorchManager *self, int brightness)
   if (self->brightness == brightness)
     return;
 
-  g_debug("Setting brightness to %d", brightness);
+  g_debug ("Setting brightness to %d", brightness);
 
   phosh_dbus_login_session_call_set_brightness (self->proxy,
                                                 TORCH_SUBSYSTEM,
@@ -199,8 +199,8 @@ find_torch_device (PhoshTorchManager *self)
 
   self->max_brightness = g_udev_device_get_sysfs_attr_as_int (self->udev_device,
                                                               "max_brightness");
-  g_debug("Found torch device '%s' with max brightness %d",
-          g_udev_device_get_name (self->udev_device), self->max_brightness);
+  g_debug ("Found torch device '%s' with max brightness %d",
+           g_udev_device_get_name (self->udev_device), self->max_brightness);
 
   self->can_scale = self->max_brightness > 1;
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_CAN_SCALE]);
@@ -261,7 +261,7 @@ phosh_torch_manager_idle_init (PhoshManager *manager)
 static void
 phosh_torch_manager_dispose (GObject *object)
 {
-  PhoshTorchManager *self = PHOSH_TORCH_MANAGER(object);
+  PhoshTorchManager *self = PHOSH_TORCH_MANAGER (object);
 
   g_cancellable_cancel (self->cancel);
   g_clear_object (&self->cancel);
