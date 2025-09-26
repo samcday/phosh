@@ -1262,10 +1262,12 @@ on_gsd_color_temperature_changed (PhoshMonitorManager*self,
 
 
 static void
-on_gsd_color_proxy_new_for_bus_finish (GObject             *source_object,
-                                       GAsyncResult        *res,
-                                       PhoshMonitorManager *self)
+on_gsd_color_proxy_new_for_bus_finish (GObject      *source_object,
+                                       GAsyncResult *res,
+                                       gpointer      user_data)
+
 {
+  PhoshMonitorManager *self = PHOSH_MONITOR_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
   PhoshDBusColor *proxy;
 
@@ -1306,7 +1308,7 @@ on_idle (PhoshMonitorManager *self)
                                       GSD_COLOR_BUS_NAME,
                                       GSD_COLOR_OBJECT_PATH,
                                       self->cancel,
-                                      (GAsyncReadyCallback) on_gsd_color_proxy_new_for_bus_finish,
+                                      on_gsd_color_proxy_new_for_bus_finish,
                                       self);
 
   return FALSE;
