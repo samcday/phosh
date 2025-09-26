@@ -332,10 +332,11 @@ on_bus_acquired (GObject      *source_object,
 
 
 static void
-on_add_agent_ready (PhoshGeoClueDBusManager *manager,
-                    GAsyncResult            *res,
-                    gpointer                 user_data)
+on_add_agent_ready (GObject      *source_object,
+                    GAsyncResult *res,
+                    gpointer      user_data)
 {
+  PhoshGeoClueDBusManager *manager = PHOSH_GEO_CLUE_DBUS_MANAGER (source_object);
   g_autoptr (GError) err = NULL;
 
   if (phosh_geo_clue_dbus_manager_call_add_agent_finish (manager, res, &err))
@@ -385,7 +386,7 @@ on_manager_proxy_ready (GObject              *source_object,
                                               /* Agent whitelisted in geoclue conf */
                                               "sm.puri.Phosh",
                                               NULL,
-                                              (GAsyncReadyCallback)on_add_agent_ready,
+                                              on_add_agent_ready,
                                               NULL);
   g_signal_connect_swapped (self->manager_proxy,
                             "notify::in-use",
