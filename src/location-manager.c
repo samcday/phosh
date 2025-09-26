@@ -385,7 +385,7 @@ on_manager_proxy_ready (GObject              *source_object,
   phosh_geo_clue_dbus_manager_call_add_agent (self->manager_proxy,
                                               /* Agent whitelisted in geoclue conf */
                                               "sm.puri.Phosh",
-                                              NULL,
+                                              self->cancel,
                                               on_add_agent_ready,
                                               NULL);
   g_signal_connect_swapped (self->manager_proxy,
@@ -410,7 +410,7 @@ on_manager_name_appeared (GDBusConnection      *connection,
     G_DBUS_PROXY_FLAGS_NONE,
     GEOCLUE_SERVICE,
     GEOCLUE_MANAGER_PATH,
-    NULL,
+    self->cancel,
     (GAsyncReadyCallback)on_manager_proxy_ready,
     self);
 }
