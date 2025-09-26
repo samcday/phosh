@@ -70,6 +70,7 @@ typedef struct _PhoshLocationManager {
   GSettings                                          *location_settings;
   gboolean                                            enabled;
   gboolean                                            active;
+  GDBusConnection                                    *connection;
 
   /* Current Request */
   GtkWidget                                          *prompt;
@@ -308,9 +309,7 @@ phosh_location_manager_geoclue2_agent_iface_init (PhoshGeoClueDBusOrgFreedesktop
 
 
 static void
-on_bus_acquired (GObject      *source_object,
-                 GAsyncResult *res,
-                 gpointer      user_data)
+on_bus_acquired (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
   g_autoptr (GError) err = NULL;
   PhoshLocationManager *self;
@@ -323,8 +322,9 @@ on_bus_acquired (GObject      *source_object,
   }
 
   self = PHOSH_LOCATION_MANAGER (user_data);
+  self->connection = connection;
   g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (self),
-                                    connection,
+                                    self->connection,
                                     LOCATION_AGENT_DBUS_PATH,
                                     NULL);
   update_accuracy_level (self, self->enabled);
@@ -454,6 +454,7 @@ phosh_location_manager_dispose (GObject *object)
 
   g_clear_object (&self->location_settings);
   g_clear_object (&self->manager_proxy);
+  g_clear_object (&self->connection);
 
   G_OBJECT_CLASS (phosh_location_manager_parent_class)->dispose (object);
 }
