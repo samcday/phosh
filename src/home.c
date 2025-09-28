@@ -397,30 +397,21 @@ add_keybindings (PhoshHome *self)
     { "Super_R", .activate = toggle_overview_action },
     { "Super_L", .activate = toggle_overview_action },
   };
-  GStrv overview_bindings;
-  GStrv app_view_bindings;
-  GPtrArray *action_names = g_ptr_array_new ();
+  g_autoptr (GStrvBuilder) builder = g_strv_builder_new ();
   g_autoptr (GSettings) settings = g_settings_new (KEYBINDINGS_SCHEMA_ID);
   g_autoptr (GArray) actions = g_array_new (FALSE, TRUE, sizeof (GActionEntry));
 
-  overview_bindings = g_settings_get_strv (settings, KEYBINDING_KEY_TOGGLE_OVERVIEW);
-  for (int i = 0; i < g_strv_length (overview_bindings); i++) {
-    GActionEntry entry = { .name = overview_bindings[i], .activate = toggle_overview_action };
-    g_array_append_val (actions, entry);
-    g_ptr_array_add (action_names, overview_bindings[i]);
-  }
-  /* Free GStrv container but keep individual strings for action_names */
-  g_free (overview_bindings);
+  PHOSH_UTIL_BUILD_KEYBINDING (actions,
+                               builder,
+                               settings,
+                               KEYBINDING_KEY_TOGGLE_OVERVIEW,
+                               toggle_overview_action);
 
-  app_view_bindings = g_settings_get_strv (settings, KEYBINDING_KEY_TOGGLE_APPLICATION_VIEW);
-  for (int i = 0; i < g_strv_length (app_view_bindings); i++) {
-    GActionEntry entry = { .name = app_view_bindings[i], .activate = toggle_application_view_action };
-    g_array_append_val (actions, entry);
-    g_ptr_array_add (action_names, app_view_bindings[i]);
-  }
-  /* Free GStrv container but keep individual strings for action_names */
-  g_free (app_view_bindings);
-  g_ptr_array_add (action_names, NULL);
+  PHOSH_UTIL_BUILD_KEYBINDING (actions,
+                               builder,
+                               settings,
+                               KEYBINDING_KEY_TOGGLE_APPLICATION_VIEW,
+                               toggle_application_view_action);
 
   phosh_shell_add_global_keyboard_action_entries (phosh_shell_get_default (),
                                                   (GActionEntry*) actions->data,
@@ -432,7 +423,7 @@ add_keybindings (PhoshHome *self)
                                                   G_N_ELEMENTS (entries),
                                                   self);
 
-  self->action_names = (GStrv) g_ptr_array_free (action_names, FALSE);
+  self->action_names = g_strv_builder_end (builder);
 }
 
 
