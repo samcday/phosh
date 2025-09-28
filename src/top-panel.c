@@ -437,19 +437,20 @@ toggle_message_tray_action (GSimpleAction *action, GVariant *param, gpointer dat
 static void
 add_keybindings (PhoshTopPanel *self)
 {
-  g_auto (GStrv) keybindings = NULL;
+  g_autoptr (GStrvBuilder) builder = g_strv_builder_new ();
   g_autoptr (GArray) actions = g_array_new (FALSE, TRUE, sizeof (GActionEntry));
 
-  keybindings = g_settings_get_strv (self->kb_settings, KEYBINDING_KEY_TOGGLE_MESSAGE_TRAY);
-  for (int i = 0; i < g_strv_length (keybindings); i++) {
-    GActionEntry entry = { .name = keybindings[i], .activate = toggle_message_tray_action };
-    g_array_append_val (actions, entry);
-  }
+  PHOSH_UTIL_BUILD_KEYBINDING (actions,
+                               builder,
+                               self->kb_settings,
+                               KEYBINDING_KEY_TOGGLE_MESSAGE_TRAY,
+                               toggle_message_tray_action);
+
   phosh_shell_add_global_keyboard_action_entries (phosh_shell_get_default (),
                                                   (GActionEntry*) actions->data,
                                                   actions->len,
                                                   self);
-  self->action_names = g_steal_pointer (&keybindings);
+  self->action_names = g_strv_builder_end (builder);
 }
 
 
