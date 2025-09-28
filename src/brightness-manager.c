@@ -185,6 +185,16 @@ static void
 phosh_brightness_manager_init (PhoshBrightnessManager *self)
 {
   PhoshShell *shell = phosh_shell_get_default ();
+  GSettingsSchemaSource *source = g_settings_schema_source_get_default ();
+  g_autoptr (GSettingsSchema) schema = NULL;
+
+  /* TODO: Drop once we can rely on GNOME 49 schema */
+  schema = g_settings_schema_source_lookup (source, KEYBINDINGS_SCHEMA_ID, TRUE);
+  if (!schema)
+    return;
+
+  if (!g_settings_schema_has_key (schema, KEYBINDING_KEY_BRIGHTNESS_UP))
+    return;
 
   self->settings = g_settings_new (KEYBINDINGS_SCHEMA_ID);
   g_signal_connect_object (self->settings,
