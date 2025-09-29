@@ -92,6 +92,7 @@
 #include "top-panel-bg.h"
 #include "torch-manager.h"
 #include "torch-info.h"
+#include "udev-manager.h"
 #include "util.h"
 #include "vpn-info.h"
 #include "wifi-info.h"
@@ -144,6 +145,7 @@ typedef struct
 
   GtkWidget *notification_banner;
 
+  PhoshUdevManager *udev_manager;
   PhoshAppTracker *app_tracker;
   PhoshSessionManager *session_manager;
   PhoshBackgroundManager *background_manager;
@@ -588,6 +590,7 @@ phosh_shell_dispose (GObject *object)
   g_clear_object (&priv->suspend_manager);
   g_clear_object (&priv->layout_manager);
   g_clear_object (&priv->style_manager);
+  g_clear_object (&priv->udev_manager);
 
   /* sensors */
   g_clear_object (&priv->proximity);
@@ -1017,12 +1020,6 @@ phosh_shell_constructed (GObject *object)
 
   G_OBJECT_CLASS (phosh_shell_parent_class)->constructed (object);
 
-  priv->settings = g_settings_new ("sm.puri.phosh");
-
-  /* We bind this early since a wl_display_roundtrip () would make us miss
-     existing toplevels */
-  priv->toplevel_manager = phosh_toplevel_manager_new ();
-
   priv->monitor_manager = phosh_monitor_manager_new (NULL);
   g_signal_connect_swapped (priv->monitor_manager,
                             "monitor-added",
@@ -1057,9 +1054,6 @@ phosh_shell_constructed (GObject *object)
   } else {
     g_error ("Need at least one monitor");
   }
-
-  gtk_icon_theme_add_resource_path (gtk_icon_theme_get_default (),
-                                    "/mobi/phosh/icons");
 
   priv->calls_manager = phosh_calls_manager_new ();
   priv->launcher_entry_manager = phosh_launcher_entry_manager_new ();
@@ -1344,6 +1338,7 @@ phosh_shell_init (PhoshShell *self)
   PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
 
   cui_init (TRUE);
+  gtk_icon_theme_add_resource_path (gtk_icon_theme_get_default (), "/mobi/phosh/icons");
 
   priv->overview_visible = TRUE;
 
@@ -1357,6 +1352,12 @@ phosh_shell_init (PhoshShell *self)
   priv->style_manager = phosh_style_manager_new ();
   priv->shell_state = PHOSH_STATE_SETTINGS;
   priv->action_map = g_simple_action_group_new ();
+  priv->settings = g_settings_new ("sm.puri.phosh");
+
+  /* We bind this early since a wl_display_roundtrip () would make us miss
+     existing toplevels */
+  priv->toplevel_manager = phosh_toplevel_manager_new ();
+  priv->udev_manager = phosh_udev_manager_get_default ();
 }
 
 /* }}} */
