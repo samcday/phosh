@@ -1012,6 +1012,7 @@ phosh_shell_constructed (GObject *object)
 {
   PhoshShell *self = PHOSH_SHELL (object);
   PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+  g_autoptr (GError) err = NULL;
   guint id;
 
   G_OBJECT_CLASS (phosh_shell_parent_class)->constructed (object);
@@ -1076,11 +1077,15 @@ phosh_shell_constructed (GObject *object)
   priv->polkit_auth_agent = phosh_polkit_auth_agent_new ();
 
   priv->feedback_manager = phosh_feedback_manager_new ();
-  priv->keyboard_events = phosh_keyboard_events_new ();
-  g_signal_connect_swapped (priv->keyboard_events,
-                            "pressed",
-                            G_CALLBACK (on_keyboard_events_pressed),
-                            self);
+  priv->keyboard_events = phosh_keyboard_events_new (&err);
+  if (priv->keyboard_events) {
+    g_signal_connect_swapped (priv->keyboard_events,
+                              "pressed",
+                              G_CALLBACK (on_keyboard_events_pressed),
+                              self);
+  } else {
+    g_warning ("Failed to initialize keyboard events: %s", err->message);
+  }
 
   id = g_idle_add ((GSourceFunc) setup_idle_cb, self);
   g_source_set_name_by_id (id, "[PhoshShell] idle");
