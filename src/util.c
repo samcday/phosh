@@ -242,6 +242,37 @@ phosh_error_warnv (const char *log_domain,
 }
 
 
+gboolean
+phosh_error_warnv2 (const char *log_domain,
+                    GError     *err,
+                    GQuark      domain,
+                    int         code1,
+                    int         code2,
+                    const char *fmt, ...)
+{
+  g_autofree char *msg = NULL;
+  gboolean matched = FALSE;
+  va_list args;
+
+  if (err == NULL)
+    return FALSE;
+
+  va_start (args, fmt);
+  msg = g_strdup_vprintf(fmt, args);
+  va_end (args);
+
+  if (g_error_matches (err, domain, code1) ||
+      g_error_matches (err, domain, code2))
+    matched = TRUE;
+
+  g_log (log_domain,
+         matched ? G_LOG_LEVEL_DEBUG : G_LOG_LEVEL_WARNING,
+         "%s: %s", msg, err->message);
+
+  return matched;
+}
+
+
 static void
 randname (char *buf)
 {
