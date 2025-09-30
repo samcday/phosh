@@ -866,7 +866,6 @@ setup_idle_cb (PhoshShell *self)
   priv->emergency_calls_manager = phosh_emergency_calls_manager_new ();
   priv->power_menu_manager = phosh_power_menu_manager_new ();
   priv->cell_broadcast_manager = phosh_cell_broadcast_manager_new ();
-  priv->brightness_manager = phosh_brightness_manager_new ();
 
   setup_primary_monitor_signal_handlers (self);
   /* Setup event hooks late so state changes in UI files don't trigger feedback */
@@ -1889,6 +1888,29 @@ phosh_shell_get_wifi_manager (PhoshShell *self)
 }
 
 /* Manager getters that create them as needed */
+
+/**
+ * phosh_shell_get_brightness_manager:
+ * @self: The shell singleton
+ *
+ * Get the brightness manager
+ *
+ * Returns: (transfer none): The brightness manager
+ */
+PhoshBrightnessManager *
+phosh_shell_get_brightness_manager (PhoshShell *self)
+{
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+
+  g_return_val_if_fail (PHOSH_IS_SHELL (self), NULL);
+
+  if (!priv->brightness_manager)
+    priv->brightness_manager = phosh_brightness_manager_new ();
+
+  g_return_val_if_fail (PHOSH_IS_BRIGHTNESS_MANAGER (priv->brightness_manager), NULL);
+
+  return priv->brightness_manager;
+}
 
 /**
  * phosh_shell_get_bt_manager:
