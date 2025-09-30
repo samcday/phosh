@@ -385,10 +385,13 @@ build_mode (GVariantBuilder *modes_builder, PhoshHeadMode *mode, gboolean is_cur
 {
   double scale = 1.0;
   GVariantBuilder supported_scales_builder, mode_properties_builder;
+  const char *name = "default";
   int n;
   g_autofree float *scales = NULL;
 
-  if (!mode->name) {
+  if (mode->name)
+    name = mode->name;
+  else if (!is_current) {
     g_warning ("Skipping unnamend mode %p", mode);
     return;
   }
@@ -410,7 +413,7 @@ build_mode (GVariantBuilder *modes_builder, PhoshHeadMode *mode, gboolean is_cur
                          g_variant_new_boolean (mode->preferred));
 
   g_variant_builder_add (modes_builder, MODE_FORMAT,
-                         mode->name,
+                         name,
                          (gint32)mode->width,
                          (gint32)mode->height,
                          (double)mode->refresh / 1000.0,
