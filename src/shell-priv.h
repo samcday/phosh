@@ -121,5 +121,11 @@ gboolean             phosh_shell_activate_action (PhoshShell *self,
                                                   GVariant   *parameter);
 
 void                 phosh_shell_set_bg_alpha    (PhoshShell *self, double alpha);
+void                 phosh_shell_show_osd (PhoshShell *self,
+                                           const char *connector,
+                                           const char *icon,
+                                           const char *label,
+                                           double      level,
+                                           double      max_level);
 
 G_END_DECLS
