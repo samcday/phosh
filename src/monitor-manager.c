@@ -463,6 +463,10 @@ phosh_monitor_manager_handle_get_current_state (PhoshDBusDisplayConfig *skeleton
 
     g_variant_builder_init (&modes_builder, G_VARIANT_TYPE (MODES_FORMAT));
 
+    /* Ensure we have at least one mode */
+    if (head->modes->len == 0)
+      build_mode (&modes_builder, head->mode, TRUE);
+
     for (int k = 0; k < head->modes->len; k++) {
       PhoshHeadMode *mode = g_ptr_array_index (head->modes, k);
 
