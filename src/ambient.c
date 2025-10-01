@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022 Purism SPC
+ *               2025 Phosh.mobi e.V.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -309,6 +310,8 @@ on_automatic_high_contrast_changed (PhoshAmbient *self,
       phosh_ambient_claim_light (self, TRUE);
   } else {
     phosh_ambient_claim_light (self, FALSE);
+    /* Switch back to normal theme */
+    switch_theme (self, FALSE);
   }
 }
 
