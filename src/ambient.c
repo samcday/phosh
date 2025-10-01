@@ -197,14 +197,14 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
 
   g_debug ("Ambient light changed: %f %s", level, unit);
 
-  if (g_ascii_strcasecmp (unit , "lux") != 0) {
+  if (g_ascii_strcasecmp (unit, "lux") != 0) {
     /* For vendor values we don't know if small or large values mean bright or dark so be conservative */
     g_warning_once ("Unknown light level unit %s", unit);
     return;
   }
 
   /* Use a bit of hysteresis to not switch too often around the threshold */
-  hyst = (self->use_hc) ? 0.9 : 1.1;
+  hyst = self->use_hc ? 0.9 : 1.1;
   threshold *= hyst;
 
   wants_hc = level > threshold;
@@ -333,9 +333,7 @@ on_has_ambient_light_changed (PhoshAmbient            *self,
 
 
 static void
-on_shell_state_changed (PhoshAmbient  *self,
-                        GParamSpec    *pspec,
-                        PhoshShell    *shell)
+on_shell_state_changed (PhoshAmbient *self, GParamSpec *pspec, PhoshShell *shell)
 {
   PhoshShellStateFlags state;
 
@@ -345,11 +343,10 @@ on_shell_state_changed (PhoshAmbient  *self,
   state = phosh_shell_get_state (shell);
   g_debug ("Shell state changed: %d", state);
   /* Claim/unclaim the sensor on screen unblank / blank */
-  if (state & PHOSH_STATE_BLANKED) {
+  if (state & PHOSH_STATE_BLANKED)
     phosh_ambient_claim_light (self, FALSE);
-  } else {
+  else
     on_has_ambient_light_changed (self, NULL, self->sensor_proxy_manager);
-  }
 }
 
 
@@ -433,7 +430,6 @@ phosh_ambient_class_init (PhoshAmbientClass *klass)
                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
-
 }
 
 
