@@ -198,7 +198,7 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
 
   if (g_ascii_strcasecmp (unit , "lux") != 0) {
     /* For vendor values we don't know if small or large values mean bright or dark so be conservative */
-    g_warning_once ("Unknown unit light level unit %s", unit);
+    g_warning_once ("Unknown light level unit %s", unit);
     return;
   }
 
