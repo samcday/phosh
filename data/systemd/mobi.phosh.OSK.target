@@ -7,7 +7,5 @@ Wants=mobi.phosh.OSK.service
 
 # Require GNOME session and specify startup ordering
 Requisite=gnome-session-initialized.target
-After=gnome-session-initialized.target
-PartOf=gnome-session-initialized.target
-Before=gnome-session.target
-
+After=mobi.phosh.Shell.target
+After=mobi.phosh.Phrog.target
