@@ -222,10 +222,10 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
 
 
 static void
-on_ambient_claimed (PhoshSensorProxyManager *sensor_proxy_manager,
-                    GAsyncResult            *res,
-                    PhoshAmbient            *self)
+on_ambient_claimed (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshSensorProxyManager *sensor_proxy_manager = PHOSH_SENSOR_PROXY_MANAGER (source_object);
+  PhoshAmbient *self = PHOSH_AMBIENT (user_data);
   g_autoptr (GError) err = NULL;
   gboolean success;
 
@@ -246,10 +246,10 @@ on_ambient_claimed (PhoshSensorProxyManager *sensor_proxy_manager,
 
 
 static void
-on_ambient_released (PhoshSensorProxyManager *sensor_proxy_manager,
-                     GAsyncResult            *res,
-                     PhoshAmbient            *self)
+on_ambient_released (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshSensorProxyManager *sensor_proxy_manager = PHOSH_SENSOR_PROXY_MANAGER (source_object);
+  PhoshAmbient *self = PHOSH_AMBIENT (user_data);
   g_autoptr (GError) err = NULL;
   gboolean success;
 
@@ -280,7 +280,7 @@ phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
     phosh_dbus_sensor_proxy_call_claim_light (
       PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager),
       self->cancel,
-      (GAsyncReadyCallback)on_ambient_claimed,
+      on_ambient_claimed,
       self);
   } else {
     g_clear_handle_id (&self->sample_id, g_source_remove);
@@ -288,7 +288,7 @@ phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
     phosh_dbus_sensor_proxy_call_release_light (
       PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager),
       self->cancel,
-      (GAsyncReadyCallback)on_ambient_released,
+      on_ambient_released,
       self);
   }
 }
