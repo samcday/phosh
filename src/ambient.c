@@ -17,12 +17,12 @@
 #include "sensor-proxy-manager.h"
 #include "util.h"
 
-#define INTERFACE_SETTINGS      "org.gnome.desktop.interface"
+#define INTERFACE_SCHEMA        "org.gnome.desktop.interface"
 #define HIGH_CONTRAST_THEME     "HighContrast"
 #define KEY_GTK_THEME           "gtk-theme"
 #define KEY_ICON_THEME          "icon-theme"
 
-#define PHOSH_SETTINGS          "sm.puri.phosh"
+#define PHOSH_SCHEMA            "sm.puri.phosh"
 #define KEY_AUTOMATIC_HC        "automatic-high-contrast"
 #define KEY_AUTOMATIC_HC_THRESHOLD  "automatic-high-contrast-threshold"
 
@@ -442,8 +442,8 @@ phosh_ambient_init (PhoshAmbient *self)
 
   self->values = g_array_new (FALSE, FALSE, sizeof(double));
 
-  self->interface_settings = g_settings_new (INTERFACE_SETTINGS);
-  self->phosh_settings = g_settings_new (PHOSH_SETTINGS);
+  self->interface_settings = g_settings_new (INTERFACE_SCHEMA);
+  self->phosh_settings = g_settings_new (PHOSH_SCHEMA);
 
   /* Check whether we're already using the hc theme */
   theme_name = g_settings_get_string (self->interface_settings, KEY_GTK_THEME);
