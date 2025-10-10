@@ -22,5 +22,12 @@
       <gnome:userid>guidog</gnome:userid>
     </foaf:Person>
   </maintainer>
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Arun Mani J</foaf:name>
+      <foaf:mbox rdf:resource="mailto:j.arunmani@proton.me" />
+      <gnome:userid>arun-mani-j</gnome:userid>
+    </foaf:Person>
+  </maintainer>
 </Project>
 
