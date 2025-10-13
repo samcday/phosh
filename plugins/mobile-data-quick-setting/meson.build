@@ -40,3 +40,8 @@ i18n.merge_file(
   install_dir: plugins_dir,
   type: 'desktop',
 )
+
+install_data(
+  'icons/mobile-data-quick-setting-symbolic.svg',
+  install_dir: phosh_plugin_icon_dir,
+)
