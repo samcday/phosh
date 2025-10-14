@@ -11,6 +11,9 @@
 
 #include <glib/gi18n.h>
 
+#define CAFFEINE_ON_ICON   "cafe-hot-symbolic"
+#define CAFFEINE_OFF_ICON  "cafe-cold-symbolic"
+
 /**
  * PhoshCaffeineQuickSetting:
  *
@@ -111,7 +114,7 @@ transform_to_icon_name (GBinding     *binding,
   gboolean inhibited = g_value_get_boolean (from_value);
   const char *icon_name;
 
-  icon_name = inhibited ? "cafe-hot-symbolic" : "cafe-cold-symbolic";
+  icon_name = inhibited ? CAFFEINE_ON_ICON : CAFFEINE_OFF_ICON;
   g_value_set_string (to_value, icon_name);
   return TRUE;
 }
