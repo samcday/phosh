@@ -8,6 +8,7 @@ caffeine_quick_setting_resources = gnome.compile_resources(
 
 caffeine_quick_setting_plugin_sources = files(
   'caffeine-quick-setting.c',
+  'interval-row.c',
   'phosh-plugin-caffeine-quick-setting.c',
 )
 
@@ -46,4 +47,19 @@ install_data(
   'icons/cafe-hot-symbolic.svg',
   rename: 'caffeine-quick-setting-symbolic.svg',
   install_dir: phosh_plugin_icon_dir,
+)
+
+caffeine_quick_setting_schema = 'mobi.phosh.plugins.caffeine-quick-setting.gschema.xml'
+compiled = gnome.compile_schemas(depend_files: caffeine_quick_setting_schema)
+compile_schemas = find_program('glib-compile-schemas', required: false)
+if compile_schemas.found()
+  test(
+    'Validate @0@ schema file'.format(caffeine_quick_setting_schema),
+    compile_schemas,
+    args: ['--strict', '--dry-run', meson.current_source_dir()],
+  )
+endif
+install_data(
+  caffeine_quick_setting_schema,
+  install_dir: 'share/glib-2.0/schemas',
 )

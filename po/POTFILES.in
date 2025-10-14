@@ -111,6 +111,7 @@ src/wifi-manager.c
 src/wifi-status-page.c
 src/wwan-info.c
 plugins/caffeine-quick-setting/caffeine-quick-setting.c
+plugins/caffeine-quick-setting/qs.ui
 plugins/dark-mode-quick-setting/dark-mode-quick-setting.c
 plugins/emergency-info/emergency-info.c
 plugins/emergency-info/emergency-info.ui
