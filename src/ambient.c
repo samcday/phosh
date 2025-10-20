@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2022 Purism SPC
- *               2025 Phosh.mobi e.V.
+ *               2023-2025 Phosh.mobi e.V.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -26,6 +26,9 @@
 #define KEY_AUTOMATIC_HC        "automatic-high-contrast"
 #define KEY_AUTOMATIC_HC_THRESHOLD  "automatic-high-contrast-threshold"
 
+#define POWER_SCHEMA "org.gnome.settings-daemon.plugins.power"
+#define KEY_AMBIENT_ENABLED "ambient-enabled"
+
 #define NUM_VALUES              3
 
 /**
@@ -40,6 +43,8 @@
 enum {
   PROP_0,
   PROP_SENSOR_PROXY_MANAGER,
+  PROP_AUTO_BRIGHTNESS_ENABLED,
+  PROP_LIGHT_LEVEL,
   LAST_PROP,
 };
 static GParamSpec *props[LAST_PROP];
@@ -54,7 +59,10 @@ typedef struct _PhoshAmbient {
 
   GSettings               *phosh_settings;
   GSettings               *interface_settings;
+  GSettings               *power_settings;
   gboolean                 use_hc;
+  gboolean                 auto_brightness;
+  double                   light_level;
 
   guint                    sample_id;
   GArray                  *values;
@@ -97,6 +105,12 @@ phosh_ambient_get_property (GObject    *object,
   switch (property_id) {
   case PROP_SENSOR_PROXY_MANAGER:
     g_value_set_object (value, self->sensor_proxy_manager);
+    break;
+  case PROP_AUTO_BRIGHTNESS_ENABLED:
+    g_value_set_boolean (value, self->auto_brightness);
+    break;
+  case PROP_LIGHT_LEVEL:
+    g_value_set_double (value, self->light_level);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -183,26 +197,31 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
   double level, hyst, threshold;
   const char *unit;
   gboolean wants_hc;
+  PhoshDBusSensorProxy *proxy;
 
   if (!self->claimed)
     return;
 
-  /* Currently sampling, ignoring changes */
-  if (self->sample_id)
-    return;
-
-  threshold = g_settings_get_uint (self->phosh_settings, KEY_AUTOMATIC_HC_THRESHOLD);
-  level = phosh_dbus_sensor_proxy_get_light_level (PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
-  unit = phosh_dbus_sensor_proxy_get_light_level_unit (PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
-
-  g_debug ("Ambient light changed: %f %s", level, unit);
-
+  proxy = PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager);
+  level = phosh_dbus_sensor_proxy_get_light_level (proxy);
+  unit = phosh_dbus_sensor_proxy_get_light_level_unit (proxy);
   if (g_ascii_strcasecmp (unit, "lux") != 0) {
     /* For vendor values we don't know if small or large values mean bright or dark so be conservative */
     g_warning_once ("Unknown light level unit %s", unit);
     return;
   }
 
+  g_debug ("Ambient light changed: %f %s", level, unit);
+  if (!G_APPROX_VALUE (self->light_level, level, FLT_EPSILON)) {
+    self->light_level = level;
+    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_LIGHT_LEVEL]);
+  }
+
+  /* Currently sampling, ignoring changes */
+  if (self->sample_id)
+    return;
+
+  threshold = g_settings_get_uint (self->phosh_settings, KEY_AUTOMATIC_HC_THRESHOLD);
   /* Use a bit of hysteresis to not switch too often around the threshold */
   hyst = self->use_hc ? 0.9 : 1.1;
   threshold *= hyst;
@@ -218,6 +237,22 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
   g_array_append_val (self->values, level);
   self->sample_id = g_timeout_add_seconds (1, on_ambient_light_level_sample, self);
   g_source_set_name_by_id (self->sample_id, "[phosh] ambient_sample");
+}
+
+
+static void
+update_auto_brightness_enabled (PhoshAmbient *self)
+{
+  gboolean auto_brightness;
+
+  auto_brightness = (self->claimed &&
+                     g_settings_get_boolean (self->power_settings, KEY_AMBIENT_ENABLED));
+
+  if (self->auto_brightness == auto_brightness)
+    return;
+
+  self->auto_brightness = auto_brightness;
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_AUTO_BRIGHTNESS_ENABLED]);
 }
 
 
@@ -241,6 +276,7 @@ on_ambient_claimed (GObject *source_object, GAsyncResult *res, gpointer user_dat
   g_debug ("Claimed ambient sensor");
   self->claimed = TRUE;
 
+  update_auto_brightness_enabled (self);
   on_ambient_light_level_changed (self, NULL, self->sensor_proxy_manager);
 }
 
@@ -267,6 +303,8 @@ on_ambient_released (GObject *source_object, GAsyncResult *res, gpointer user_da
 
   g_debug ("Released ambient light sensor");
   self->claimed = FALSE;
+
+  update_auto_brightness_enabled (self);
 }
 
 
@@ -317,6 +355,26 @@ on_automatic_high_contrast_changed (PhoshAmbient *self,
 
 
 static void
+on_auto_brightness_enabled_changed (PhoshAmbient *self)
+{
+  gboolean enable = g_settings_get_boolean (self->power_settings, KEY_AMBIENT_ENABLED);
+
+  g_debug ("Auto brightness setting enabled: %d", enable);
+
+  if (enable) {
+    if (self->claimed) {
+      update_auto_brightness_enabled (self);
+      on_ambient_light_level_changed (self, NULL, self->sensor_proxy_manager);
+    } else {
+      phosh_ambient_claim_light (self, TRUE);
+    }
+  } else {
+    phosh_ambient_claim_light (self, FALSE);
+  }
+}
+
+
+static void
 on_has_ambient_light_changed (PhoshAmbient            *self,
                               GParamSpec              *pspec,
                               PhoshSensorProxyManager *proxy)
@@ -329,6 +387,7 @@ on_has_ambient_light_changed (PhoshAmbient            *self,
   g_debug ("Found %s ambient sensor", has_ambient ? "a" : "no");
 
   on_automatic_high_contrast_changed (self, NULL, self->phosh_settings);
+  on_auto_brightness_enabled_changed (self);
 }
 
 
@@ -381,6 +440,11 @@ phosh_ambient_constructed (GObject *object)
                            self,
                            G_CONNECT_SWAPPED);
 
+  g_signal_connect_swapped (self->power_settings,
+                            "changed::" KEY_AMBIENT_ENABLED,
+                            G_CALLBACK (on_auto_brightness_enabled_changed),
+                            self);
+
   on_has_ambient_light_changed (self, NULL, self->sensor_proxy_manager);
 }
 
@@ -409,6 +473,8 @@ phosh_ambient_dispose (GObject *object)
   g_clear_handle_id (&self->fader_id, g_source_remove);
   g_clear_pointer (&self->fader, phosh_cp_widget_destroy);
 
+  g_clear_object (&self->power_settings);
+
   G_OBJECT_CLASS (phosh_ambient_parent_class)->dispose (object);
 }
 
@@ -428,6 +494,26 @@ phosh_ambient_class_init (PhoshAmbientClass *klass)
     g_param_spec_object ("sensor-proxy-manager", "", "",
                          PHOSH_TYPE_SENSOR_PROXY_MANAGER,
                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  /**
+   * PhoshAmbient:auto-brightness-enabled:
+   *
+   * If `TRUE` the display brightness should currently be adjusted to
+   * ambient light levels
+   */
+  props[PROP_AUTO_BRIGHTNESS_ENABLED] =
+    g_param_spec_boolean ("auto-brightness-enabled", "", "",
+                          FALSE,
+                          G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+  /**
+   * PhoshAmbient:light-level:
+   *
+   * The last light level reading of the ambient light sensor.
+   */
+  props[PROP_LIGHT_LEVEL] =
+    g_param_spec_double ("light-level", "", "",
+                         0.0, G_MAXDOUBLE, 0.0,
+                         G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 }
@@ -438,12 +524,15 @@ phosh_ambient_init (PhoshAmbient *self)
 {
   g_autofree char *theme_name = NULL;
 
+  /* Ensure initial sync */
+  self->light_level = -1.0;
   self->cancel = g_cancellable_new ();
 
   self->values = g_array_new (FALSE, FALSE, sizeof(double));
 
   self->interface_settings = g_settings_new (INTERFACE_SCHEMA);
   self->phosh_settings = g_settings_new (PHOSH_SCHEMA);
+  self->power_settings = g_settings_new (POWER_SCHEMA);
 
   /* Check whether we're already using the hc theme */
   theme_name = g_settings_get_string (self->interface_settings, KEY_GTK_THEME);
@@ -458,4 +547,22 @@ phosh_ambient_new (PhoshSensorProxyManager *sensor_proxy_manager)
   return g_object_new (PHOSH_TYPE_AMBIENT,
                        "sensor-proxy-manager", sensor_proxy_manager,
                        NULL);
+}
+
+
+gboolean
+phosh_ambient_get_auto_brightness (PhoshAmbient *self)
+{
+  g_return_val_if_fail (PHOSH_IS_AMBIENT (self), FALSE);
+
+  return self->auto_brightness;
+}
+
+
+double
+phosh_ambient_get_light_level (PhoshAmbient *self)
+{
+  g_return_val_if_fail (PHOSH_IS_AMBIENT (self), FALSE);
+
+  return self->light_level;
 }
