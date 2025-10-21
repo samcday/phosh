@@ -60,6 +60,7 @@ typedef struct _PhoshAmbient {
   GSettings               *phosh_settings;
   GSettings               *interface_settings;
   GSettings               *power_settings;
+  gboolean                 auto_hc;
   gboolean                 use_hc;
   gboolean                 auto_brightness;
   double                   light_level;
@@ -217,6 +218,9 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
     g_object_notify_by_pspec (G_OBJECT (self), props[PROP_LIGHT_LEVEL]);
   }
 
+  if (!self->auto_hc)
+    return;
+
   /* Currently sampling, ignoring changes */
   if (self->sample_id)
     return;
@@ -337,11 +341,14 @@ on_automatic_high_contrast_changed (PhoshAmbient *self,
                                     GParamSpec   *pspec,
                                     GSettings    *settings)
 {
-  gboolean enable;
+  gboolean auto_hc;
 
-  enable = g_settings_get_boolean (self->phosh_settings, KEY_AUTOMATIC_HC);
+  auto_hc = g_settings_get_boolean (self->phosh_settings, KEY_AUTOMATIC_HC);
+  if (self->auto_hc == auto_hc)
+    return;
 
-  if (enable) {
+  self->auto_hc = auto_hc;
+  if (self->auto_hc) {
     if (self->claimed)
       on_ambient_light_level_changed (self, NULL, self->sensor_proxy_manager);
     else
