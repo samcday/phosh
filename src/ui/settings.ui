@@ -34,10 +34,9 @@
                           <object class="GtkBox" id="box_brightness">
                             <property name="visible">1</property>
                             <child>
-                              <object class="GtkImage">
+                              <object class="GtkImage" id="brightness_image">
                                 <property name="visible">1</property>
                                 <property name="margin-end">6</property>
-                                <property name="icon-name">display-brightness-symbolic</property>
                               </object>
                             </child>
                             <child>

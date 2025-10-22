@@ -59,6 +59,7 @@ typedef struct _PhoshSettings {
   GtkWidget *box_brightness;
   GtkWidget *box_sliders;
   GtkWidget *box_settings;
+  GtkWidget *brightness_image;
   GtkWidget *quick_settings;
   GtkWidget *scale_brightness;
   GtkWidget *media_player;
@@ -327,6 +328,21 @@ on_notification_frames_items_changed (PhoshSettings *self,
 }
 
 
+static gboolean
+transform_to_brightness_icon_name (GBinding     *binding,
+                                   const GValue *from_value,
+                                   GValue       *to_value,
+                                   gpointer      user_data)
+{
+  gboolean enabled = g_value_get_boolean (from_value);
+  const char *icon_name;
+
+  icon_name = enabled ? "auto-brightness-symbolic" : "display-brightness-symbolic";
+  g_value_set_string (to_value, icon_name);
+  return TRUE;
+}
+
+
 static void
 setup_brightness_scale (PhoshSettings *self)
 {
@@ -343,7 +359,16 @@ setup_brightness_scale (PhoshSettings *self)
                           self->box_brightness,
                           "visible",
                           G_BINDING_SYNC_CREATE);
+
+  g_object_bind_property_full (brightness_manager,
+                               "auto-brightness-enabled",
+                               self->brightness_image,
+                               "icon-name",
+                               G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
+                               transform_to_brightness_icon_name,
+                               NULL, NULL, NULL);
 }
+
 
 
 static void
@@ -476,6 +501,7 @@ phosh_settings_class_init (PhoshSettingsClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_brightness);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_sliders);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_settings);
+  gtk_widget_class_bind_template_child (widget_class, PhoshSettings, brightness_image);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, list_notifications);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, media_player);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, quick_settings);

@@ -28,8 +28,6 @@
  * PhoshBrightnessManager:
  *
  * Manage backglight brightness
- *
- * TODO: indicate auto-brightness is on
  */
 
 enum {
