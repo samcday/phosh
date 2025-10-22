@@ -32,6 +32,13 @@
  * TODO: indicate auto-brightness is on
  */
 
+enum {
+  PROP_0,
+  PROP_AUTO_BRIGHTNESS_ENABLED,
+  LAST_PROP,
+};
+static GParamSpec *props[LAST_PROP];
+
 #define BRIGHTNESS_STEP_AMOUNT(max) ((max) < 20 ? 1 : (max) / 20)
 
 struct _PhoshBrightnessManager {
@@ -111,7 +118,11 @@ on_ambient_auto_brightness_changed (PhoshBrightnessManager *self,
   gboolean enabled = phosh_ambient_get_auto_brightness (ambient);
 
   g_debug ("Ambient auto-brightness enabled: %d", enabled);
-  self->auto_brightness.enabled = enabled;
+
+  if (self->auto_brightness.enabled != enabled) {
+    self->auto_brightness.enabled = enabled;
+    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_AUTO_BRIGHTNESS_ENABLED]);
+  }
 
   set_auto_brightness_tracker (self);
 }
@@ -415,6 +426,25 @@ on_keybindings_changed (PhoshBrightnessManager *self)
 
 
 static void
+phosh_brightness_manager_get_property (GObject    *object,
+                                       guint       property_id,
+                                       GValue     *value,
+                                       GParamSpec *pspec)
+{
+  PhoshBrightnessManager *self = PHOSH_BRIGHTNESS_MANAGER (object);
+
+  switch (property_id) {
+  case PROP_AUTO_BRIGHTNESS_ENABLED:
+    g_value_set_boolean (value, self->auto_brightness.enabled);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    break;
+  }
+}
+
+
+static void
 phosh_brightness_manager_dispose (GObject *object)
 {
   PhoshBrightnessManager *self = PHOSH_BRIGHTNESS_MANAGER (object);
@@ -443,6 +473,20 @@ phosh_brightness_manager_class_init (PhoshBrightnessManagerClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->dispose = phosh_brightness_manager_dispose;
+  object_class->get_property = phosh_brightness_manager_get_property;
+
+  /**
+   * PhoshBrightnessManager:auto-brightness-enabled:
+   *
+   * If `TRUE` the display brightness is currently being adjusted to
+   * ambient light levels
+   */
+  props[PROP_AUTO_BRIGHTNESS_ENABLED] =
+    g_param_spec_boolean ("auto-brightness-enabled", "", "",
+                          FALSE,
+                          G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, LAST_PROP, props);
 }
 
 
