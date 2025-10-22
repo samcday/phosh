@@ -8,9 +8,6 @@
 
 #include "caffeine-quick-setting.h"
 #include "plugin-shell.h"
-#include "quick-setting.h"
-#include "session-manager.h"
-#include "status-icon.h"
 
 #include <glib/gi18n.h>
 
