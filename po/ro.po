@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: phosh master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
 "POT-Creation-Date: 2025-10-24 08:37+0000\n"
-"PO-Revision-Date: 2025-10-24 11:08+0200\n"
+"PO-Revision-Date: 2025-10-24 15:09+0200\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -757,7 +757,7 @@ msgstr "VPN"
 #. long format
 #: src/wall-clock.c:248
 msgid "%A, %B %-e"
-msgstr "%A, %B %-e"
+msgstr "%A, %-e %B"
 
 #: src/widget-box.c:54
 msgid "Plugin not found"
@@ -936,7 +936,7 @@ msgstr "Numele _contactului"
 
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:246
 msgid "Relationship"
-msgstr "Relație"
+msgstr "Relația"
 
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:252
 msgid "_Contact Number"
