@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-12 08:52+0000\n"
-"PO-Revision-Date: 2025-10-12 17:30+0300\n"
+"POT-Creation-Date: 2025-10-24 15:13+0000\n"
+"PO-Revision-Date: 2025-10-24 20:44+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 23.04.3\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
 #: data/mobi.phosh.Shell.desktop.in.in:3 data/wayland-sessions/phosh.desktop:3
 msgid "Phone Shell"
@@ -78,6 +78,16 @@ msgstr "Панель засобів запуску"
 msgid "Add launchers to the lock screen. <b>This plugin is experimental.</b>"
 msgstr ""
 "Додає кнопки запуску на екран блокування. <b>Цей додаток є тестовим.</b>"
+
+#: plugins/location-quick-setting/location-quick-setting.desktop.in.in:4
+#| msgid "Caffeine Quick Setting"
+msgid "Location Quick Setting"
+msgstr "Швидке налаштовування місця"
+
+#: plugins/location-quick-setting/location-quick-setting.desktop.in.in:6
+#| msgid "Toggle mobile data on/off"
+msgid "Toggle location services on/off"
+msgstr "Увімкнути або вимкнути служби місця перебування"
 
 #: plugins/media-players/media-players.desktop.in.in:3
 #: plugins/media-players/media-players.ui:19
@@ -788,29 +798,29 @@ msgid "Cellular"
 msgstr "Стільниковий"
 
 #. Translators: Phosh prevents the session from going idle because the caffeine quick setting is toggled
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:53
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:50
 msgid "Phosh on caffeine"
 msgstr "Phosh на caffeine"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:132
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
 msgctxt "caffeine-enabled"
 msgid "On"
 msgstr "❙"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:132
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
 msgctxt "caffeine-disabled"
 msgid "Off"
 msgstr "○"
 
-#: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:36
+#: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:34
 msgid "Default style"
 msgstr "Типовий стиль"
 
-#: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:37
+#: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:35
 msgid "Dark mode"
 msgstr "Темний режим"
 
-#: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:38
+#: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:36
 msgid "Light mode"
 msgstr "Світлий режим"
 
@@ -940,52 +950,62 @@ msgstr "Не налаштовано жодного засобу запуску"
 msgid "Launchers"
 msgstr "Засоби запуску"
 
+#: plugins/location-quick-setting/location-quick-setting.c:65
+#| msgid "Geolocation"
+msgid "Location On"
+msgstr "Позиціювання увімкнено"
+
+#: plugins/location-quick-setting/location-quick-setting.c:65
+#| msgid "Geolocation"
+msgid "Location Off"
+msgstr "Позиціювання вимкнено"
+
 #: plugins/media-players/media-players.ui:20
 msgid "No running media players"
 msgstr "Немає запущених програвачів"
 
-#: plugins/mobile-data-quick-setting/mobile-data-quick-setting.c:82
+#: plugins/mobile-data-quick-setting/mobile-data-quick-setting.c:79
 msgid "Mobile Data On"
 msgstr "Мобільні дані увімкнено"
 
-#: plugins/mobile-data-quick-setting/mobile-data-quick-setting.c:82
+#: plugins/mobile-data-quick-setting/mobile-data-quick-setting.c:79
 msgid "Mobile Data Off"
 msgstr "Мобільні дані вимкнено"
 
-#: plugins/night-light-quick-setting/night-light-quick-setting.c:65
+#: plugins/night-light-quick-setting/night-light-quick-setting.c:63
 msgid "Night Light On"
 msgstr "Нічні кольори увімкнено"
 
-#: plugins/night-light-quick-setting/night-light-quick-setting.c:65
+#: plugins/night-light-quick-setting/night-light-quick-setting.c:63
 msgid "Night Light Off"
 msgstr "Нічні кольори вимкнено"
 
-#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:75
+#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:72
 msgid "Pomodoro start"
 msgstr "Запуск помідора"
 
-#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:76
+#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:73
 #, c-format
 msgid "Focus on your task for %d minutes"
 msgstr "Зосередитися на завданні на %d хвилин"
 
-#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:81
+#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:78
 msgid "Take a break"
 msgstr "Зробіть перерву"
 
 #. Translators: Pomodoro is a technique, no need to translate it
-#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:83
+#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:80
 #, c-format
 msgid "You have %d minutes until next Pomodoro"
 msgstr "У вас %d хвилин до наступного Помідора"
 
 #. Translators: Pomodoro is a technique, no need to translate it
-#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:98
+#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:95
 msgid "Pomodoro Timer"
 msgstr "Таймер-помідор"
 
 #. Translators: Pomodoro is a technique, no need to translate it
-#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:121
+#: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:118
 #, c-format
 msgid "Pomodoro Off"
 msgstr "Вимикання помідора"
@@ -1107,7 +1127,6 @@ msgid "No events for the next %d days"
 msgstr "Немає подій протягом наступних %d днів"
 
 #: plugins/upcoming-events/upcoming-events.ui:28
-#| msgid "Upcoming Events"
 msgid "No upcoming events"
 msgstr "Записів майбутніх подій не виявлено"
 
@@ -1134,16 +1153,16 @@ msgstr "Масштаби монітора"
 
 #. Translators: This is scale factor of a monitor in percent
 #: plugins/scaling-quick-setting/scale-row.c:48
-#: plugins/scaling-quick-setting/scaling-quick-setting.c:93
+#: plugins/scaling-quick-setting/scaling-quick-setting.c:91
 #, c-format
 msgid "%d%%"
 msgstr "%d%%"
 
-#: plugins/wifi-hotspot-quick-setting/wifi-hotspot-quick-setting.c:79
+#: plugins/wifi-hotspot-quick-setting/wifi-hotspot-quick-setting.c:75
 msgid "Hotspot On"
 msgstr "Точку доступу увімкнено"
 
-#: plugins/wifi-hotspot-quick-setting/wifi-hotspot-quick-setting.c:81
+#: plugins/wifi-hotspot-quick-setting/wifi-hotspot-quick-setting.c:77
 msgid "Hotspot Off"
 msgstr "Точку доступу вимкнено"
 
