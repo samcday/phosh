@@ -56,6 +56,12 @@ struct _PhoshBrightnessManager {
     PhoshAutoBrightness *tracker;
   } auto_brightness;
 
+  struct {
+    double target;
+    double step;
+    uint   id;
+  } transition;
+
   int             dbus_name_id;
   double          saved_brightness;
 };
@@ -67,6 +73,55 @@ G_DEFINE_TYPE_WITH_CODE (PhoshBrightnessManager,
                          PHOSH_DBUS_TYPE_BRIGHTNESS_SKELETON,
                          G_IMPLEMENT_INTERFACE (PHOSH_DBUS_TYPE_BRIGHTNESS,
                                                 phosh_brightness_manager_brightness_init))
+
+static gboolean
+on_transition_step (gpointer user_data)
+{
+  PhoshBrightnessManager *self = user_data;
+  double current, next;
+
+  current = phosh_backlight_get_relative (self->backlight);
+  next = current + self->transition.step;
+
+  if ((self->transition.step > 0 && next >= self->transition.target) ||
+      (self->transition.step < 0 && next <= self->transition.target)) {
+    g_debug ("Brightness transition done at %f", self->transition.target);
+    phosh_backlight_set_relative (self->backlight, self->transition.target);
+    self->transition.id = 0;
+    return G_SOURCE_REMOVE;
+  }
+
+  g_debug ("Brightness transition step: current %.3f, next %.3f, step: %.3f, target: %.3f",
+           current, next, self->transition.step, self->transition.target);
+  phosh_backlight_set_relative (self->backlight, next);
+  return G_SOURCE_CONTINUE;
+}
+
+
+static void
+transition_to_brightness (PhoshBrightnessManager *self, double target)
+{
+  double current;
+
+  current = phosh_backlight_get_relative (self->backlight);
+
+  self->transition.target = target;
+  if (G_APPROX_VALUE (current, self->transition.target, FLT_EPSILON))
+    return;
+
+  self->transition.step = 1.0 / phosh_backlight_get_levels (self->backlight);
+  /* Don't do too many steps, even for large changes */
+  self->transition.step = MAX (0.025, self->transition.step);
+  if (self->transition.target < current)
+    self->transition.step *= -1.0;
+
+  g_debug ("Starting auto brightness transition from %.2f to %.2f in steps of %f",
+           current, target, self->transition.step);
+
+  g_clear_handle_id (&self->transition.id, g_source_remove);
+  self->transition.id = g_timeout_add (250, on_transition_step, self);
+}
+
 
 static void
 on_auto_brightness_changed (PhoshBrightnessManager *self)
@@ -87,8 +142,7 @@ on_auto_brightness_changed (PhoshBrightnessManager *self)
 
   g_debug ("New auto brightness %f", brightness);
 
-  /* TODO: Use transition on large brightness changes */
-  phosh_backlight_set_relative (self->backlight, brightness);
+  transition_to_brightness (self, brightness);
 }
 
 
@@ -269,6 +323,13 @@ on_value_changed (PhoshBrightnessManager *self, GtkAdjustment *adjustment)
 
   value = gtk_adjustment_get_value (self->adjustment) * 0.01;
 
+  /* Adjustment changed due to slider change, stop any transitions */
+  if (self->transition.id) {
+    g_debug ("Stopping brightness transition due to external change");
+    g_clear_handle_id (&self->transition.id, g_source_remove);
+    self->transition.target = value;
+  }
+
   self->setting_brightness = TRUE;
   phosh_backlight_set_relative (self->backlight, value);
   self->setting_brightness = FALSE;
@@ -447,6 +508,7 @@ phosh_brightness_manager_dispose (GObject *object)
 {
   PhoshBrightnessManager *self = PHOSH_BRIGHTNESS_MANAGER (object);
 
+  g_clear_handle_id (&self->transition.id, g_source_remove);
   g_clear_handle_id (&self->dbus_name_id, g_bus_unown_name);
 
   if (g_dbus_interface_skeleton_get_object_path (G_DBUS_INTERFACE_SKELETON (self)))
