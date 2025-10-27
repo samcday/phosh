@@ -10,6 +10,8 @@
 
 #include "phosh-config.h"
 
+#include "auto-brightness.h"
+#include "auto-brightness-bucket.h"
 #include "brightness-manager.h"
 #include "shell-priv.h"
 #include "util.h"
@@ -28,6 +30,13 @@
  * Manage backglight brightness
  */
 
+enum {
+  PROP_0,
+  PROP_AUTO_BRIGHTNESS_ENABLED,
+  LAST_PROP,
+};
+static GParamSpec *props[LAST_PROP];
+
 #define BRIGHTNESS_STEP_AMOUNT(max) ((max) < 20 ? 1 : (max) / 20)
 
 struct _PhoshBrightnessManager {
@@ -42,6 +51,11 @@ struct _PhoshBrightnessManager {
 
   GSettings      *settings_power;
   gboolean        dimmed;
+  struct {
+    gboolean             enabled;
+    PhoshAutoBrightness *tracker;
+  } auto_brightness;
+
   int             dbus_name_id;
   double          saved_brightness;
 };
@@ -53,6 +67,80 @@ G_DEFINE_TYPE_WITH_CODE (PhoshBrightnessManager,
                          PHOSH_DBUS_TYPE_BRIGHTNESS_SKELETON,
                          G_IMPLEMENT_INTERFACE (PHOSH_DBUS_TYPE_BRIGHTNESS,
                                                 phosh_brightness_manager_brightness_init))
+
+static void
+on_auto_brightness_changed (PhoshBrightnessManager *self)
+{
+  double brightness;
+
+  g_return_if_fail (PHOSH_IS_BRIGHTNESS_MANAGER (self));
+
+  if (!self->backlight)
+    return;
+
+  if (!self->auto_brightness.enabled)
+    return;
+
+  brightness = phosh_auto_brightness_get_brightness (self->auto_brightness.tracker);
+  /* TODO: clamp to 100% as we don't do brightness boosts yet */
+  brightness = MIN (brightness, 1.0);
+
+  g_debug ("New auto brightness %f", brightness);
+
+  /* TODO: Use transition on large brightness changes */
+  phosh_backlight_set_relative (self->backlight, brightness);
+}
+
+
+static void
+set_auto_brightness_tracker (PhoshBrightnessManager *self)
+{
+  if (self->auto_brightness.tracker)
+    return;
+
+  /* TODO: allow for different brightness trackers */
+  /* TODO: take backlight brightness curve into account */
+  self->auto_brightness.tracker = PHOSH_AUTO_BRIGHTNESS (phosh_auto_brightness_bucket_new ());
+  g_signal_connect_swapped (self->auto_brightness.tracker,
+                            "notify::brightness",
+                            G_CALLBACK (on_auto_brightness_changed),
+                            self);
+}
+
+
+static void
+on_ambient_auto_brightness_changed (PhoshBrightnessManager *self,
+                                    GParamSpec             *pspec,
+                                    PhoshAmbient           *ambient)
+{
+  gboolean enabled = phosh_ambient_get_auto_brightness (ambient);
+
+  g_debug ("Ambient auto-brightness enabled: %d", enabled);
+
+  if (self->auto_brightness.enabled != enabled) {
+    self->auto_brightness.enabled = enabled;
+    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_AUTO_BRIGHTNESS_ENABLED]);
+  }
+
+  set_auto_brightness_tracker (self);
+}
+
+
+static void
+on_ambient_light_level_changed (PhoshBrightnessManager *self,
+                                GParamSpec             *pspec,
+                                PhoshAmbient           *ambient)
+{
+  double level;
+
+  if (!self->auto_brightness.enabled)
+    return;
+
+  level = phosh_ambient_get_light_level (ambient);
+  g_debug ("Ambient light level: %f lux", level);
+
+  phosh_auto_brightness_add_ambient_level (self->auto_brightness.tracker, level);
+}
 
 
 static void
@@ -92,10 +180,8 @@ phosh_brightness_manager_handle_set_auto_brightness_target (PhoshDBusBrightness 
 {
   g_debug ("Target brightness: %f", arg_target);
 
-  /* TODO: Leave unimplemented until
-   * https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/merge_requests/442
-   * is fixed as we otherwise might end up with a very dark screen */
-
+  /* Nothing to do here, we handle it internally */
+  /* https://gitlab.gnome.org/GNOME/gnome-settings-daemon/-/merge_requests/442 */
   phosh_dbus_brightness_complete_set_auto_brightness_target (object, invocation);
   return TRUE;
 }
@@ -338,6 +424,25 @@ on_keybindings_changed (PhoshBrightnessManager *self)
 
 
 static void
+phosh_brightness_manager_get_property (GObject    *object,
+                                       guint       property_id,
+                                       GValue     *value,
+                                       GParamSpec *pspec)
+{
+  PhoshBrightnessManager *self = PHOSH_BRIGHTNESS_MANAGER (object);
+
+  switch (property_id) {
+  case PROP_AUTO_BRIGHTNESS_ENABLED:
+    g_value_set_boolean (value, self->auto_brightness.enabled);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    break;
+  }
+}
+
+
+static void
 phosh_brightness_manager_dispose (GObject *object)
 {
   PhoshBrightnessManager *self = PHOSH_BRIGHTNESS_MANAGER (object);
@@ -354,6 +459,8 @@ phosh_brightness_manager_dispose (GObject *object)
   g_clear_signal_handler (&self->value_changed_id, self->adjustment);
   g_clear_object (&self->adjustment);
 
+  g_clear_object (&self->auto_brightness.tracker);
+
   G_OBJECT_CLASS (phosh_brightness_manager_parent_class)->dispose (object);
 }
 
@@ -364,6 +471,20 @@ phosh_brightness_manager_class_init (PhoshBrightnessManagerClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->dispose = phosh_brightness_manager_dispose;
+  object_class->get_property = phosh_brightness_manager_get_property;
+
+  /**
+   * PhoshBrightnessManager:auto-brightness-enabled:
+   *
+   * If `TRUE` the display brightness is currently being adjusted to
+   * ambient light levels
+   */
+  props[PROP_AUTO_BRIGHTNESS_ENABLED] =
+    g_param_spec_boolean ("auto-brightness-enabled", "", "",
+                          FALSE,
+                          G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, LAST_PROP, props);
 }
 
 
@@ -373,6 +494,7 @@ phosh_brightness_manager_init (PhoshBrightnessManager *self)
   PhoshShell *shell = phosh_shell_get_default ();
   GSettingsSchemaSource *source = g_settings_schema_source_get_default ();
   g_autoptr (GSettingsSchema) schema = NULL;
+  PhoshAmbient *ambient = phosh_shell_get_ambient (phosh_shell_get_default ());
 
   self->saved_brightness = -1.0;
   self->settings_power = g_settings_new (POWER_SCHEMA);
@@ -398,6 +520,17 @@ phosh_brightness_manager_init (PhoshBrightnessManager *self)
                                        on_name_lost,
                                        self,
                                        NULL);
+
+  if (ambient) {
+    g_object_connect (ambient,
+                      "swapped-object-signal::notify::auto-brightness-enabled",
+                      on_ambient_auto_brightness_changed,
+                      self,
+                      "swapped-object-signal::notify::light-level",
+                      on_ambient_light_level_changed,
+                      self,
+                      NULL);
+  }
 
   /* TODO: Drop once we can rely on GNOME 49 schema for the keybindings */
   schema = g_settings_schema_source_lookup (source, KEYBINDINGS_SCHEMA_ID, TRUE);

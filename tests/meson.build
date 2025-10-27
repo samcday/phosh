@@ -112,6 +112,7 @@ tests_unit = [
   'app-grid-button',
   'app-grid-folder-button',
   'app-list-model',
+  'auto-brightness-bucket',
   'connectivity-info',
   'css',
   'fading-label',
