@@ -22,5 +22,6 @@ void         phosh_backlight_get_range (PhoshBacklight *self,
                                         int            *min_brightness,
                                         int            *max_brightness);
 const char * phosh_backlight_get_name (PhoshBacklight *self);
+int          phosh_backlight_get_levels (PhoshBacklight *self);
 
 G_END_DECLS
