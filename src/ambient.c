@@ -315,23 +315,17 @@ on_ambient_released (GObject *source_object, GAsyncResult *res, gpointer user_da
 static void
 phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
 {
+  PhoshDBusSensorProxy *proxy = PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager);
+
   if (claim == self->claimed)
     return;
 
   if (claim) {
-    phosh_dbus_sensor_proxy_call_claim_light (
-      PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager),
-      self->cancel,
-      on_ambient_claimed,
-      self);
+    phosh_dbus_sensor_proxy_call_claim_light (proxy, self->cancel, on_ambient_claimed, self);
   } else {
     g_clear_handle_id (&self->sample_id, g_source_remove);
     g_array_set_size (self->values, 0);
-    phosh_dbus_sensor_proxy_call_release_light (
-      PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager),
-      self->cancel,
-      on_ambient_released,
-      self);
+    phosh_dbus_sensor_proxy_call_release_light (proxy, self->cancel, on_ambient_released, self);
   }
 }
 
@@ -382,14 +376,13 @@ on_auto_brightness_enabled_changed (PhoshAmbient *self)
 
 
 static void
-on_has_ambient_light_changed (PhoshAmbient            *self,
-                              GParamSpec              *pspec,
-                              PhoshSensorProxyManager *proxy)
+on_has_ambient_light_changed (PhoshAmbient         *self,
+                              GParamSpec           *pspec,
+                              PhoshDBusSensorProxy *proxy)
 {
   gboolean has_ambient;
 
-  has_ambient = phosh_dbus_sensor_proxy_get_has_ambient_light (
-    PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
+  has_ambient = phosh_dbus_sensor_proxy_get_has_ambient_light (proxy);
 
   g_debug ("Found %s ambient sensor", has_ambient ? "a" : "no");
 
@@ -412,7 +405,7 @@ on_shell_state_changed (PhoshAmbient *self, GParamSpec *pspec, PhoshShell *shell
   if (state & PHOSH_STATE_BLANKED)
     phosh_ambient_claim_light (self, FALSE);
   else
-    on_has_ambient_light_changed (self, NULL, self->sensor_proxy_manager);
+    on_has_ambient_light_changed (self, NULL, PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
 }
 
 
@@ -452,7 +445,7 @@ phosh_ambient_constructed (GObject *object)
                             G_CALLBACK (on_auto_brightness_enabled_changed),
                             self);
 
-  on_has_ambient_light_changed (self, NULL, self->sensor_proxy_manager);
+  on_has_ambient_light_changed (self, NULL, PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
 }
 
 
