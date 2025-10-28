@@ -331,47 +331,46 @@ phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
 
 
 static void
-on_automatic_high_contrast_changed (PhoshAmbient *self,
-                                    GParamSpec   *pspec,
-                                    GSettings    *settings)
+maybe_claim (PhoshAmbient *self)
 {
-  gboolean auto_hc;
+  gboolean auto_brightness, auto_hc, claim;
 
+  auto_brightness = g_settings_get_boolean (self->power_settings, KEY_AMBIENT_ENABLED);
   auto_hc = g_settings_get_boolean (self->phosh_settings, KEY_AUTOMATIC_HC);
-  if (self->auto_hc == auto_hc)
+  claim = auto_hc || auto_brightness;
+
+  g_debug ("Auto brightness enabled: %d, Auto HC enabled: %d, claim: %d",
+           auto_brightness, auto_hc, claim);
+
+  if (self->auto_hc == auto_hc &&
+      self->auto_brightness == auto_brightness &&
+      !!self->claimed == claim) {
     return;
+  }
 
   self->auto_hc = auto_hc;
-  if (self->auto_hc) {
-    if (self->claimed)
-      on_ambient_light_level_changed (self, NULL, self->sensor_proxy_manager);
-    else
-      phosh_ambient_claim_light (self, TRUE);
-  } else {
-    phosh_ambient_claim_light (self, FALSE);
-    /* Switch back to normal theme */
-    switch_theme (self, FALSE);
-  }
-}
+  update_auto_brightness_enabled (self);
 
-
-static void
-on_auto_brightness_enabled_changed (PhoshAmbient *self)
-{
-  gboolean enable = g_settings_get_boolean (self->power_settings, KEY_AMBIENT_ENABLED);
-
-  g_debug ("Auto brightness setting enabled: %d", enable);
-
-  if (enable) {
+  if (claim) {
     if (self->claimed) {
-      update_auto_brightness_enabled (self);
+      g_debug ("Already claimed, triggering update");
       on_ambient_light_level_changed (self, NULL, self->sensor_proxy_manager);
     } else {
       phosh_ambient_claim_light (self, TRUE);
     }
   } else {
     phosh_ambient_claim_light (self, FALSE);
+    /* Switch back to normal theme */
+    if (!self->auto_hc)
+      switch_theme (self, FALSE);
   }
+}
+
+
+static void
+on_settings_changed (PhoshAmbient *self)
+{
+  maybe_claim (self);
 }
 
 
@@ -386,8 +385,7 @@ on_has_ambient_light_changed (PhoshAmbient         *self,
 
   g_debug ("Found %s ambient sensor", has_ambient ? "a" : "no");
 
-  on_automatic_high_contrast_changed (self, NULL, self->phosh_settings);
-  on_auto_brightness_enabled_changed (self);
+  maybe_claim (self);
 }
 
 
@@ -401,6 +399,7 @@ on_shell_state_changed (PhoshAmbient *self, GParamSpec *pspec, PhoshShell *shell
 
   state = phosh_shell_get_state (shell);
   g_debug ("Shell state changed: %d", state);
+
   /* Claim/unclaim the sensor on screen unblank / blank */
   if (state & PHOSH_STATE_BLANKED)
     phosh_ambient_claim_light (self, FALSE);
@@ -427,10 +426,10 @@ phosh_ambient_constructed (GObject *object)
 
   g_object_connect (self->phosh_settings,
                     "swapped-signal::changed::" KEY_AUTOMATIC_HC,
-                    G_CALLBACK (on_automatic_high_contrast_changed),
+                    G_CALLBACK (on_settings_changed),
                     self,
                     "swapped-signal::changed::" KEY_AUTOMATIC_HC_THRESHOLD,
-                    G_CALLBACK (on_automatic_high_contrast_changed),
+                    G_CALLBACK (on_settings_changed),
                     self,
                     NULL);
 
@@ -442,7 +441,7 @@ phosh_ambient_constructed (GObject *object)
 
   g_signal_connect_swapped (self->power_settings,
                             "changed::" KEY_AMBIENT_ENABLED,
-                            G_CALLBACK (on_auto_brightness_enabled_changed),
+                            G_CALLBACK (on_settings_changed),
                             self);
 
   on_has_ambient_light_changed (self, NULL, PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
