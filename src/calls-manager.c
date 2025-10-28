@@ -125,9 +125,7 @@ on_call_state_changed (PhoshCallsManager *self, GParamSpec *pspec, PhoshDBusCall
 
 
 static void
-on_call_proxy_new_for_bus_finish (GObject      *source_object,
-                                  GAsyncResult *res,
-                                  gpointer     *data)
+on_call_proxy_new_for_bus_finish (GObject *source_object, GAsyncResult *res, gpointer data)
 {
   const char *path;
   gboolean inbound;
@@ -169,8 +167,7 @@ on_call_proxy_new_for_bus_finish (GObject      *source_object,
 
 
 static void
-on_call_obj_added (PhoshCallsManager *self,
-                   GDBusObject       *object)
+on_call_obj_added (PhoshCallsManager *self, GDBusObject *object)
 {
   const char *path;
 
@@ -186,7 +183,7 @@ on_call_obj_added (PhoshCallsManager *self,
                                            BUS_NAME,
                                            path,
                                            self->cancel,
-                                           (GAsyncReadyCallback) on_call_proxy_new_for_bus_finish,
+                                           on_call_proxy_new_for_bus_finish,
                                            self);
 }
 
