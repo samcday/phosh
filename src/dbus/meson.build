@@ -123,6 +123,13 @@ dbus_server_protos = [
     false,
     false,
   ],
+  [
+    'notify-dbus',
+    'org.freedesktop.Notifications.xml',
+    'org.freedesktop',
+    false,
+    false,
+  ],
   ['phosh-gnome-shell-dbus', 'org.gnome.Shell.xml', 'org', false, false],
   [
     'phosh-display-dbus',
@@ -202,13 +209,6 @@ endforeach
 # Protocols where Phosh is the DBus server
 # TODO: Use `dbus_prefix` as namespace
 #
-generated_dbus_sources += gnome.gdbus_codegen(
-  'notify-dbus',
-  'org.freedesktop.Notifications.xml',
-  interface_prefix: 'org.freedesktop',
-  namespace: 'PhoshNotifyDBus',
-)
-
 generated_dbus_sources += gnome.gdbus_codegen(
   'phosh-idle-dbus',
   'org.gnome.Mutter.IdleMonitor.xml',
