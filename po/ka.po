@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-25 02:23+0000\n"
-"PO-Revision-Date: 2025-10-25 16:24+0200\n"
+"POT-Creation-Date: 2025-10-28 12:34+0000\n"
+"PO-Revision-Date: 2025-10-29 00:48+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -687,15 +687,15 @@ msgstr "სასწრაფო"
 msgid "Run Command"
 msgstr "ბრძანების გაშვება"
 
-#: src/ui/settings.ui:138
+#: src/ui/settings.ui:137
 msgid "No notifications"
 msgstr "გაფრთხილების გარეშე"
 
-#: src/ui/settings.ui:167
+#: src/ui/settings.ui:166
 msgid "Notifications"
 msgstr "გაფრთხილებები"
 
-#: src/ui/settings.ui:176
+#: src/ui/settings.ui:175
 msgid "Clear all"
 msgstr "ყველას გასუფთავება"
 
@@ -776,19 +776,27 @@ msgid "Cellular"
 msgstr "მობილური"
 
 #. Translators: Phosh prevents the session from going idle because the caffeine quick setting is toggled
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:50
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:68
 msgid "Phosh on caffeine"
 msgstr "Phosh caffeine-ზე"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:226
+msgctxt "caffeine-disabled"
+msgid "Off"
+msgstr "გამორთ"
+
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:231
 msgctxt "caffeine-enabled"
 msgid "On"
 msgstr "ჩართ"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
-msgctxt "caffeine-disabled"
-msgid "Off"
-msgstr "გამორთ"
+#: plugins/caffeine-quick-setting/qs.ui:15
+msgid "Caffeine timers"
+msgstr "კოფეინის ტაიმერები"
+
+#: plugins/caffeine-quick-setting/qs.ui:37
+msgid "No caffeine intervals"
+msgstr "კოფეინის შუალედების გარეშე"
 
 #: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:34
 msgid "Default style"
