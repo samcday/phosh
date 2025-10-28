@@ -18,11 +18,9 @@
 #include "settings.h"
 #include "quick-settings.h"
 #include "settings/audio-settings.h"
-#include "settings/brightness.h"
 #include "torch-manager.h"
 #include "notifications/notify-manager.h"
 #include "notifications/notification-frame.h"
-#include "util.h"
 
 #include <gio/gdesktopappinfo.h>
 #include <xkbcommon/xkbcommon.h>
