@@ -13,7 +13,7 @@ G_BEGIN_DECLS
 
 #define PHOSH_TYPE_LOCATION_MANAGER     (phosh_location_manager_get_type ())
 G_DECLARE_FINAL_TYPE (PhoshLocationManager, phosh_location_manager, PHOSH, LOCATION_MANAGER,
-                      PhoshGeoClueDBusOrgFreedesktopGeoClue2AgentSkeleton)
+                      PhoshDBusGeoClue2AgentSkeleton)
 
 PhoshLocationManager * phosh_location_manager_new (void);
 

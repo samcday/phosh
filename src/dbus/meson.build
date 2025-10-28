@@ -116,6 +116,13 @@ dbus_client_protos = [
 #
 dbus_server_protos = [
   # Sorted by xml filename:
+  [
+    'geoclue-agent-dbus',
+    'org.freedesktop.GeoClue2.Agent.xml',
+    'org.freedesktop',
+    false,
+    false,
+  ],
   ['phosh-gnome-shell-dbus', 'org.gnome.Shell.xml', 'org', false, false],
   [
     'phosh-display-dbus',
@@ -195,13 +202,6 @@ endforeach
 # Protocols where Phosh is the DBus server
 # TODO: Use `dbus_prefix` as namespace
 #
-generated_dbus_sources += gnome.gdbus_codegen(
-  'geoclue-agent-dbus',
-  'org.freedesktop.GeoClue2.Agent.xml',
-  interface_prefix: 'org.freedesktop.Agent',
-  namespace: 'PhoshGeoClueDBus',
-)
-
 generated_dbus_sources += gnome.gdbus_codegen(
   'notify-dbus',
   'org.freedesktop.Notifications.xml',
