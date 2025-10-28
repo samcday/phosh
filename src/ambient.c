@@ -264,15 +264,15 @@ update_auto_brightness_enabled (PhoshAmbient *self)
 static void
 on_ambient_claimed (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
-  PhoshSensorProxyManager *sensor_proxy_manager = PHOSH_SENSOR_PROXY_MANAGER (source_object);
+  PhoshDBusSensorProxy *proxy = PHOSH_DBUS_SENSOR_PROXY (source_object);
   PhoshAmbient *self = PHOSH_AMBIENT (user_data);
   g_autoptr (GError) err = NULL;
   gboolean success;
 
-  success = phosh_dbus_sensor_proxy_call_claim_light_finish (
-    PHOSH_DBUS_SENSOR_PROXY (sensor_proxy_manager),
-    res, &err);
+  g_return_if_fail (PHOSH_IS_SENSOR_PROXY_MANAGER (proxy));
+  g_return_if_fail (proxy == PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
 
+  success = phosh_dbus_sensor_proxy_call_claim_light_finish (proxy, res, &err);
   if (!success) {
     g_warning ("Failed to claim ambient sensor: %s", err->message);
     return;
@@ -289,18 +289,15 @@ on_ambient_claimed (GObject *source_object, GAsyncResult *res, gpointer user_dat
 static void
 on_ambient_released (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
-  PhoshSensorProxyManager *sensor_proxy_manager = PHOSH_SENSOR_PROXY_MANAGER (source_object);
+  PhoshDBusSensorProxy *proxy = PHOSH_DBUS_SENSOR_PROXY (source_object);
   PhoshAmbient *self = PHOSH_AMBIENT (user_data);
   g_autoptr (GError) err = NULL;
   gboolean success;
 
-  g_return_if_fail (PHOSH_IS_SENSOR_PROXY_MANAGER (sensor_proxy_manager));
-  g_return_if_fail (sensor_proxy_manager == self->sensor_proxy_manager);
+  g_return_if_fail (PHOSH_IS_SENSOR_PROXY_MANAGER (proxy));
+  g_return_if_fail (proxy == PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
 
-  success = phosh_dbus_sensor_proxy_call_release_light_finish (
-    PHOSH_DBUS_SENSOR_PROXY (sensor_proxy_manager),
-    res, &err);
-
+  success = phosh_dbus_sensor_proxy_call_release_light_finish (proxy, res, &err);
   if (!success) {
     g_warning ("Failed to release ambient sensor: %s", err->message);
     return;
@@ -321,6 +318,7 @@ phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
   if (claim == self->claimed)
     return;
 
+  g_debug ("Claiming sensor: %d", claim);
   if (claim) {
     phosh_dbus_sensor_proxy_call_claim_light (proxy, self->cancel, on_ambient_claimed, self);
   } else {
