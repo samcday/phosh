@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2020 Purism SPC
+ *               2025 Phosh.mobi e.V.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  * Author: Guido Günther <agx@sigxcpu.org>
@@ -97,8 +98,9 @@ get_max_level (PhoshLocationManager *self)
   gint level = LEVEL_NONE;
 
   if (self->enabled) {
-    GDesktopLocationAccuracyLevel val = g_settings_get_enum (self->location_settings, "max-accuracy-level");
+    GDesktopLocationAccuracyLevel val;
 
+    val = g_settings_get_enum (self->location_settings, "max-accuracy-level");
     switch (val) {
     case G_DESKTOP_LOCATION_ACCURACY_LEVEL_COUNTRY:
       level = LEVEL_COUNTRY;
@@ -375,9 +377,7 @@ on_manager_proxy_ready (GObject *source_object, GAsyncResult *res, gpointer user
 
   self->manager_proxy = phosh_dbus_geo_clue2_manager_proxy_new_for_bus_finish (res, &err);
   if (self->manager_proxy == NULL) {
-    g_warning ("Failed to create proxy to %s: %s",
-               GEOCLUE_MANAGER_PATH,
-               err->message);
+    g_warning ("Failed to create proxy to %s: %s", GEOCLUE_MANAGER_PATH, err->message);
     return;
   }
 
@@ -473,10 +473,7 @@ phosh_location_manager_constructed (GObject *object)
                    "enabled",
                    G_SETTINGS_BIND_DEFAULT);
 
-  g_bus_get (G_BUS_TYPE_SYSTEM,
-             self->cancel,
-             on_bus_acquired,
-             self);
+  g_bus_get (G_BUS_TYPE_SYSTEM, self->cancel, on_bus_acquired, self);
 
   self->dbus_name_id = g_bus_watch_name (G_BUS_TYPE_SYSTEM,
                                          GEOCLUE_SERVICE,
@@ -499,21 +496,24 @@ phosh_location_manager_class_init (PhoshLocationManagerClass *klass)
   object_class->set_property = phosh_location_manager_set_property;
   object_class->get_property = phosh_location_manager_get_property;
 
+  /**
+   * LocationManager:enabled:
+   *
+   * Whether location services are enabled
+   */
   props[PROP_ENABLED] =
-    g_param_spec_boolean ("enabled",
-                          "enabled",
-                          "Whether location services are enabled",
+    g_param_spec_boolean ("enabled", "", "",
                           FALSE,
-                          G_PARAM_READWRITE |
-                          G_PARAM_STATIC_STRINGS);
-
+                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  /**
+   * LocationManager:active:
+   *
+   * Whether location services are currently active
+   */
   props[PROP_ACTIVE] =
-    g_param_spec_boolean ("active",
-                          "Active",
-                          "Whether location services are currently active",
+    g_param_spec_boolean ("active", "", "",
                           FALSE,
-                          G_PARAM_READABLE |
-                          G_PARAM_STATIC_STRINGS);
+                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 }
