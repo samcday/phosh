@@ -212,7 +212,7 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
     return;
   }
 
-  g_debug ("Ambient light changed: %f %s", level, unit);
+  g_debug ("Ambient light changed: %.2f %s", level, unit);
   if (!G_APPROX_VALUE (self->light_level, level, FLT_EPSILON)) {
     self->light_level = level;
     g_object_notify_by_pspec (G_OBJECT (self), props[PROP_LIGHT_LEVEL]);

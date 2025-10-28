@@ -137,7 +137,7 @@ on_ambient_light_level_changed (PhoshBrightnessManager *self,
     return;
 
   level = phosh_ambient_get_light_level (ambient);
-  g_debug ("Ambient light level: %f lux", level);
+  g_debug ("Ambient light level: %.2f lux", level);
 
   phosh_auto_brightness_add_ambient_level (self->auto_brightness.tracker, level);
 }
