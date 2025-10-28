@@ -53,7 +53,7 @@ static GParamSpec *props[LAST_PROP];
 typedef struct _PhoshAmbient {
   GObject                  parent;
 
-  gboolean                 claimed;
+  int                      claimed;
   PhoshSensorProxyManager *sensor_proxy_manager;
   GCancellable            *cancel;
 
@@ -250,6 +250,8 @@ update_auto_brightness_enabled (PhoshAmbient *self)
 {
   gboolean auto_brightness;
 
+  g_return_if_fail (self->claimed >= 0);
+
   auto_brightness = (self->claimed &&
                      g_settings_get_boolean (self->power_settings, KEY_AMBIENT_ENABLED));
 
@@ -279,7 +281,7 @@ on_ambient_claimed (GObject *source_object, GAsyncResult *res, gpointer user_dat
   }
 
   g_debug ("Claimed ambient sensor");
-  self->claimed = TRUE;
+  self->claimed++;
 
   update_auto_brightness_enabled (self);
   on_ambient_light_level_changed (self, NULL, self->sensor_proxy_manager);
@@ -294,18 +296,17 @@ on_ambient_released (GObject *source_object, GAsyncResult *res, gpointer user_da
   g_autoptr (GError) err = NULL;
   gboolean success;
 
+  g_return_if_fail (self->claimed > 0);
   g_return_if_fail (PHOSH_IS_SENSOR_PROXY_MANAGER (proxy));
   g_return_if_fail (proxy == PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
 
   success = phosh_dbus_sensor_proxy_call_release_light_finish (proxy, res, &err);
-  if (!success) {
+  if (success)
+    g_debug ("Released ambient light sensor");
+  else
     g_warning ("Failed to release ambient sensor: %s", err->message);
-    return;
-  }
 
-  g_debug ("Released ambient light sensor");
-  self->claimed = FALSE;
-
+  self->claimed--;
   update_auto_brightness_enabled (self);
 }
 
@@ -315,7 +316,7 @@ phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
 {
   PhoshDBusSensorProxy *proxy = PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager);
 
-  if (claim == self->claimed)
+  if (claim == !!self->claimed)
     return;
 
   g_debug ("Claiming sensor: %d", claim);
@@ -333,6 +334,8 @@ static void
 maybe_claim (PhoshAmbient *self)
 {
   gboolean auto_brightness, auto_hc, claim;
+
+  g_return_if_fail (self->claimed >= 0);
 
   auto_brightness = g_settings_get_boolean (self->power_settings, KEY_AMBIENT_ENABLED);
   auto_hc = g_settings_get_boolean (self->phosh_settings, KEY_AUTOMATIC_HC);
@@ -380,11 +383,21 @@ on_has_ambient_light_changed (PhoshAmbient         *self,
 {
   gboolean has_ambient;
 
+  g_return_if_fail (self->claimed >= 0);
+
   has_ambient = phosh_dbus_sensor_proxy_get_has_ambient_light (proxy);
+  if (has_ambient) {
+    g_debug ("Ambient sensor appeared");
+    maybe_claim (self);
+    return;
+  }
 
-  g_debug ("Found %s ambient sensor", has_ambient ? "a" : "no");
+  if (!self->claimed)
+    return;
 
-  maybe_claim (self);
+  g_debug ("Ambient sensor disappeared, marking unclaimed");
+  self->claimed--;
+  update_auto_brightness_enabled (self);
 }
 
 
