@@ -64,6 +64,7 @@ typedef struct _PhoshAmbient {
   gboolean                 use_hc;
   gboolean                 auto_brightness;
   double                   light_level;
+  gboolean                 blanked;
 
   guint                    sample_id;
   GArray                  *values;
@@ -392,19 +393,25 @@ on_has_ambient_light_changed (PhoshAmbient         *self,
 static void
 on_shell_state_changed (PhoshAmbient *self, GParamSpec *pspec, PhoshShell *shell)
 {
+  gboolean blanked;
   PhoshShellStateFlags state;
 
   g_return_if_fail (PHOSH_IS_AMBIENT (self));
   g_return_if_fail (PHOSH_IS_SHELL (shell));
 
   state = phosh_shell_get_state (shell);
-  g_debug ("Shell state changed: %d", state);
+  blanked = !!(state & PHOSH_STATE_BLANKED);
 
-  /* Claim/unclaim the sensor on screen unblank / blank */
-  if (state & PHOSH_STATE_BLANKED)
+  if (self->blanked == blanked)
+    return;
+  self->blanked = blanked;
+
+  g_debug ("Shell blanked: %d", self->blanked);
+  /* Claim / unclaim the sensor on screen unblank / blank */
+  if (blanked)
     phosh_ambient_claim_light (self, FALSE);
   else
-    on_has_ambient_light_changed (self, NULL, PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager));
+    maybe_claim (self);
 }
 
 
@@ -525,6 +532,7 @@ phosh_ambient_init (PhoshAmbient *self)
 
   /* Ensure initial sync */
   self->light_level = -1.0;
+  self->blanked = -1;
   self->cancel = g_cancellable_new ();
 
   self->values = g_array_new (FALSE, FALSE, sizeof(double));
