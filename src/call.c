@@ -285,9 +285,8 @@ phosh_call_constructed (GObject *object)
   path = phosh_dbus_calls_call_get_image_path (self->proxy);
   if (!gm_str_is_null_or_empty (path)) {
     file = g_file_new_for_path (path);
-    if (file) {
+    if (file)
       self->avatar_icon = G_LOADABLE_ICON (g_file_icon_new (file));
-    }
   }
 
   /* Sync active property */
@@ -437,7 +436,7 @@ on_call_send_dtmf_finish (GObject *source_object, GAsyncResult *res, gpointer dt
   g_return_if_fail (PHOSH_DBUS_IS_CALLS_CALL_PROXY (proxy));
 
   if (!phosh_dbus_calls_call_call_send_dtmf_finish (proxy, res, &err))
-    phosh_async_error_warn(err, "Failed to send DTMF `%c' %p", key, proxy);
+    phosh_async_error_warn (err, "Failed to send DTMF `%c' %p", key, proxy);
 }
 
 
