@@ -180,10 +180,9 @@ on_bt_has_airplane_mode_changed (PhoshBtManager *self, GParamSpec *pspec, PhoshD
 
 
 static void
-on_proxy_new_for_bus_finish (GObject        *source_object,
-                             GAsyncResult   *res,
-                             PhoshBtManager *self)
+on_proxy_new_for_bus_finish (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshBtManager *self = PHOSH_BT_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_IS_BT_MANAGER (self));
@@ -222,7 +221,7 @@ phosh_bt_manager_idle_init (PhoshManager *manager)
                                        BUS_NAME,
                                        OBJECT_PATH,
                                        NULL,
-                                       (GAsyncReadyCallback) on_proxy_new_for_bus_finish,
+                                       on_proxy_new_for_bus_finish,
                                        g_object_ref (self));
 }
 
