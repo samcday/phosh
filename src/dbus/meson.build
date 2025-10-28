@@ -85,6 +85,13 @@ dbus_client_protos = [
     false,
     false,
   ],
+  [
+    'gnome-session-presence-dbus',
+    'org.gnome.SessionManager.Presence.xml',
+    'org.gnome',
+    false,
+    false,
+  ],
   ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
   [
     'gnome-shell-search-provider',
@@ -179,13 +186,6 @@ endforeach
 # Protocols where Phosh is the DBus client
 # TODO: Use `dbus_prefix` as namespace
 #
-# org.gnome.SessionManager.Presence
-generated_dbus_sources += gnome.gdbus_codegen(
-  'gnome-session-presence-dbus',
-  'org.gnome.SessionManager.Presence.xml',
-  interface_prefix: 'org.gnome.SessionManager',
-  namespace: 'PhoshSessionPresenceDBus',
-)
 # org.gnome.SettingsDaemon.Rfkill
 generated_dbus_sources += gnome.gdbus_codegen(
   'gsd-rfkill-dbus',
