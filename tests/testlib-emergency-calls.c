@@ -55,7 +55,7 @@ on_handle_get_emergency_contacts (PhoshDBusEmergencyCalls     *interface,
   g_variant_builder_add (&contacts_builder, "a{sv}", NULL);
   g_variant_builder_close (&contacts_builder);
 
-  g_variant_builder_open(&contacts_builder, G_VARIANT_TYPE (CONTACT_FORMAT));
+  g_variant_builder_open (&contacts_builder, G_VARIANT_TYPE (CONTACT_FORMAT));
   /* https://www.police.govt.nz/use-105 */
   /* 105 is the number for Police non-emergencies. */
 
@@ -69,7 +69,7 @@ on_handle_get_emergency_contacts (PhoshDBusEmergencyCalls     *interface,
   g_variant_builder_add (&contacts_builder, "a{sv}", NULL);
   g_variant_builder_close (&contacts_builder);
 
-  g_variant_builder_open(&contacts_builder, G_VARIANT_TYPE (CONTACT_FORMAT));
+  g_variant_builder_open (&contacts_builder, G_VARIANT_TYPE (CONTACT_FORMAT));
   /* https://en.wikipedia.org/wiki/Fictitious_telephone_number */
 
   /* id: The identifier to dial (usually the phone number) */
@@ -82,7 +82,7 @@ on_handle_get_emergency_contacts (PhoshDBusEmergencyCalls     *interface,
   g_variant_builder_add (&contacts_builder, "a{sv}", NULL);
   g_variant_builder_close(&contacts_builder);
 
-  g_variant_builder_open(&contacts_builder, G_VARIANT_TYPE (CONTACT_FORMAT));
+  g_variant_builder_open (&contacts_builder, G_VARIANT_TYPE (CONTACT_FORMAT));
   /* https://en.wikipedia.org/wiki/Fictitious_telephone_number */
 
   /* id: The identifier to dial (usually the phone number) */
