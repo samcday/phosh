@@ -99,7 +99,6 @@ dbus_client_protos = [
     false,
     false,
   ],
-  ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
   [
     'gnome-shell-search-provider',
     'org.gnome.Shell.SearchProvider2.xml',
@@ -107,6 +106,7 @@ dbus_client_protos = [
     false,
     false,
   ],
+  ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
   ['phosh-osk0-dbus', 'sm.puri.OSK0.xml', 'sm.puri', false, false],
 ]
 
