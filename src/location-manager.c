@@ -65,7 +65,7 @@ static GParamSpec *props[PROP_LAST_PROP];
 typedef struct _PhoshLocationManager {
   PhoshGeoClueDBusOrgFreedesktopGeoClue2AgentSkeleton parent;
 
-  PhoshGeoClueDBusManager                            *manager_proxy;
+  PhoshDBusGeoClue2Manager                           *manager_proxy;
   guint                                               dbus_name_id;
   GSettings                                          *location_settings;
   gboolean                                            enabled;
@@ -336,10 +336,10 @@ on_add_agent_ready (GObject      *source_object,
                     GAsyncResult *res,
                     gpointer      user_data)
 {
-  PhoshGeoClueDBusManager *manager = PHOSH_GEO_CLUE_DBUS_MANAGER (source_object);
+  PhoshDBusGeoClue2Manager *manager = PHOSH_DBUS_GEO_CLUE2_MANAGER (source_object);
   g_autoptr (GError) err = NULL;
 
-  if (phosh_geo_clue_dbus_manager_call_add_agent_finish (manager, res, &err))
+  if (phosh_dbus_geo_clue2_manager_call_add_agent_finish (manager, res, &err))
     g_debug ("Added ourself as geoclue agent");
   else
     g_warning ("Failed to add agent: %s", err->message);
@@ -352,9 +352,9 @@ on_agent_in_use_changed (PhoshLocationManager *self)
   gboolean in_use;
 
   g_return_if_fail (PHOSH_IS_LOCATION_MANAGER (self));
-  g_return_if_fail (PHOSH_GEO_CLUE_DBUS_IS_MANAGER (self->manager_proxy));
+  g_return_if_fail (PHOSH_DBUS_IS_GEO_CLUE2_MANAGER (self->manager_proxy));
 
-  in_use = phosh_geo_clue_dbus_manager_get_in_use (self->manager_proxy);
+  in_use = phosh_dbus_geo_clue2_manager_get_in_use (self->manager_proxy);
   g_debug ("In use: %d", in_use);
 
   if (in_use == self->active)
@@ -374,7 +374,7 @@ on_manager_proxy_ready (GObject              *source_object,
 
   g_return_if_fail (PHOSH_IS_LOCATION_MANAGER (self));
 
-  self->manager_proxy = phosh_geo_clue_dbus_manager_proxy_new_for_bus_finish (res, &err);
+  self->manager_proxy = phosh_dbus_geo_clue2_manager_proxy_new_for_bus_finish (res, &err);
   if (self->manager_proxy == NULL) {
     g_warning ("Failed to create proxy to %s: %s",
                GEOCLUE_MANAGER_PATH,
@@ -382,12 +382,12 @@ on_manager_proxy_ready (GObject              *source_object,
     return;
   }
 
-  phosh_geo_clue_dbus_manager_call_add_agent (self->manager_proxy,
-                                              /* Agent whitelisted in geoclue conf */
-                                              "sm.puri.Phosh",
-                                              self->cancel,
-                                              on_add_agent_ready,
-                                              NULL);
+  phosh_dbus_geo_clue2_manager_call_add_agent (self->manager_proxy,
+                                               /* Agent whitelisted in geoclue conf */
+                                               "sm.puri.Phosh",
+                                               self->cancel,
+                                               on_add_agent_ready,
+                                               NULL);
   g_signal_connect_swapped (self->manager_proxy,
                             "notify::in-use",
                             G_CALLBACK (on_agent_in_use_changed),
@@ -405,7 +405,7 @@ on_manager_name_appeared (GDBusConnection      *connection,
   g_return_if_fail (PHOSH_IS_LOCATION_MANAGER (self));
   g_debug ("%s appeared", name);
 
-  phosh_geo_clue_dbus_manager_proxy_new_for_bus (
+  phosh_dbus_geo_clue2_manager_proxy_new_for_bus (
     G_BUS_TYPE_SYSTEM,
     G_DBUS_PROXY_FLAGS_NONE,
     GEOCLUE_SERVICE,

@@ -22,6 +22,13 @@ dbus_client_protos = [
     false,
   ],
   [
+    'geoclue-manager-dbus',
+    'org.freedesktop.GeoClue2.Manager.xml',
+    'org.freedesktop',
+    false,
+    false,
+  ],
+  [
     'hostname1-dbus',
     'org.freedesktop.hostname1.xml',
     'org.freedesktop',
@@ -165,13 +172,6 @@ endforeach
 # Protocols where Phosh is the DBus client
 # TODO: Use `dbus_prefix` as namespace
 #
-# Geoclue
-generated_dbus_sources += gnome.gdbus_codegen(
-  'geoclue-manager-dbus',
-  'org.freedesktop.GeoClue2.Manager.xml',
-  interface_prefix: 'org.freedesktop.GeoClue2',
-  namespace: 'PhoshGeoClueDBus',
-)
 # org.gnome.SessionManager.ClientPrivate
 generated_dbus_sources += gnome.gdbus_codegen(
   'gnome-session-client-private-dbus',
