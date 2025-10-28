@@ -106,6 +106,7 @@ dbus_client_protos = [
     false,
     false,
   ],
+  ['mpris-dbus', 'org.mpris.MediaPlayer2.xml', 'org.mpris', false, false],
   ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
   ['phosh-osk0-dbus', 'sm.puri.OSK0.xml', 'sm.puri', false, false],
 ]
@@ -190,17 +191,6 @@ foreach p : dbus_client_protos + dbus_server_protos
   endif
 endforeach
 
-#
-# Protocols where Phosh is the DBus client
-# TODO: Use `dbus_prefix` as namespace
-#
-# MPris2
-generated_dbus_sources += gnome.gdbus_codegen(
-  'mpris-dbus',
-  'org.mpris.MediaPlayer2.xml',
-  interface_prefix: 'org.mpris',
-  namespace: 'PhoshMprisDBus',
-)
 #
 # Protocols where Phosh is the DBus server
 # TODO: Use `dbus_prefix` as namespace
