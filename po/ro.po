@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-24 08:37+0000\n"
-"PO-Revision-Date: 2025-10-24 15:09+0200\n"
+"POT-Creation-Date: 2025-10-28 09:32+0000\n"
+"PO-Revision-Date: 2025-10-28 11:50+0100\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -565,11 +565,11 @@ msgstr "Anulează"
 
 #: src/ui/app-grid-button.ui:31
 msgid "Remove from _Favorites"
-msgstr "Elimină din _Favorite"
+msgstr "Elimină din Pre_ferate"
 
 #: src/ui/app-grid-button.ui:36
 msgid "Add to _Favorites"
-msgstr "Adaugă în _Favorite"
+msgstr "Adaugă în Pre_ferate"
 
 #: src/ui/app-grid-button.ui:41
 msgid "View _Details"
@@ -709,15 +709,15 @@ msgstr "Urgență"
 msgid "Run Command"
 msgstr "Execută comanda"
 
-#: src/ui/settings.ui:138
+#: src/ui/settings.ui:137
 msgid "No notifications"
 msgstr "Nicio notificare"
 
-#: src/ui/settings.ui:167
+#: src/ui/settings.ui:166
 msgid "Notifications"
 msgstr "Notificări"
 
-#: src/ui/settings.ui:176
+#: src/ui/settings.ui:175
 msgid "Clear all"
 msgstr "Șterge tot"
 
@@ -798,19 +798,27 @@ msgid "Cellular"
 msgstr "Celular"
 
 #. Translators: Phosh prevents the session from going idle because the caffeine quick setting is toggled
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:50
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:68
 msgid "Phosh on caffeine"
 msgstr "Phosh cu Cafeină"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:226
+msgctxt "caffeine-disabled"
+msgid "Off"
+msgstr "Oprit"
+
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:231
 msgctxt "caffeine-enabled"
 msgid "On"
 msgstr "Pornit"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
-msgctxt "caffeine-disabled"
-msgid "Off"
-msgstr "Oprit"
+#: plugins/caffeine-quick-setting/qs.ui:15
+msgid "Caffeine timers"
+msgstr "Timpi Cafeină"
+
+#: plugins/caffeine-quick-setting/qs.ui:37
+msgid "No caffeine intervals"
+msgstr "Niciun interval Cafeină"
 
 #: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:34
 msgid "Default style"
