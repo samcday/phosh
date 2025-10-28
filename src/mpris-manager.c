@@ -280,8 +280,9 @@ is_valid_player (const char *bus_name)
 
 
 static void
-find_player_done (GObject *source_object, GAsyncResult *res, PhoshMprisManager *self)
+find_player_done (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshMprisManager *self = PHOSH_MPRIS_MANAGER (user_data);
   g_autoptr (GVariant) result = NULL;
   g_autoptr (GVariant) names = NULL;
   g_autoptr (GError) err = NULL;
@@ -337,7 +338,7 @@ find_player (PhoshMprisManager *self)
                           G_DBUS_CALL_FLAGS_NO_AUTO_START,
                           1000,
                           self->cancel,
-                          (GAsyncReadyCallback)find_player_done,
+                          find_player_done,
                           self);
 }
 
@@ -376,8 +377,9 @@ on_dbus_name_owner_changed (GDBusConnection *connection,
 
 
 static void
-on_bus_get_finished (GObject *source_object, GAsyncResult *res, PhoshMprisManager *self)
+on_bus_get_finished (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshMprisManager *self = PHOSH_MPRIS_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
   GDBusConnection *session_bus;
 
@@ -414,7 +416,7 @@ phosh_mpris_manager_init (PhoshMprisManager *self)
 
   g_bus_get (G_BUS_TYPE_SESSION,
              self->cancel,
-             (GAsyncReadyCallback)on_bus_get_finished,
+             on_bus_get_finished,
              self);
 }
 
