@@ -366,10 +366,9 @@ on_agent_in_use_changed (PhoshLocationManager *self)
 
 
 static void
-on_manager_proxy_ready (GObject              *source_object,
-                        GAsyncResult         *res,
-                        PhoshLocationManager *self)
+on_manager_proxy_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshLocationManager *self = PHOSH_LOCATION_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_IS_LOCATION_MANAGER (self));
@@ -411,7 +410,7 @@ on_manager_name_appeared (GDBusConnection      *connection,
     GEOCLUE_SERVICE,
     GEOCLUE_MANAGER_PATH,
     self->cancel,
-    (GAsyncReadyCallback)on_manager_proxy_ready,
+    on_manager_proxy_ready,
     self);
 }
 
