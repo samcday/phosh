@@ -373,8 +373,9 @@ phosh_call_class_init (PhoshCallClass *klass)
 
 
 static void
-on_call_accept_finish (PhoshDBusCallsCall *proxy, GAsyncResult *res, gpointer unused)
+on_call_accept_finish (GObject *source_object, GAsyncResult *res, gpointer unused)
 {
+  PhoshDBusCallsCall *proxy = PHOSH_DBUS_CALLS_CALL (source_object);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_DBUS_IS_CALLS_CALL_PROXY (proxy));
@@ -394,13 +395,14 @@ phosh_call_accept (CuiCall *call)
 
   phosh_dbus_calls_call_call_accept (self->proxy,
                                      self->cancel,
-                                     (GAsyncReadyCallback) on_call_accept_finish,
+                                     on_call_accept_finish,
                                      NULL);
 }
 
 static void
-on_call_hangup_finish (PhoshDBusCallsCall *proxy, GAsyncResult *res, gpointer unused)
+on_call_hangup_finish (GObject *source_object, GAsyncResult *res, gpointer unused)
 {
+  PhoshDBusCallsCall *proxy = PHOSH_DBUS_CALLS_CALL (source_object);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_DBUS_IS_CALLS_CALL_PROXY (proxy));
@@ -420,14 +422,15 @@ phosh_call_hang_up (CuiCall *call)
 
   phosh_dbus_calls_call_call_hangup (self->proxy,
                                      self->cancel,
-                                     (GAsyncReadyCallback) on_call_hangup_finish,
+                                     on_call_hangup_finish,
                                      NULL);
 }
 
 
 static void
-on_call_send_dtmf_finish (PhoshDBusCallsCall *proxy, GAsyncResult *res, gpointer dtmf_key)
+on_call_send_dtmf_finish (GObject *source_object, GAsyncResult *res, gpointer dtmf_key)
 {
+  PhoshDBusCallsCall *proxy = PHOSH_DBUS_CALLS_CALL (source_object);
   g_autoptr (GError) err = NULL;
   char key = (char) GPOINTER_TO_INT (dtmf_key);
 
@@ -450,7 +453,7 @@ phosh_call_send_dtmf (CuiCall *call, const char *dtmf)
   phosh_dbus_calls_call_call_send_dtmf (self->proxy,
                                         dtmf,
                                         self->cancel,
-                                        (GAsyncReadyCallback) on_call_send_dtmf_finish,
+                                        on_call_send_dtmf_finish,
                                         GINT_TO_POINTER (dtmf));
 }
 
