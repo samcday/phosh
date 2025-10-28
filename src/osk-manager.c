@@ -76,8 +76,10 @@ phosh_osk_manager_get_property (GObject *object,
 
 
 static void
-on_osk0_set_visible_done (PhoshDBusOSK0 *proxy, GAsyncResult *res, PhoshOskManager *self)
+on_osk0_set_visible_done (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshDBusOSK0 *proxy = PHOSH_DBUS_OSK0 (source_object);
+  PhoshOskManager *self = PHOSH_OSK_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
   gboolean visible;
 
@@ -104,7 +106,7 @@ set_visible_real (PhoshOskManager *self, gboolean visible)
     self->proxy,
     visible,
     NULL,
-    (GAsyncReadyCallback) on_osk0_set_visible_done,
+    on_osk0_set_visible_done,
     g_object_ref (self));
 }
 
