@@ -30,6 +30,12 @@ dbus_client_protos = [
     false,
   ],
   [
+    'calls-emergency-dbus',
+    'org.gnome.Calls.EmergencyCalls.xml',
+    'org.gnome.Calls',
+    false,
+  ],
+  [
     'gsd-color-dbus',
     'org.gnome.SettingsDaemon.Color.xml',
     'org.gnome.SettingsDaemon',
@@ -123,12 +129,6 @@ generated_dbus_sources += gnome.gdbus_codegen(
   object_manager: true,
   interface_prefix: 'org.gnome',
   namespace: 'PhoshCallsDBus',
-)
-generated_dbus_sources += gnome.gdbus_codegen(
-  'calls-emergency-dbus',
-  'org.gnome.Calls.EmergencyCalls.xml',
-  interface_prefix: 'org.gnome.Calls',
-  namespace: 'Phosh',
 )
 # org.gnome.SessionManager.ClientPrivate
 generated_dbus_sources += gnome.gdbus_codegen(
