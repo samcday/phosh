@@ -190,10 +190,9 @@ on_session_active_changed (PhoshSessionManager     *self,
 
 
 static void
-on_end_session_response_finish (GObject             *source_object,
-                                GAsyncResult        *res,
-                                PhoshSessionManager *self)
+on_end_session_response_finish (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshSessionManager *self = PHOSH_SESSION_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_IS_SESSION_MANAGER (self));
@@ -219,7 +218,7 @@ respond_to_end_session (PhoshSessionManager *self, gboolean shutdown)
     TRUE,
     "",
     NULL,
-    (GAsyncReadyCallback)on_end_session_response_finish,
+    on_end_session_response_finish,
     g_object_ref (self));
 }
 
@@ -250,10 +249,11 @@ on_stop (PhoshSessionManager *self, PhoshDBusSessionManagerClientPrivate *object
 
 
 static void
-on_client_private_proxy_new_for_bus_finish (GObject             *source_object,
-                                            GAsyncResult        *res,
-                                            PhoshSessionManager *self)
+on_client_private_proxy_new_for_bus_finish (GObject      *source_object,
+                                            GAsyncResult *res,
+                                            gpointer      user_data)
 {
+  PhoshSessionManager *self = PHOSH_SESSION_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   g_return_if_fail (PHOSH_IS_SESSION_MANAGER (self));
@@ -278,10 +278,10 @@ out:
 
 
 static void
-on_client_registered (PhoshDBusSessionManager *proxy,
-                      GAsyncResult            *res,
-                      PhoshSessionManager     *self)
+on_client_registered (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshDBusSessionManager *proxy = PHOSH_DBUS_SESSION_MANAGER (source_object);
+  PhoshSessionManager *self = PHOSH_SESSION_MANAGER (user_data);
   g_autofree char *client_id = NULL;
   g_autoptr (GError) err = NULL;
 
@@ -297,16 +297,16 @@ on_client_registered (PhoshDBusSessionManager *proxy,
     BUS_NAME,
     client_id,
     NULL,
-    (GAsyncReadyCallback)on_client_private_proxy_new_for_bus_finish,
+    on_client_private_proxy_new_for_bus_finish,
     g_object_ref (self));
 }
 
 
 static void
-on_logout_finished (PhoshDBusSessionManager *proxy,
-                    GAsyncResult            *res,
-                    PhoshSessionManager     *self)
+on_logout_finished (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshDBusSessionManager *proxy = PHOSH_DBUS_SESSION_MANAGER (source_object);
+  PhoshSessionManager *self = PHOSH_SESSION_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   if (!phosh_dbus_session_manager_call_logout_finish (proxy, res, &err))
@@ -316,10 +316,10 @@ on_logout_finished (PhoshDBusSessionManager *proxy,
 
 
 static void
-on_shutdown_finished (PhoshDBusSessionManager *proxy,
-                      GAsyncResult            *res,
-                      PhoshSessionManager     *self)
+on_shutdown_finished (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshDBusSessionManager *proxy = PHOSH_DBUS_SESSION_MANAGER (source_object);
+  PhoshSessionManager *self = PHOSH_SESSION_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   if (!phosh_dbus_session_manager_call_shutdown_finish (proxy, res, &err))
@@ -329,10 +329,10 @@ on_shutdown_finished (PhoshDBusSessionManager *proxy,
 
 
 static void
-on_reboot_finished (PhoshDBusSessionManager *proxy,
-                    GAsyncResult            *res,
-                    PhoshSessionManager     *self)
+on_reboot_finished (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshDBusSessionManager *proxy = PHOSH_DBUS_SESSION_MANAGER (source_object);
+  PhoshSessionManager *self = PHOSH_SESSION_MANAGER (user_data);
   g_autoptr (GError) err = NULL;
 
   if (!phosh_dbus_session_manager_call_reboot_finish (proxy, res, &err))
@@ -451,7 +451,7 @@ phosh_session_manager_register (PhoshSessionManager *self,
                                                    app_id,
                                                    startup_id ? startup_id : "",
                                                    self->cancel,
-                                                   (GAsyncReadyCallback) on_client_registered,
+                                                   on_client_registered,
                                                    self);
 }
 
@@ -464,7 +464,7 @@ phosh_session_manager_logout (PhoshSessionManager *self)
   phosh_dbus_session_manager_call_logout (self->proxy,
                                           1 /* no dialog */,
                                           NULL,
-                                          (GAsyncReadyCallback)on_logout_finished,
+                                          on_logout_finished,
                                           g_object_ref (self));
 }
 
@@ -477,7 +477,7 @@ phosh_session_manager_shutdown (PhoshSessionManager *self)
 
   phosh_dbus_session_manager_call_shutdown (self->proxy,
                                             NULL,
-                                            (GAsyncReadyCallback)on_shutdown_finished,
+                                            on_shutdown_finished,
                                             g_object_ref (self));
 }
 
@@ -490,7 +490,7 @@ phosh_session_manager_reboot (PhoshSessionManager *self)
 
   phosh_dbus_session_manager_call_reboot (self->proxy,
                                           NULL,
-                                          (GAsyncReadyCallback)on_reboot_finished,
+                                          on_reboot_finished,
                                           g_object_ref (self));
 }
 
