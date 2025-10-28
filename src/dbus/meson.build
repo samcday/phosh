@@ -49,6 +49,7 @@ dbus_client_protos = [
     false,
     false,
   ],
+  ['calls-dbus', 'org.gnome.Calls.Call.xml', 'org.gnome', false, true],
   [
     'calls-emergency-dbus',
     'org.gnome.Calls.EmergencyCalls.xml',
@@ -170,13 +171,6 @@ generated_dbus_sources += gnome.gdbus_codegen(
   'org.freedesktop.GeoClue2.Manager.xml',
   interface_prefix: 'org.freedesktop.GeoClue2',
   namespace: 'PhoshGeoClueDBus',
-)
-generated_dbus_sources += gnome.gdbus_codegen(
-  'calls-dbus',
-  'org.gnome.Calls.Call.xml',
-  object_manager: true,
-  interface_prefix: 'org.gnome',
-  namespace: 'PhoshCallsDBus',
 )
 # org.gnome.SessionManager.ClientPrivate
 generated_dbus_sources += gnome.gdbus_codegen(
