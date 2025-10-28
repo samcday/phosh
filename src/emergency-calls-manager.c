@@ -134,10 +134,9 @@ on_emergency_menu_activated (GSimpleAction *action, GVariant *param, gpointer da
  * From the phosh_emergency_calls_manager_idle_init function.
  */
 static void
-on_update_finish (GObject                    *source_object,
-                  GAsyncResult               *res,
-                  PhoshEmergencyCallsManager *self)
+on_update_finish (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
+  PhoshEmergencyCallsManager *self = PHOSH_EMERGENCY_CALLS_MANAGER (user_data);
   PhoshDBusEmergencyCalls *proxy = PHOSH_DBUS_EMERGENCY_CALLS (source_object);
   g_autoptr (GError) err = NULL;
   g_autoptr (GVariant) contacts = NULL;
@@ -236,7 +235,7 @@ phosh_emergency_calls_manager_update (PhoshEmergencyCallsManager *self)
   phosh_dbus_emergency_calls_call_get_emergency_contacts (
     self->dbus_proxy,
     self->cancel,
-    (GAsyncReadyCallback) on_update_finish,
+    on_update_finish,
     self);
 }
 
@@ -287,10 +286,10 @@ on_name_owner_changed (PhoshEmergencyCallsManager *self)
  * Called when the DBus proxy is ready
  */
 static void
-on_proxy_new_finish (GObject                    *source_object,
-                     GAsyncResult               *res,
-                     PhoshEmergencyCallsManager *self)
+on_proxy_new_finish (GObject *source_object, GAsyncResult *res, gpointer user_data)
+
 {
+  PhoshEmergencyCallsManager *self = PHOSH_EMERGENCY_CALLS_MANAGER (user_data);
   PhoshDBusEmergencyCalls *proxy;
   g_autoptr (GError) err = NULL;
 
@@ -326,7 +325,7 @@ phosh_emergency_calls_manager_idle_init (PhoshManager *manager)
                                                 CALLS_BUS_NAME,
                                                 CALLS_OBJECT_PATH,
                                                 self->cancel,
-                                                (GAsyncReadyCallback) on_proxy_new_finish,
+                                                on_proxy_new_finish,
                                                 self);
 }
 
