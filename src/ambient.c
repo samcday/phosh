@@ -206,7 +206,7 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
   proxy = PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager);
   level = phosh_dbus_sensor_proxy_get_light_level (proxy);
   unit = phosh_dbus_sensor_proxy_get_light_level_unit (proxy);
-  if (g_ascii_strcasecmp (unit, "lux") != 0) {
+  if (!unit || g_ascii_strcasecmp (unit, "lux") != 0) {
     /* For vendor values we don't know if small or large values mean bright or dark so be conservative */
     g_warning_once ("Unknown light level unit %s", unit);
     return;
