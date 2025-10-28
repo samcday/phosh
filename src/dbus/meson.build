@@ -72,6 +72,13 @@ dbus_client_protos = [
     false,
   ],
   [
+    'gsd-rfkill-dbus',
+    'org.gnome.SettingsDaemon.Rfkill.xml',
+    'org.gnome.SettingsDaemon',
+    false,
+    false,
+  ],
+  [
     'gnome-session-dbus',
     'org.gnome.SessionManager.xml',
     'org.gnome',
@@ -187,13 +194,6 @@ endforeach
 # Protocols where Phosh is the DBus client
 # TODO: Use `dbus_prefix` as namespace
 #
-# org.gnome.SettingsDaemon.Rfkill
-generated_dbus_sources += gnome.gdbus_codegen(
-  'gsd-rfkill-dbus',
-  'org.gnome.SettingsDaemon.Rfkill.xml',
-  interface_prefix: 'org.gnome.SettingsDaemon',
-  namespace: 'PhoshRfkillDBus',
-)
 # MPris2
 generated_dbus_sources += gnome.gdbus_codegen(
   'mpris-dbus',
