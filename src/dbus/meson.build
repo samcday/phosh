@@ -100,6 +100,7 @@ dbus_client_protos = [
     false,
     false,
   ],
+  ['phosh-osk0-dbus', 'sm.puri.OSK0.xml', 'sm.puri', false, false],
 ]
 
 #
@@ -199,11 +200,6 @@ generated_dbus_sources += gnome.gdbus_codegen(
   'org.mpris.MediaPlayer2.xml',
   interface_prefix: 'org.mpris',
   namespace: 'PhoshMprisDBus',
-)
-generated_dbus_sources += gnome.gdbus_codegen(
-  'phosh-osk0-dbus',
-  'sm.puri.OSK0.xml',
-  namespace: 'PhoshOsk0',
 )
 #
 # Protocols where Phosh is the DBus server
