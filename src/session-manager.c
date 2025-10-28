@@ -44,12 +44,12 @@ static void phosh_session_manager_end_session_dialog_iface_init (
   PhoshDBusEndSessionDialogIface *iface);
 
 typedef struct _PhoshSessionManager {
-  PhoshDBusEndSessionDialogSkeleton           parent;
-  gboolean                                    active;
+  PhoshDBusEndSessionDialogSkeleton     parent;
+  gboolean                              active;
 
-  PhoshDBusSessionManager                    *proxy;
-  GCancellable                               *cancel;
-  PhoshSessionClientPrivateDBusClientPrivate *priv_proxy;
+  PhoshDBusSessionManager              *proxy;
+  GCancellable                         *cancel;
+  PhoshDBusSessionManagerClientPrivate *priv_proxy;
 
   PhoshEndSessionDialog *dialog;
 } PhoshSessionManager;
@@ -198,7 +198,7 @@ on_end_session_response_finish (GObject             *source_object,
 
   g_return_if_fail (PHOSH_IS_SESSION_MANAGER (self));
 
-  if (!phosh_session_client_private_dbus_client_private_call_end_session_response_finish (
+  if (!phosh_dbus_session_manager_client_private_call_end_session_response_finish (
         self->priv_proxy, res, &err)) {
     g_warning ("Failed end session response: %s", err->message);
     goto out;
@@ -214,7 +214,7 @@ respond_to_end_session (PhoshSessionManager *self, gboolean shutdown)
   if (shutdown)
     phosh_shell_fade_out (phosh_shell_get_default (), SESSION_SHUTDOWN_TIMEOUT);
 
-  phosh_session_client_private_dbus_client_private_call_end_session_response (
+  phosh_dbus_session_manager_client_private_call_end_session_response (
     self->priv_proxy,
     TRUE,
     "",
@@ -225,26 +225,25 @@ respond_to_end_session (PhoshSessionManager *self, gboolean shutdown)
 
 
 static void
-on_query_end_session (PhoshSessionManager                        *self,
-                      guint                                       flags,
-                      PhoshSessionClientPrivateDBusClientPrivate *object)
+on_query_end_session (PhoshSessionManager                  *self,
+                      guint                                 flags,
+                      PhoshDBusSessionManagerClientPrivate *object)
 {
   respond_to_end_session (self, FALSE);
 }
 
 
 static void
-on_end_session (PhoshSessionManager                        *self,
-                guint                                       flags,
-                PhoshSessionClientPrivateDBusClientPrivate *object)
+on_end_session (PhoshSessionManager                  *self,
+                guint                                 flags,
+                PhoshDBusSessionManagerClientPrivate *object)
 {
   respond_to_end_session (self, TRUE);
 }
 
 
 static void
-on_stop (PhoshSessionManager                        *self,
-         PhoshSessionClientPrivateDBusClientPrivate *object)
+on_stop (PhoshSessionManager *self, PhoshDBusSessionManagerClientPrivate *object)
 {
   gtk_main_quit ();
 }
@@ -259,7 +258,7 @@ on_client_private_proxy_new_for_bus_finish (GObject             *source_object,
 
   g_return_if_fail (PHOSH_IS_SESSION_MANAGER (self));
 
-  self->priv_proxy = phosh_session_client_private_dbus_client_private_proxy_new_for_bus_finish (
+  self->priv_proxy = phosh_dbus_session_manager_client_private_proxy_new_for_bus_finish (
     res, &err);
   if (!self->priv_proxy) {
     g_warning ("Failed to get client private proxy: %s", err->message);
@@ -292,7 +291,7 @@ on_client_registered (PhoshDBusSessionManager *proxy,
   }
   g_debug ("Registered client at '%s'", client_id);
 
-  phosh_session_client_private_dbus_client_private_proxy_new_for_bus (
+  phosh_dbus_session_manager_client_private_proxy_new_for_bus (
     G_BUS_TYPE_SESSION,
     G_DBUS_PROXY_FLAGS_NONE,
     BUS_NAME,
