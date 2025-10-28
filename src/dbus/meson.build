@@ -205,14 +205,13 @@ foreach p : dbus_client_protos + dbus_server_protos
   endif
 endforeach
 
-#
-# Protocols where Phosh is the DBus server
 # TODO: Use `dbus_prefix` as namespace
-#
-generated_dbus_sources += gnome.gdbus_codegen(
+targets = gnome.gdbus_codegen(
   'phosh-idle-dbus',
   'org.gnome.Mutter.IdleMonitor.xml',
   interface_prefix: 'org.gnome.Mutter',
   object_manager: true,
   namespace: 'PhoshIdleDBus',
 )
+generated_dbus_headers += targets[0]
+generated_dbus_sources += targets[1]
