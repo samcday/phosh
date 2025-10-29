@@ -162,7 +162,7 @@ switch_theme (PhoshAmbient *self, gboolean use_hc)
 
 
 static gboolean
-on_ambient_light_level_sample (gpointer data)
+on_ambient_sample_for_hc (gpointer data)
 {
   PhoshAmbient *self = PHOSH_AMBIENT (data);
   double level, threshold;
@@ -192,32 +192,18 @@ on_ambient_light_level_sample (gpointer data)
 
 
 static void
-on_ambient_light_level_changed (PhoshAmbient            *self,
-                                GParamSpec              *pspec,
-                                PhoshSensorProxyManager *sensor)
+stop_high_contrast_sampling (PhoshAmbient *self)
 {
-  double level, hyst, threshold;
-  const char *unit;
+  g_clear_handle_id (&self->sample_id, g_source_remove);
+  g_array_set_size (self->values, 0);
+}
+
+
+static void
+check_high_contrast (PhoshAmbient *self, double level)
+{
+  double hyst, threshold;
   gboolean wants_hc;
-  PhoshDBusSensorProxy *proxy;
-
-  if (!self->claimed)
-    return;
-
-  proxy = PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager);
-  level = phosh_dbus_sensor_proxy_get_light_level (proxy);
-  unit = phosh_dbus_sensor_proxy_get_light_level_unit (proxy);
-  if (!unit || g_ascii_strcasecmp (unit, "lux") != 0) {
-    /* For vendor values we don't know if small or large values mean bright or dark so be conservative */
-    g_warning_once ("Unknown light level unit %s", unit);
-    return;
-  }
-
-  g_debug ("Ambient light changed: %.2f %s", level, unit);
-  if (!G_APPROX_VALUE (self->light_level, level, FLT_EPSILON)) {
-    self->light_level = level;
-    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_LIGHT_LEVEL]);
-  }
 
   if (!self->auto_hc)
     return;
@@ -240,8 +226,39 @@ on_ambient_light_level_changed (PhoshAmbient            *self,
   g_return_if_fail (self->sample_id == 0);
   g_return_if_fail (self->values->len == 0);
   g_array_append_val (self->values, level);
-  self->sample_id = g_timeout_add_seconds (1, on_ambient_light_level_sample, self);
-  g_source_set_name_by_id (self->sample_id, "[phosh] ambient_sample");
+  self->sample_id = g_timeout_add_seconds (1, on_ambient_sample_for_hc, self);
+  g_source_set_name_by_id (self->sample_id, "[phosh] ambient_sample_for_hc");
+}
+
+
+static void
+on_ambient_light_level_changed (PhoshAmbient            *self,
+                                GParamSpec              *pspec,
+                                PhoshSensorProxyManager *sensor)
+{
+  double level;
+  const char *unit;
+  PhoshDBusSensorProxy *proxy;
+
+  if (!self->claimed)
+    return;
+
+  proxy = PHOSH_DBUS_SENSOR_PROXY (self->sensor_proxy_manager);
+  level = phosh_dbus_sensor_proxy_get_light_level (proxy);
+  unit = phosh_dbus_sensor_proxy_get_light_level_unit (proxy);
+  if (!unit || g_ascii_strcasecmp (unit, "lux") != 0) {
+    /* For vendor values we don't know if small or large values mean bright or dark so be conservative */
+    g_warning_once ("Unknown light level unit %s", unit);
+    return;
+  }
+
+  g_debug ("Ambient light changed: %.2f %s", level, unit);
+  if (!G_APPROX_VALUE (self->light_level, level, FLT_EPSILON)) {
+    self->light_level = level;
+    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_LIGHT_LEVEL]);
+  }
+
+  check_high_contrast (self, level);
 }
 
 
@@ -308,6 +325,7 @@ on_ambient_released (GObject *source_object, GAsyncResult *res, gpointer user_da
 
   self->claimed--;
   update_auto_brightness_enabled (self);
+  stop_high_contrast_sampling (self);
 }
 
 
@@ -323,8 +341,6 @@ phosh_ambient_claim_light (PhoshAmbient *self, gboolean claim)
   if (claim) {
     phosh_dbus_sensor_proxy_call_claim_light (proxy, self->cancel, on_ambient_claimed, self);
   } else {
-    g_clear_handle_id (&self->sample_id, g_source_remove);
-    g_array_set_size (self->values, 0);
     phosh_dbus_sensor_proxy_call_release_light (proxy, self->cancel, on_ambient_released, self);
   }
 }
@@ -398,6 +414,7 @@ on_has_ambient_light_changed (PhoshAmbient         *self,
   g_debug ("Ambient sensor disappeared, marking unclaimed");
   self->claimed--;
   update_auto_brightness_enabled (self);
+  stop_high_contrast_sampling (self);
 }
 
 
