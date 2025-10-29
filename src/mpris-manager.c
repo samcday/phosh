@@ -159,10 +159,11 @@ static void
 add_to_known_players (PhoshMprisManager *self, PhoshDBusMediaPlayer2Player *player)
 {
   if (g_list_store_find_with_equal_func (self->known_players,
-                                          player,
-                                          cmp_by_name,
-                                          NULL))
+                                         player,
+                                         cmp_by_name,
+                                         NULL)) {
     return;
+  }
 
   g_debug ("Player %s not yet known, adding to known players",
            g_dbus_proxy_get_name (G_DBUS_PROXY (player)));
