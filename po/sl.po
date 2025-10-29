@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-24 17:45+0000\n"
-"PO-Revision-Date: 2025-10-24 23:53+0200\n"
+"POT-Creation-Date: 2025-10-29 09:35+0000\n"
+"PO-Revision-Date: 2025-10-29 21:57+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian <gnome-si@googlegroups.com>\n"
 "Language: sl\n"
@@ -333,12 +333,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Zaslonska slika iz %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:646 src/ui/media-player.ui:208
+#: src/media-player.c:649 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Neznan naslov"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:654 src/ui/media-player.ui:196
+#: src/media-player.c:657 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Neznan izvajalec"
 
@@ -717,15 +717,15 @@ msgstr "Klic v sili"
 msgid "Run Command"
 msgstr "Zaženi ukaz"
 
-#: src/ui/settings.ui:138
+#: src/ui/settings.ui:137
 msgid "No notifications"
 msgstr "Ni obvestil"
 
-#: src/ui/settings.ui:167
+#: src/ui/settings.ui:166
 msgid "Notifications"
 msgstr "Obvestila"
 
-#: src/ui/settings.ui:176
+#: src/ui/settings.ui:175
 msgid "Clear all"
 msgstr "Počisti vse"
 
@@ -806,19 +806,27 @@ msgid "Cellular"
 msgstr "Mobilno"
 
 #. Translators: Phosh prevents the session from going idle because the caffeine quick setting is toggled
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:50
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:68
 msgid "Phosh on caffeine"
 msgstr "Phosh na Caffeinu"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:226
+msgctxt "caffeine-disabled"
+msgid "Off"
+msgstr "Izključeno"
+
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:231
 msgctxt "caffeine-enabled"
 msgid "On"
 msgstr "Vključeno"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
-msgctxt "caffeine-disabled"
-msgid "Off"
-msgstr "Izključeno"
+#: plugins/caffeine-quick-setting/qs.ui:15
+msgid "Caffeine timers"
+msgstr "Kofeinski časovniki"
+
+#: plugins/caffeine-quick-setting/qs.ui:37
+msgid "No caffeine intervals"
+msgstr "Brez intervalov kofeina"
 
 #: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:34
 msgid "Default style"
