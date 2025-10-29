@@ -37,14 +37,11 @@ on_bus_acquired (GDBusConnection *connection,
   g_autoptr (GError) err = NULL;
   GVariant *metadata;
   GVariantBuilder builder;
-  //const char *const artists[] = {"1, 2, 3, 4", NULL};
   g_autofree char *uri = load_icon ();
 
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_add (&builder, "{sv}", "xesam:title",
                          g_variant_new_string ("The Worldhood of the World (As Such)"));
-  //g_variant_builder_add (&builder, "{sv}", "xesam:artist",
-  //                       g_variant_new_bytestring_array (artists, -1));
   g_variant_builder_add (&builder, "{sv}", "mpris:artUrl", g_variant_new_string (uri));
   metadata = g_variant_builder_end (&builder);
 
