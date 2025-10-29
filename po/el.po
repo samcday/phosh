@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-29 20:58+0000\n"
+"POT-Creation-Date: 2025-10-29 22:13+0000\n"
 "PO-Revision-Date: 2023-08-20 00:55+0300\n"
 "Last-Translator: Efstathios Iosifidis <iosifidis@opensuse.org>\n"
 "Language-Team: Greek, Modern (1453-) <gnome-el-list@gnome.org>\n"
@@ -17,6 +17,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
+#: data/mobi.phosh.Shell.desktop.in.in:3 data/wayland-sessions/phosh.desktop:3
+msgid "Phone Shell"
+msgstr "Κέλυφος Τηλεφώνου"
+
+#: data/mobi.phosh.Shell.desktop.in.in:4
+msgid "Window management and application launching for mobile"
+msgstr "Διαχείριση παραθύρων και εκκίνηση εφαρμογών για κινητά"
+
+#. Translators: this is the session name, no need to translate it
+#: data/phosh.session.desktop.in.in:3 data/wayland-sessions/phosh.desktop:2
+msgid "Phosh"
+msgstr "Phosh"
+
+#: data/wayland-sessions/phosh.desktop:4
+msgid "This session logs you into Phosh"
+msgstr "Αυτή η συνεδρία σας συνδέει στο Phosh"
+
 #: plugins/caffeine-quick-setting/caffeine-quick-setting.desktop.in.in:4
 msgid "Caffeine Quick Setting"
 msgstr "Γρήγορη Ρύθμιση Caffeine"
@@ -24,6 +41,14 @@ msgstr "Γρήγορη Ρύθμιση Caffeine"
 #: plugins/caffeine-quick-setting/caffeine-quick-setting.desktop.in.in:6
 msgid "Prevent the session from going idle"
 msgstr "Αποτροπή αδράνειας συνεδρίας"
+
+#: plugins/calendar/calendar.desktop.in.in:4
+msgid "Calendar"
+msgstr "Ημερολόγιο"
+
+#: plugins/calendar/calendar.desktop.in.in:6
+msgid "A simple calendar widget"
+msgstr "Ένα απλό widget ημερολογίου"
 
 #: plugins/dark-mode-quick-setting/dark-mode-quick-setting.desktop.in.in:4
 msgid "Dark Mode / Color Scheme Quick Setting"
@@ -86,6 +111,7 @@ msgstr "Γρήγορη Ρύθμιση Νυχτερινού Φωτός"
 msgid "Toggle night light on/off"
 msgstr "Εναλλαγή νυχτερινού φωτός ενεργό/ανενεργό"
 
+#. Translators: "Pomodoro" is a technique, no need to translate it
 #: plugins/pomodoro-quick-setting/pomodoro-quick-setting.desktop.in.in:5
 msgid "Pomodoro Quick Setting"
 msgstr "Γρήγορη Ρύθμιση Pomodoro"
@@ -99,6 +125,20 @@ msgstr "Απλός Χρονομετρητής Pomodoro"
 msgid "Ticket Box"
 msgstr "Πλαίσιο Εισιτηρίων"
 
+#: plugins/ticket-box/ticket-box.desktop.in.in:5
+msgid "Show PDFs on the lock screen. <b>This plugin is experimental.</b>"
+msgstr ""
+"Εμφάνιση αρχείων PDF στην οθόνη κλειδώματος. <b>Αυτό το πρόσθετο είναι "
+"πειραματικό.</b>"
+
+#: plugins/upcoming-events/upcoming-events.desktop.in.in:3
+msgid "Upcoming Events"
+msgstr "Επερχόμενα Συμβάντα"
+
+#: plugins/upcoming-events/upcoming-events.desktop.in.in:5
+msgid "Show upcoming calendar events"
+msgstr "Εμφάνιση επερχόμενων συμβάντων ημερολογίου"
+
 #: src/app-grid-button.c:144
 msgid "Add to Folder"
 msgstr "Προσθήκη σε Φάκελο"
@@ -106,6 +146,10 @@ msgstr "Προσθήκη σε Φάκελο"
 #: src/app-grid-button.c:168
 msgid "Create new folder"
 msgstr "Δημιουργία νέου φακέλου"
+
+#: src/app-grid-button.c:694 src/app-grid-button.c:748
+msgid "Application"
+msgstr "Εφαρμογή"
 
 #: src/app-grid.c:261
 msgid "Show All Apps"
@@ -115,10 +159,20 @@ msgstr "Εμφάνιση Όλων των Εφαρμογών"
 msgid "Show Only Mobile Friendly Apps"
 msgstr "Εμφάνιση Μόνο Εφαρμογών Φιλικών προς Κινητά"
 
+#. Translators: a battery level in percent
 #: src/bt-device-row.c:81
 #, c-format
 msgid "Battery %.0f%%"
 msgstr "Μπαταρία %.0f%%"
+
+#: src/bt-info.c:95 src/ui/bt-status-page.ui:6
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: src/bt-info.c:123
+msgctxt "bluetooth:enabled"
+msgid "On"
+msgstr "Ενεργό"
 
 #: src/bt-status-page.c:123
 msgid "No connectable Bluetooth Devices found"
@@ -127,6 +181,10 @@ msgstr "Δεν βρέθηκαν συσκευές Bluetooth που μπορούν
 #: src/bt-status-page.c:127
 msgid "Bluetooth disabled"
 msgstr "Το Bluetooth είναι απενεργοποιημένο"
+
+#: src/call-notification.c:63
+msgid "Unknown caller"
+msgstr "Άγνωστος καλών"
 
 #: src/connectivity-manager.c:114
 #, c-format
@@ -141,23 +199,107 @@ msgstr "Το δίκτυο Wi-Fi χρησιμοποιεί captive portal"
 msgid "Sign into Wi-Fi network"
 msgstr "Σύνδεση στο δίκτυο Wi-Fi"
 
+#: src/docked-info.c:81
+msgid "Docked"
+msgstr "Σε Θήκη"
+
+#: src/docked-info.c:81 src/docked-info.c:199
+msgid "Undocked"
+msgstr "Εκτός Θήκης"
+
+#: src/emergency-menu.c:97 src/ui/app-auth-prompt.ui:64
+#: src/ui/cell-broadcast-prompt.ui:18 src/ui/end-session-dialog.ui:62
+msgid "Ok"
+msgstr "ΟΚ"
+
+#: src/emergency-menu.c:100
+msgid "Unable to place emergency call"
+msgstr "Αδυναμία πραγματοποίησης κλήσης έκτακτης ανάγκης"
+
+#: src/emergency-menu.c:105
+msgid "Internal error"
+msgstr "Εσωτερικό σφάλμα"
+
+#: src/end-session-dialog.c:173
+msgid "Log Out"
+msgstr "Αποσύνδεση"
+
+#: src/end-session-dialog.c:176
+#, c-format
+msgid "%s will be logged out automatically in %d second."
+msgid_plural "%s will be logged out automatically in %d seconds."
+msgstr[0] "Ο %s θα αποσυνδεθεί αυτόματα σε %d δευτερόλεπτο."
+msgstr[1] "Ο %s θα αποσυνδεθεί αυτόματα σε %d δευτερόλεπτα."
+
+#: src/end-session-dialog.c:182 src/ui/power-menu.ui:72
+msgid "Power Off"
+msgstr "Απενεργοποίηση"
+
+#: src/end-session-dialog.c:183
+#, c-format
+msgid "The system will power off automatically in %d second."
+msgid_plural "The system will power off automatically in %d seconds."
+msgstr[0] "Το σύστημα θα απενεργοποιηθεί αυτόματα σε %d δευτερόλεπτο."
+msgstr[1] "Το σύστημα θα απενεργοποιηθεί αυτόματα σε %d δευτερόλεπτα."
+
+#: src/end-session-dialog.c:189
+msgid "Restart"
+msgstr "Επανεκκίνηση"
+
+#: src/end-session-dialog.c:190
+#, c-format
+msgid "The system will restart automatically in %d second."
+msgid_plural "The system will restart automatically in %d seconds."
+msgstr[0] "Το σύστημα θα επανεκκινηθεί αυτόματα σε %d δευτερόλεπτο."
+msgstr[1] "Το σύστημα θα επανεκκινηθεί αυτόματα σε %d δευτερόλεπτα."
+
+#. Translators: quiet and silent are fbd profiles names:
+#. see https://source.puri.sm/Librem5/feedbackd#profiles
+#. for details
 #: src/feedbackinfo.c:97
 msgid "Quiet"
 msgstr "Σιωπηλό"
 
+#. Translators: quiet and silent are fbd profiles names:
+#. see https://source.puri.sm/Librem5/feedbackd#profiles
+#. for details
 #: src/feedbackinfo.c:104
 msgid "Silent"
 msgstr "Αθόρυβο"
 
+#. Translators: Enable LED, haptic and audio feedback
 #: src/feedbackinfo.c:108
 msgctxt "feedback:enabled"
 msgid "On"
 msgstr "Ενεργό"
 
+#: src/location-manager.c:269
+#, c-format
+msgid "Allow '%s' to access your location information?"
+msgstr "Να επιτραπεί στο '%s' η πρόσβαση στις πληροφορίες τοποθεσίας σας;"
+
+#: src/location-manager.c:274
+msgid "Geolocation"
+msgstr "Γεωτοποθεσία"
+
+#: src/location-manager.c:275
+msgid "Yes"
+msgstr "Ναι"
+
+#: src/location-manager.c:275
+msgid "No"
+msgstr "Όχι"
+
+#. give visual feedback on error
+#: src/lockscreen.c:313 src/ui/lockscreen.ui:282
+msgid "Enter Passcode"
+msgstr "Εισαγωγή Κωδικού Πρόσβασης"
+
 #: src/lockscreen.c:956
 msgid "Checking…"
 msgstr "Γίνεται έλεγχος…"
 
+#. Translators: '%s' is the filename of a screenshot
 #: src/screenshot-manager.c:238
 #, c-format
 msgid "Screenshot saved to '%s'"
@@ -167,34 +309,109 @@ msgstr "Το στιγμιότυπο οθόνης αποθηκεύτηκε στο
 msgid "Failed to save screenshot"
 msgstr "Αποτυχία αποθήκευσης στιγμιότυπου οθόνης"
 
+#: src/screenshot-manager.c:244 src/ui/power-menu.ui:199
+msgid "Screenshot"
+msgstr "Στιγμιότυπο οθόνης"
+
+#. Translators: name of the folder beneath ~/Pictures used to store screenshots
 #: src/screenshot-manager.c:554
 msgid "Screenshots"
 msgstr "Στιγμιότυπα Οθόνης"
 
+#. Translators: Name of a screenshot file. The first '%s' is a timestamp
+#. * like "2017-05-21 12-24-03" the 2nd '%s' is a possible suffix in case
+#. * the file already exists like '-3'
 #: src/screenshot-manager.c:574
 #, c-format
 msgid "Screenshot from %s%s.png"
 msgstr "Στιγμιότυπο οθόνης από %s%s.png"
 
+#. Translators: Used when the title of a song is unknown
+#: src/media-player.c:649 src/ui/media-player.ui:208
+msgid "Unknown Title"
+msgstr "Άγνωστος Τίτλος"
+
+#. Translators: Used when the artist of a song is unknown
+#: src/media-player.c:657 src/ui/media-player.ui:196
+msgid "Unknown Artist"
+msgstr "Άγνωστος Καλλιτέχνης"
+
+#: src/monitor-manager.c:128
+msgid "Built-in display"
+msgstr "Ενσωματωμένη οθόνη"
+
+#: src/monitor-manager.c:146
+#, c-format
+msgctxt ""
+"This is a monitor vendor name, followed by a size in inches, like 'Dell 15\"'"
+msgid "%s %s"
+msgstr "%s %s"
+
+#: src/monitor-manager.c:153
+#, c-format
+msgctxt ""
+"This is a monitor vendor name followed by product/model name where size in "
+"inches could not be calculated, e.g. Dell U2414H"
+msgid "%s %s"
+msgstr "%s %s"
+
+#. Translators: An unknown monitor type
+#: src/monitor-manager.c:162
+msgid "Unknown"
+msgstr "Άγνωστο"
+
+#: src/network-auth-prompt.c:202
+#, c-format
+msgid "Authentication type of Wi-Fi network “%s” not supported"
+msgstr "Ο τύπος πιστοποίησης του δικτύου Wi-Fi «%s» δεν υποστηρίζεται"
+
+#: src/network-auth-prompt.c:207
+#, c-format
+msgid "Enter password for the Wi-Fi network “%s”"
+msgstr "Εισαγωγή κωδικού πρόσβασης για το δίκτυο Wi-Fi «%s»"
+
+#: src/notifications/mount-notification.c:121
+#| msgid "_Open"
+msgid "Open"
+msgstr "Άνοιγμα"
+
+#. We don't just set the app_info but name and icon separately to
+#. * not overwrite values set by the caller
+#: src/notifications/notification.c:422 src/notifications/notification.c:695
+#: src/notifications/notify-manager.c:1012
+#| msgid "Location On"
+msgid "Notification"
+msgstr "Ειδοποίηση"
+
+#. Translators: Point in time, use a short word or abbreviation
+#. Please stick to a maximum of 12 chars
 #: src/notifications/timestamp-label.c:88
 msgid "now"
 msgstr "τώρα"
 
+#. Translators: abbreviated time difference "Less than 30 seconds"
+#. Please stick to a maximum of 12 chars
 #: src/notifications/timestamp-label.c:93
 #, c-format
 msgid "<30s"
 msgstr "<30δ"
 
+#. Translators: abbreviated time difference "Less than one minute"
+#. Please stick to a maximum of 12 chars
 #: src/notifications/timestamp-label.c:98
 #, c-format
 msgid "<1m"
 msgstr "<1λ"
 
+#. Translators: abbreviated time difference "About one minute"
+#. Please stick to a maximum of 12 chars
 #: src/notifications/timestamp-label.c:103
 #, c-format
 msgid "~1m"
 msgstr "~1λ"
 
+#. Translators: abbreviated, exact time difference "1 minute ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:111
 #, c-format
 msgid "%dm"
@@ -202,6 +419,8 @@ msgid_plural "%dm"
 msgstr[0] "%dλ"
 msgstr[1] "%dλ"
 
+#. Translators: abbreviated time difference "About 3 hours ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:119
 #, c-format
 msgid "~%dh"
@@ -209,11 +428,15 @@ msgid_plural "~%dh"
 msgstr[0] "~%dω"
 msgstr[1] "~%dω"
 
+#. Translators: abbreviated time difference "About 1 day ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:124
 #, c-format
 msgid "~1d"
 msgstr "~1η"
 
+#. Translators: abbreviated, exact time difference "3 days ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:129
 #, c-format
 msgid "%dd"
@@ -221,11 +444,15 @@ msgid_plural "%dd"
 msgstr[0] "%dη"
 msgstr[1] "%dη"
 
+#. Translators: abbreviated time difference "About 1 month ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:134
 #, c-format
 msgid "~1mo"
 msgstr "~1μ"
 
+#. Translators: abbreviated, exact time difference "3 months ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:139
 #, c-format
 msgid "%dmo"
@@ -233,6 +460,8 @@ msgid_plural "%dmos"
 msgstr[0] "%dμ"
 msgstr[1] "%dμ"
 
+#. Translators: abbreviated time difference "About 5 years ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:149
 #, c-format
 msgid "~%dy"
@@ -240,6 +469,8 @@ msgid_plural "~%dy"
 msgstr[0] "~%dχ"
 msgstr[1] "~%dχ"
 
+#. Translators: abbreviated time difference "Over 5 years ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:153
 #, c-format
 msgid "Over %dy"
@@ -247,12 +478,157 @@ msgid_plural "Over %dy"
 msgstr[0] "Πάνω από %dχ"
 msgstr[1] "Πάνω από %dχ"
 
+#. Translators: abbreviated time difference "almost 5 years ago"
+#. Please stick to a maximum of 4 chars for the time unit
 #: src/notifications/timestamp-label.c:158
 #, c-format
 msgid "Almost %dy"
 msgid_plural "Almost %dy"
 msgstr[0] "Σχεδόν %dχ"
 msgstr[1] "Σχεδόν %dχ"
+
+#: src/polkit-auth-agent.c:271
+msgid "Authentication dialog was dismissed by the user"
+msgstr "Ο διάλογος πιστοποίησης ακυρώθηκε από τον χρήστη"
+
+#: src/polkit-auth-prompt.c:275 src/ui/gtk-mount-prompt.ui:17
+#: src/ui/network-auth-prompt.ui:69 src/ui/polkit-auth-prompt.ui:45
+#: src/ui/system-prompt.ui:28
+msgid "Password:"
+msgstr "Κωδικός πρόσβασης:"
+
+#: src/polkit-auth-prompt.c:322
+msgid "Sorry, that didn’t work. Please try again."
+msgstr "Συγγνώμη, αυτό δεν λειτούργησε. Παρακαλώ δοκιμάστε ξανά."
+
+#: src/rotateinfo.c:102
+msgid "Portrait"
+msgstr "Πορτρέτο"
+
+#: src/rotateinfo.c:105
+msgid "Landscape"
+msgstr "Τοπίο"
+
+#: src/rotateinfo.c:125 src/rotateinfo.c:230
+msgctxt "automatic-screen-rotation-disabled"
+msgid "Off"
+msgstr "Ανενεργό"
+
+#: src/rotateinfo.c:126
+msgctxt "automatic-screen-rotation-enabled"
+msgid "On"
+msgstr "Ενεργό"
+
+#: src/run-command-dialog.c:129
+msgid "Press ESC to close"
+msgstr "Πατήστε ESC για κλείσιμο"
+
+#: src/run-command-manager.c:89
+#, c-format
+msgid "Running '%s' failed"
+msgstr "Η εκτέλεση του '%s' απέτυχε"
+
+#: src/settings/audio-settings.c:376
+msgid "Phone Shell Volume Control"
+msgstr "Έλεγχος Έντασης Κελύφους Τηλεφώνου"
+
+#: src/system-prompt.c:376
+msgid "Passwords do not match."
+msgstr "Οι κωδικοί πρόσβασης δεν ταιριάζουν."
+
+#: src/system-prompt.c:383
+msgid "Password cannot be blank"
+msgstr "Ο κωδικός πρόσβασης δεν μπορεί να είναι κενός"
+
+#: src/torch-info.c:80
+msgid "Torch"
+msgstr "Φακός"
+
+#: src/ui/app-auth-prompt.ui:43
+msgid "Remember decision"
+msgstr "Απομνημόνευση απόφασης"
+
+#: src/ui/app-auth-prompt.ui:55 src/ui/end-session-dialog.ui:53
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:25
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: src/ui/app-grid-button.ui:31
+msgid "Remove from _Favorites"
+msgstr "Αφαίρεση από τα _Αγαπημένα"
+
+#: src/ui/app-grid-button.ui:36
+msgid "Add to _Favorites"
+msgstr "Προσθήκη στα _Αγαπημένα"
+
+#: src/ui/app-grid-button.ui:41
+msgid "View _Details"
+msgstr "Προβολή _Λεπτομερειών"
+
+#: src/ui/app-grid-button.ui:46
+msgid "Uninstall"
+msgstr "Απεγκατάσταση"
+
+#: src/ui/app-grid-button.ui:53
+msgid "_Remove from Folder"
+msgstr "_Αφαίρεση από Φάκελο"
+
+#: src/ui/app-grid.ui:26
+msgid "Search apps…"
+msgstr "Αναζήτηση εφαρμογών…"
+
+#: src/ui/audio-settings.ui:84
+msgid "Output Devices"
+msgstr "Συσκευές Εξόδου"
+
+#: src/ui/audio-settings.ui:108
+msgid "Input Devices"
+msgstr "Συσκευές Εισόδου"
+
+#: src/ui/audio-settings.ui:136
+msgid "Sound Settings"
+msgstr "Ρυθμίσεις Ήχου"
+
+#: src/ui/bt-status-page.ui:39
+msgid "Enable Bluetooth"
+msgstr "Ενεργοποίηση Bluetooth"
+
+#: src/ui/bt-status-page.ui:54
+msgid "Bluetooth Settings"
+msgstr "Ρυθμίσεις Bluetooth"
+
+#: src/ui/emergency-menu.ui:26
+msgid "Close the emergency call dialog"
+msgstr "Κλείσιμο διαλόγου κλήσης έκτακτης ανάγκης"
+
+#: src/ui/emergency-menu.ui:52
+msgid "Emergency _Contacts"
+msgstr "Επαφές _Έκτακτης Ανάγκης"
+
+#: src/ui/emergency-menu.ui:59
+msgid "Go to the emergency contacts page"
+msgstr "Μετάβαση στη σελίδα επαφών έκτακτης ανάγκης"
+
+#: src/ui/emergency-menu.ui:82
+msgid "Go back to the emergency dialpad page"
+msgstr "Επιστροφή στη σελίδα πληκτρολογίου έκτακτης ανάγκης"
+
+#: src/ui/emergency-menu.ui:105
+msgid "Owner unknown"
+msgstr "Άγνωστος κάτοχος"
+
+#: src/ui/emergency-menu.ui:123 plugins/emergency-info/emergency-info.ui:211
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:170
+msgid "Emergency Contacts"
+msgstr "Επαφές Έκτακτης Ανάγκης"
+
+#: src/ui/emergency-menu.ui:142
+msgid "No emergency contacts available."
+msgstr "Δεν υπάρχουν διαθέσιμες επαφές έκτακτης ανάγκης."
+
+#: src/ui/end-session-dialog.ui:27
+msgid "Some applications are busy or have unsaved work"
+msgstr "Ορισμένες εφαρμογές είναι απασχολημένες ή έχουν μη αποθηκευμένη εργασία"
 
 #: src/ui/feedback-status-page.ui:6
 msgid "Feedback"
@@ -266,6 +642,47 @@ msgstr "Να μην ενοχλείτε"
 msgid "Feedback Settings"
 msgstr "Ρυθμίσεις Ανατροφοδότησης"
 
+#: src/ui/gtk-mount-prompt.ui:74
+msgid "User:"
+msgstr "Χρήστης:"
+
+#: src/ui/gtk-mount-prompt.ui:96
+msgid "Domain:"
+msgstr "Τομέας:"
+
+#: src/ui/gtk-mount-prompt.ui:128
+msgid "Co_nnect"
+msgstr "Σύν_δεση"
+
+#: src/ui/lockscreen.ui:43 src/ui/lockscreen.ui:245
+msgid "Back"
+msgstr "Πίσω"
+
+#: src/ui/lockscreen.ui:95
+msgid "Slide up to unlock"
+msgstr "Σύρετε προς τα πάνω για ξεκλείδωμα"
+
+#: src/ui/lockscreen.ui:332
+msgid "Unlock"
+msgstr "Ξεκλείδωμα"
+
+#: src/ui/network-auth-prompt.ui:6 src/ui/polkit-auth-prompt.ui:5
+msgid "Authentication required"
+msgstr "Απαιτείται πιστοποίηση"
+
+#: src/ui/network-auth-prompt.ui:37
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:212
+msgid "_Cancel"
+msgstr "_Ακύρωση"
+
+#: src/ui/network-auth-prompt.ui:50
+msgid "C_onnect"
+msgstr "Σύν_δεση"
+
+#: src/ui/polkit-auth-prompt.ui:97
+msgid "Authenticate"
+msgstr "Πιστοποίηση"
+
 #: src/ui/power-menu.ui:112
 msgid "Suspend"
 msgstr "Αναστολή"
@@ -278,9 +695,68 @@ msgstr "Κλείδωμα"
 msgid "Emergency"
 msgstr "Επείγον"
 
+#: src/ui/run-command-dialog.ui:5
+msgid "Run Command"
+msgstr "Εκτέλεση Εντολής"
+
+#: src/ui/settings.ui:137
+msgid "No notifications"
+msgstr "Δεν υπάρχουν ειδοποιήσεις"
+
+#: src/ui/settings.ui:166
+msgid "Notifications"
+msgstr "Ειδοποιήσεις"
+
+#: src/ui/settings.ui:175
+msgid "Clear all"
+msgstr "Καθαρισμός όλων"
+
+#: src/ui/system-prompt.ui:52
+msgid "Confirm:"
+msgstr "Επιβεβαίωση:"
+
+#: src/ui/top-panel.ui:34
+msgid "_Power Off…"
+msgstr "_Απενεργοποίηση…"
+
+#: src/ui/top-panel.ui:61
+msgid "_Restart…"
+msgstr "_Επανεκκίνηση…"
+
+#: src/ui/top-panel.ui:88
+msgid "_Suspend…"
+msgstr "_Αναστολή…"
+
+#: src/ui/top-panel.ui:115
+msgid "_Log Out…"
+msgstr "_Αποσύνδεση…"
+
+#: src/ui/wifi-status-page.ui:6 src/wifi-info.c:90
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
 #: src/ui/wifi-status-page.ui:89
 msgid "Wi-Fi Settings"
 msgstr "Ρυθμίσεις Wi-Fi"
+
+#: src/vpn-info.c:89
+msgid "VPN"
+msgstr "VPN"
+
+#. Translators: This is a time format for a date in
+#. long format
+#: src/wall-clock.c:248
+msgid "%A, %B %-e"
+msgstr "%A, %e %B"
+
+#: src/widget-box.c:54
+msgid "Plugin not found"
+msgstr "Το πρόσθετο δεν βρέθηκε"
+
+#: src/widget-box.c:57
+#, c-format
+msgid "The plugin '%s' could not be loaded."
+msgstr "Το πρόσθετο '%s' δεν μπόρεσε να φορτωθεί."
 
 #: src/wifi-status-page.c:53
 msgid "No Wi-Fi Device Found"
@@ -306,6 +782,12 @@ msgstr "Απενεργοποίηση"
 msgid "No Wi-Fi Hotspots"
 msgstr "Κανένα Hotspot Wi-Fi"
 
+#. Translators: Refers to the cellular wireless network
+#: src/wwan-info.c:210
+msgid "Cellular"
+msgstr "Κινητό Δίκτυο"
+
+#. Translators: Phosh prevents the session from going idle because the caffeine quick setting is toggled
 #: plugins/caffeine-quick-setting/caffeine-quick-setting.c:68
 msgid "Phosh on caffeine"
 msgstr "Phosh με caffeine"
@@ -340,21 +822,119 @@ msgstr "Σκούρη λειτουργία"
 msgid "Light mode"
 msgstr "Φωτεινή λειτουργία"
 
+#: plugins/emergency-info/emergency-info.ui:43
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:62
+msgid "Personal Information"
+msgstr "Προσωπικές Πληροφορίες"
+
+#: plugins/emergency-info/emergency-info.ui:51
+msgid "Date of Birth"
+msgstr "Ημερομηνία Γέννησης"
+
+#: plugins/emergency-info/emergency-info.ui:71
+msgid "Preferred Language"
+msgstr "Προτιμώμενη Γλώσσα"
+
+#: plugins/emergency-info/emergency-info.ui:91
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:85
+msgid "Home Address"
+msgstr "Διεύθυνση Κατοικίας"
+
+#: plugins/emergency-info/emergency-info.ui:99
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:100
+msgid "Medical Information"
+msgstr "Ιατρικές Πληροφορίες"
+
+#: plugins/emergency-info/emergency-info.ui:107
+msgid "Age"
+msgstr "Ηλικία"
+
+#: plugins/emergency-info/emergency-info.ui:127
+msgid "Blood Type"
+msgstr "Ομάδα Αίματος"
+
+#: plugins/emergency-info/emergency-info.ui:147
+msgid "Height"
+msgstr "Ύψος"
+
+#: plugins/emergency-info/emergency-info.ui:167
+msgid "Weight"
+msgstr "Βάρος"
+
+#: plugins/emergency-info/emergency-info.ui:187
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:129
+msgid "Allergies"
+msgstr "Αλλεργίες"
+
 #: plugins/emergency-info/emergency-info.ui:195
 msgid "Medications & Conditions"
 msgstr "Φάρμακα & Παθήσεις"
+
+#: plugins/emergency-info/emergency-info.ui:203
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:155
+msgid "Other Information"
+msgstr "Άλλες Πληροφορίες"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:6
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:16
+msgid "Emergency Info Preferences"
+msgstr "Προτιμήσεις Πληροφοριών Έκτακτης Ανάγκης"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:36
+msgid "Done"
+msgstr "ΟΚ"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:67
+msgid "_Owner Name"
+msgstr "_Όνομα Κατόχου"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:73
+msgid "_Date of Birth"
+msgstr "_Ημερομηνία Γέννησης"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:79
+msgid "_Preferred Language"
+msgstr "_Προτιμώμενη Γλώσσα"
 
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:105
 msgid "_Age"
 msgstr "_Ηλικία"
 
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:111
+msgid "_Blood Type"
+msgstr "_Ομάδα Αίματος"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:117
+msgid "_Height"
+msgstr "_Ύψος"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:123
+msgid "_Weight"
+msgstr "_Βάρος"
+
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:142
 msgid "Medications and Conditions"
 msgstr "Φάρμακα και Παθήσεις"
 
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:179
+msgid "Add Contact"
+msgstr "Προσθήκη Επαφής"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:203
+msgid "Add New Contact"
+msgstr "Προσθήκη Νέας Επαφής"
+
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:220
 msgid "_Add"
 msgstr "_Προσθήκη"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:240
+msgid "_Contact Name"
+msgstr "_Όνομα Επαφής"
+
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:246
+msgid "Relationship"
+msgstr "Σχέση"
 
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:252
 msgid "_Contact Number"
@@ -409,15 +989,18 @@ msgstr "Εστίαση στην εργασία σας για %d λεπτά"
 msgid "Take a break"
 msgstr "Κάντε ένα διάλειμμα"
 
+#. Translators: Pomodoro is a technique, no need to translate it
 #: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:80
 #, c-format
 msgid "You have %d minutes until next Pomodoro"
 msgstr "Έχετε %d λεπτά μέχρι το επόμενο Pomodoro"
 
+#. Translators: Pomodoro is a technique, no need to translate it
 #: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:95
 msgid "Pomodoro Timer"
 msgstr "Χρονομετρητής Pomodoro"
 
+#. Translators: Pomodoro is a technique, no need to translate it
 #: plugins/pomodoro-quick-setting/pomodoro-quick-setting.c:118
 #, c-format
 msgid "Pomodoro Off"
@@ -499,6 +1082,7 @@ msgstr "Σήμερα"
 msgid "Tomorrow"
 msgstr "Αύριο"
 
+#. Translators: The current date and weekday for display in a calendar entry
 #: plugins/upcoming-events/event-list.c:151
 #, c-format
 msgid "%x %a"
@@ -508,19 +1092,23 @@ msgstr "%x %a"
 msgid "No events"
 msgstr "Χωρίς συμβάντα"
 
+#. Translators: This is the time format used in 24-hour mode.
 #: plugins/upcoming-events/upcoming-event.c:56
 msgid "%R"
 msgstr "%R"
 
+#. Translators: This is the time format used in 12-hour mode.
 #: plugins/upcoming-events/upcoming-event.c:59
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
+#. Translators: An all day event
 #: plugins/upcoming-events/upcoming-event.c:122
 #: plugins/upcoming-events/upcoming-event.c:159
 msgid "All day"
 msgstr "Όλη μέρα"
 
+#. Translators: When the event ends: Ends\r16:00
 #: plugins/upcoming-events/upcoming-event.c:148
 msgid "Ends"
 msgstr "Τελειώνει"
@@ -559,6 +1147,7 @@ msgstr "Αριθμός ημερών για εμφάνιση συμβάντων"
 msgid "Monitor scales"
 msgstr "Κλίμακες οθόνης"
 
+#. Translators: This is scale factor of a monitor in percent
 #: plugins/scaling-quick-setting/scale-row.c:48
 #: plugins/scaling-quick-setting/scaling-quick-setting.c:91
 #, c-format
@@ -572,9 +1161,6 @@ msgstr "Hotspot Ενεργό"
 #: plugins/wifi-hotspot-quick-setting/wifi-hotspot-quick-setting.c:77
 msgid "Hotspot Off"
 msgstr "Hotspot Ανενεργό"
-
-#~ msgid "Unknown application"
-#~ msgstr "Άγνωστη εφαρμογή"
 
 #~ msgctxt "timestamp-suffix-seconds"
 #~ msgid "s"
@@ -626,9 +1212,6 @@ msgstr "Hotspot Ανενεργό"
 
 #~ msgid "App"
 #~ msgstr "Εφαρμογή"
-
-#~ msgid "_Power Off"
-#~ msgstr "_Απενεργοποίηση"
 
 #~ msgid "_Screenshot"
 #~ msgstr "_Στιγμιότυπο οθόνης"
