@@ -72,13 +72,33 @@ dbus_client_protos = [
     false,
   ],
   [
+    'gsd-rfkill-dbus',
+    'org.gnome.SettingsDaemon.Rfkill.xml',
+    'org.gnome.SettingsDaemon',
+    false,
+    false,
+  ],
+  [
     'gnome-session-dbus',
     'org.gnome.SessionManager.xml',
     'org.gnome',
     false,
     false,
   ],
-  ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
+  [
+    'gnome-session-client-private-dbus',
+    'org.gnome.SessionManager.ClientPrivate.xml',
+    'org.gnome',
+    false,
+    false,
+  ],
+  [
+    'gnome-session-presence-dbus',
+    'org.gnome.SessionManager.Presence.xml',
+    'org.gnome',
+    false,
+    false,
+  ],
   [
     'gnome-shell-search-provider',
     'org.gnome.Shell.SearchProvider2.xml',
@@ -86,6 +106,9 @@ dbus_client_protos = [
     false,
     false,
   ],
+  ['mpris-dbus', 'org.mpris.MediaPlayer2.xml', 'org.mpris', false, false],
+  ['phosh-wwan-ofono-dbus', 'org.ofono.xml', 'org', false, false],
+  ['phosh-osk0-dbus', 'sm.puri.OSK0.xml', 'sm.puri', false, false],
 ]
 
 #
@@ -168,43 +191,6 @@ foreach p : dbus_client_protos + dbus_server_protos
   endif
 endforeach
 
-#
-# Protocols where Phosh is the DBus client
-# TODO: Use `dbus_prefix` as namespace
-#
-# org.gnome.SessionManager.ClientPrivate
-generated_dbus_sources += gnome.gdbus_codegen(
-  'gnome-session-client-private-dbus',
-  'org.gnome.SessionManager.ClientPrivate.xml',
-  interface_prefix: 'org.gnome.SessionManager',
-  namespace: 'PhoshSessionClientPrivateDBus',
-)
-# org.gnome.SessionManager.Presence
-generated_dbus_sources += gnome.gdbus_codegen(
-  'gnome-session-presence-dbus',
-  'org.gnome.SessionManager.Presence.xml',
-  interface_prefix: 'org.gnome.SessionManager',
-  namespace: 'PhoshSessionPresenceDBus',
-)
-# org.gnome.SettingsDaemon.Rfkill
-generated_dbus_sources += gnome.gdbus_codegen(
-  'gsd-rfkill-dbus',
-  'org.gnome.SettingsDaemon.Rfkill.xml',
-  interface_prefix: 'org.gnome.SettingsDaemon',
-  namespace: 'PhoshRfkillDBus',
-)
-# MPris2
-generated_dbus_sources += gnome.gdbus_codegen(
-  'mpris-dbus',
-  'org.mpris.MediaPlayer2.xml',
-  interface_prefix: 'org.mpris',
-  namespace: 'PhoshMprisDBus',
-)
-generated_dbus_sources += gnome.gdbus_codegen(
-  'phosh-osk0-dbus',
-  'sm.puri.OSK0.xml',
-  namespace: 'PhoshOsk0',
-)
 #
 # Protocols where Phosh is the DBus server
 # TODO: Use `dbus_prefix` as namespace
