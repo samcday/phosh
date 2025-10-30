@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-24 15:13+0000\n"
-"PO-Revision-Date: 2025-10-24 20:44+0300\n"
+"POT-Creation-Date: 2025-10-29 22:48+0000\n"
+"PO-Revision-Date: 2025-10-30 21:12+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 23.04.3\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
-"=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
 #: data/mobi.phosh.Shell.desktop.in.in:3 data/wayland-sessions/phosh.desktop:3
 msgid "Phone Shell"
@@ -80,12 +80,10 @@ msgstr ""
 "Додає кнопки запуску на екран блокування. <b>Цей додаток є тестовим.</b>"
 
 #: plugins/location-quick-setting/location-quick-setting.desktop.in.in:4
-#| msgid "Caffeine Quick Setting"
 msgid "Location Quick Setting"
 msgstr "Швидке налаштовування місця"
 
 #: plugins/location-quick-setting/location-quick-setting.desktop.in.in:6
-#| msgid "Toggle mobile data on/off"
 msgid "Toggle location services on/off"
 msgstr "Увімкнути або вимкнути служби місця перебування"
 
@@ -332,12 +330,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Знімок вікна %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:646 src/ui/media-player.ui:208
+#: src/media-player.c:649 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Невідома назва"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:654 src/ui/media-player.ui:196
+#: src/media-player.c:657 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Невідомий виконавець"
 
@@ -709,15 +707,15 @@ msgstr "Екстрений виклик"
 msgid "Run Command"
 msgstr "Виконати команду"
 
-#: src/ui/settings.ui:138
+#: src/ui/settings.ui:137
 msgid "No notifications"
 msgstr "Немає сповіщень"
 
-#: src/ui/settings.ui:167
+#: src/ui/settings.ui:166
 msgid "Notifications"
 msgstr "Сповіщення"
 
-#: src/ui/settings.ui:176
+#: src/ui/settings.ui:175
 msgid "Clear all"
 msgstr "Очистити все"
 
@@ -798,19 +796,27 @@ msgid "Cellular"
 msgstr "Стільниковий"
 
 #. Translators: Phosh prevents the session from going idle because the caffeine quick setting is toggled
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:50
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:68
 msgid "Phosh on caffeine"
 msgstr "Phosh на caffeine"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:226
+msgctxt "caffeine-disabled"
+msgid "Off"
+msgstr "○"
+
+#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:231
 msgctxt "caffeine-enabled"
 msgid "On"
 msgstr "❙"
 
-#: plugins/caffeine-quick-setting/caffeine-quick-setting.c:129
-msgctxt "caffeine-disabled"
-msgid "Off"
-msgstr "○"
+#: plugins/caffeine-quick-setting/qs.ui:15
+msgid "Caffeine timers"
+msgstr "Таймери caffeine"
+
+#: plugins/caffeine-quick-setting/qs.ui:37
+msgid "No caffeine intervals"
+msgstr "Немає інтервалів caffeine"
 
 #: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:34
 msgid "Default style"
@@ -951,12 +957,10 @@ msgid "Launchers"
 msgstr "Засоби запуску"
 
 #: plugins/location-quick-setting/location-quick-setting.c:65
-#| msgid "Geolocation"
 msgid "Location On"
 msgstr "Позиціювання увімкнено"
 
 #: plugins/location-quick-setting/location-quick-setting.c:65
-#| msgid "Geolocation"
 msgid "Location Off"
 msgstr "Позиціювання вимкнено"
 
