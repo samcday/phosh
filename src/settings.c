@@ -12,16 +12,15 @@
 
 #include "phosh-config.h"
 
+#include "brightness-settings.h"
 #include "media-player.h"
 #include "shell-priv.h"
 #include "settings.h"
 #include "quick-settings.h"
 #include "settings/audio-settings.h"
-#include "settings/brightness.h"
 #include "torch-manager.h"
 #include "notifications/notify-manager.h"
 #include "notifications/notification-frame.h"
-#include "util.h"
 
 #include <gio/gdesktopappinfo.h>
 #include <xkbcommon/xkbcommon.h>
@@ -56,14 +55,12 @@ typedef struct _PhoshSettings {
   guint      debounce_handle;
 
   GtkWidget *scrolled_window;
-  GtkWidget *box_brightness;
   GtkWidget *box_sliders;
   GtkWidget *box_settings;
-  GtkWidget *brightness_image;
   GtkWidget *quick_settings;
-  GtkWidget *scale_brightness;
   GtkWidget *media_player;
   PhoshAudioSettings *audio_settings;
+  PhoshBrightnessSettings *brightness_settings;
 
   /* The area with media widget, notifications */
   GtkWidget *box_bottom_half;
@@ -328,49 +325,6 @@ on_notification_frames_items_changed (PhoshSettings *self,
 }
 
 
-static gboolean
-transform_to_brightness_icon_name (GBinding     *binding,
-                                   const GValue *from_value,
-                                   GValue       *to_value,
-                                   gpointer      user_data)
-{
-  gboolean enabled = g_value_get_boolean (from_value);
-  const char *icon_name;
-
-  icon_name = enabled ? "auto-brightness-symbolic" : "display-brightness-symbolic";
-  g_value_set_string (to_value, icon_name);
-  return TRUE;
-}
-
-
-static void
-setup_brightness_scale (PhoshSettings *self)
-{
-  PhoshShell *shell = phosh_shell_get_default ();
-  PhoshBrightnessManager *brightness_manager;
-  GtkAdjustment *adj;
-
-  brightness_manager = phosh_shell_get_brightness_manager (shell);
-  adj = phosh_brightness_manager_get_adjustment (brightness_manager);
-  gtk_range_set_adjustment (GTK_RANGE (self->scale_brightness), adj);
-
-  g_object_bind_property (brightness_manager,
-                          "has-brightness-control",
-                          self->box_brightness,
-                          "visible",
-                          G_BINDING_SYNC_CREATE);
-
-  g_object_bind_property_full (brightness_manager,
-                               "auto-brightness-enabled",
-                               self->brightness_image,
-                               "icon-name",
-                               G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
-                               transform_to_brightness_icon_name,
-                               NULL, NULL, NULL);
-}
-
-
-
 static void
 setup_torch (PhoshSettings *self)
 {
@@ -403,7 +357,6 @@ phosh_settings_constructed (GObject *object)
 
   G_OBJECT_CLASS (phosh_settings_parent_class)->constructed (object);
 
-  setup_brightness_scale (self);
   setup_torch (self);
 
   manager = phosh_notify_manager_get_default ();
@@ -494,19 +447,18 @@ phosh_settings_class_init (PhoshSettingsClass *klass)
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 
   g_type_ensure (PHOSH_TYPE_AUDIO_SETTINGS);
+  g_type_ensure (PHOSH_TYPE_BRIGHTNESS_SETTINGS);
   g_type_ensure (PHOSH_TYPE_QUICK_SETTINGS);
 
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, audio_settings);
+  gtk_widget_class_bind_template_child (widget_class, PhoshSettings, brightness_settings);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_bottom_half);
-  gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_brightness);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_sliders);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, box_settings);
-  gtk_widget_class_bind_template_child (widget_class, PhoshSettings, brightness_image);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, list_notifications);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, media_player);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, quick_settings);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, revealer);
-  gtk_widget_class_bind_template_child (widget_class, PhoshSettings, scale_brightness);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, scale_torch);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, stack_notifications);
   gtk_widget_class_bind_template_child (widget_class, PhoshSettings, scrolled_window);
@@ -559,5 +511,6 @@ phosh_settings_hide_details (PhoshSettings *self)
   g_return_if_fail (PHOSH_IS_SETTINGS (self));
 
   phosh_audio_settings_hide_details (self->audio_settings);
+  phosh_brightness_settings_hide_details (self->brightness_settings);
   phosh_quick_settings_hide_status (PHOSH_QUICK_SETTINGS (self->quick_settings));
 }

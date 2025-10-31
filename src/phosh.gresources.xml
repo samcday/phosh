@@ -9,6 +9,7 @@
     <file preprocess="xml-stripblanks">ui/app-grid.ui</file>
     <file preprocess="xml-stripblanks">ui/audio-device-row.ui</file>
     <file preprocess="xml-stripblanks">ui/audio-settings.ui</file>
+    <file preprocess="xml-stripblanks">ui/brightness-settings.ui</file>
     <file preprocess="xml-stripblanks">ui/bt-device-row.ui</file>
     <file preprocess="xml-stripblanks">ui/bt-status-page.ui</file>
     <file preprocess="xml-stripblanks">ui/call-notification.ui</file>
