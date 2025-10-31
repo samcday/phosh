@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-29 22:48+0000\n"
-"PO-Revision-Date: 2025-10-30 21:12+0200\n"
+"POT-Creation-Date: 2025-10-31 18:10+0000\n"
+"PO-Revision-Date: 2025-10-31 21:22+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -597,6 +597,15 @@ msgstr "Пристрої отримання"
 msgid "Sound Settings"
 msgstr "Параметри звуку"
 
+#: src/ui/brightness-settings.ui:87
+msgid "Automatic Screen Brightness"
+msgstr "Автоматична яскравість екрана"
+
+#: src/ui/brightness-settings.ui:114
+#| msgid "Sound Settings"
+msgid "Brightness Settings"
+msgstr "Параметри яскравості"
+
 #: src/ui/bt-status-page.ui:39
 msgid "Enable Bluetooth"
 msgstr "Увімкнути Bluetooth"
@@ -707,15 +716,15 @@ msgstr "Екстрений виклик"
 msgid "Run Command"
 msgstr "Виконати команду"
 
-#: src/ui/settings.ui:137
+#: src/ui/settings.ui:121
 msgid "No notifications"
 msgstr "Немає сповіщень"
 
-#: src/ui/settings.ui:166
+#: src/ui/settings.ui:150
 msgid "Notifications"
 msgstr "Сповіщення"
 
-#: src/ui/settings.ui:175
+#: src/ui/settings.ui:159
 msgid "Clear all"
 msgstr "Очистити все"
 
