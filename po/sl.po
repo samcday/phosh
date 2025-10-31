@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-29 09:35+0000\n"
-"PO-Revision-Date: 2025-10-29 21:57+0100\n"
+"POT-Creation-Date: 2025-10-31 16:04+0000\n"
+"PO-Revision-Date: 2025-10-31 19:09+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian <gnome-si@googlegroups.com>\n"
 "Language: sl\n"
@@ -607,6 +607,14 @@ msgstr "Vhodne naprave"
 msgid "Sound Settings"
 msgstr "Nastavitve zvoka"
 
+#: src/ui/brightness-settings.ui:87
+msgid "Automatic Screen Brightness"
+msgstr "Samodejna svetlost zaslona"
+
+#: src/ui/brightness-settings.ui:114
+msgid "Brightness Settings"
+msgstr "Nastavitve svetlosti"
+
 #: src/ui/bt-status-page.ui:39
 msgid "Enable Bluetooth"
 msgstr "Omogoči Bluetooth"
@@ -717,15 +725,15 @@ msgstr "Klic v sili"
 msgid "Run Command"
 msgstr "Zaženi ukaz"
 
-#: src/ui/settings.ui:137
+#: src/ui/settings.ui:121
 msgid "No notifications"
 msgstr "Ni obvestil"
 
-#: src/ui/settings.ui:166
+#: src/ui/settings.ui:150
 msgid "Notifications"
 msgstr "Obvestila"
 
-#: src/ui/settings.ui:175
+#: src/ui/settings.ui:159
 msgid "Clear all"
 msgstr "Počisti vse"
 
