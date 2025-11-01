@@ -83,6 +83,13 @@ on_transition_step (gpointer user_data)
   current = phosh_backlight_get_relative (self->backlight);
   next = current + self->transition.step;
 
+  if (!self->auto_brightness.enabled) {
+    g_debug ("Brightness transition aborted");
+    self->transition.id = 0;
+    self->transition.target = current;
+    return G_SOURCE_REMOVE;
+  }
+
   if ((self->transition.step > 0 && next >= self->transition.target) ||
       (self->transition.step < 0 && next <= self->transition.target)) {
     g_debug ("Brightness transition done at %f", self->transition.target);
