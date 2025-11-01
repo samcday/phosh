@@ -311,7 +311,7 @@ on_brightness_changed (PhoshBrightnessManager *self, GParamSpec *pspec, PhoshBac
   if (self->setting_brightness)
     return;
 
-  value = 100.0 * phosh_backlight_get_relative (self->backlight);
+  value = phosh_backlight_get_relative (self->backlight);
 
   g_signal_handler_block (self->adjustment, self->value_changed_id);
   gtk_adjustment_set_value (self->adjustment, value);
@@ -329,7 +329,7 @@ on_value_changed (PhoshBrightnessManager *self, GtkAdjustment *adjustment)
   if (!self->backlight)
     return;
 
-  value = gtk_adjustment_get_value (self->adjustment) * 0.01;
+  value = gtk_adjustment_get_value (self->adjustment);
 
   /* Adjustment changed due to slider change, stop any transitions */
   if (self->transition.id) {
@@ -568,7 +568,7 @@ phosh_brightness_manager_init (PhoshBrightnessManager *self)
 
   self->saved_brightness = -1.0;
   self->settings_power = g_settings_new (POWER_SCHEMA);
-  self->adjustment = g_object_ref_sink (gtk_adjustment_new (0, 0, 100, 10, 10, 0));
+  self->adjustment = g_object_ref_sink (gtk_adjustment_new (0, 0, 1.0, 0.01, 0.01, 0));
   self->value_changed_id = g_signal_connect_swapped (self->adjustment,
                                                      "value-changed",
                                                      G_CALLBACK (on_value_changed),
