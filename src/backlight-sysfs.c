@@ -150,10 +150,15 @@ on_backlight_changed (PhoshBacklightSysfs *self,
 
 
 static gboolean
-phosh_backlight_sysfs_get_udev_info (GUdevDevice *device, int *minout, int *maxout, GError **err)
+phosh_backlight_sysfs_get_udev_info (GUdevDevice         *device,
+                                     int                 *minout,
+                                     int                 *maxout,
+                                     PhoshBacklightScale *scaleout,
+                                     GError             **err)
 {
   int min, max;
-  const char *device_type;
+  const char *device_type, *scale_str;
+  PhoshBacklightScale scale = PHOSH_BACKLIGHT_SCALE_UNKNOWN;
 
   max = g_udev_device_get_sysfs_attr_as_int (device, "max_brightness");
   min = MAX (1, max / 100);
@@ -171,10 +176,25 @@ phosh_backlight_sysfs_get_udev_info (GUdevDevice *device, int *minout, int *maxo
     return FALSE;
   }
 
+  scale_str = g_udev_device_get_sysfs_attr (device, "scale");
+  if (scale_str) {
+    if (g_str_equal (scale_str, "unknown")) {
+      scale = PHOSH_BACKLIGHT_SCALE_UNKNOWN;
+    } else if (g_str_equal (scale_str, "linear")) {
+      scale = PHOSH_BACKLIGHT_SCALE_LINEAR;
+    } else if (g_str_equal (scale_str, "non-linear")) {
+      scale = PHOSH_BACKLIGHT_SCALE_NON_LINEAR;
+    } else {
+      g_warning ("Unknown brightness scale '%s'", scale_str);
+    }
+  }
+
   if (minout)
     *minout = min;
   if (maxout)
     *maxout = max;
+  if (scaleout)
+    *scaleout = scale;
 
   return TRUE;
 }
@@ -185,6 +205,7 @@ initable_init (GInitable *initable, GCancellable *cancel, GError **error)
 {
   PhoshBacklightSysfs *self = PHOSH_BACKLIGHT_SYSFS (initable);
   PhoshUdevManager *udev_manager = phosh_udev_manager_get_default ();
+  PhoshBacklightScale scale;
   int min = 0, max = 0;
 
   if (!self->connector_name) {
@@ -200,10 +221,10 @@ initable_init (GInitable *initable, GCancellable *cancel, GError **error)
     return FALSE;
   }
 
-  if (!phosh_backlight_sysfs_get_udev_info (self->device, &min, &max, error))
+  if (!phosh_backlight_sysfs_get_udev_info (self->device, &min, &max, &scale, error))
     return FALSE;
 
-  phosh_backlight_set_range (PHOSH_BACKLIGHT (self), min, max);
+  phosh_backlight_set_range (PHOSH_BACKLIGHT (self), min, max, scale);
 
   self->device_name = g_strdup (g_udev_device_get_name (self->device));
   self->device_path = realpath (g_udev_device_get_sysfs_path (self->device), NULL);

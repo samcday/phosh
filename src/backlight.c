@@ -32,6 +32,7 @@ typedef struct _PhoshBacklightPrivate {
   GObject       parent;
 
   char         *name;
+  PhoshBacklightScale scale;
 
   gboolean      pending;
   int           min_brightness;
@@ -167,12 +168,13 @@ phosh_backlight_get_range (PhoshBacklight *self, int *min_brightness, int *max_b
 
 
 void
-phosh_backlight_set_range (PhoshBacklight *self, int min, int max)
+phosh_backlight_set_range (PhoshBacklight *self, int min, int max, PhoshBacklightScale scale)
 {
   PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
 
   priv->min_brightness = min;
   priv->max_brightness = max;
+  priv->scale = scale;
 }
 
 
@@ -307,6 +309,17 @@ phosh_backlight_set_name (PhoshBacklight *self, const char *name)
   PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
 
   g_set_str (&priv->name, name);
+}
+
+
+PhoshBacklightScale
+phosh_backlight_get_scale (PhoshBacklight *self)
+{
+  PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
+
+  g_return_val_if_fail (PHOSH_IS_BACKLIGHT (self), PHOSH_BACKLIGHT_SCALE_UNKNOWN);
+
+  return priv->scale;
 }
 
 

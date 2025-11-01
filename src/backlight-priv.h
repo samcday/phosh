@@ -27,7 +27,7 @@ struct _PhoshBacklightClass {
 };
 
 void phosh_backlight_backend_update_brightness (PhoshBacklight *self, int brightness);
-void phosh_backlight_set_range (PhoshBacklight *self, int min, int max);
+void phosh_backlight_set_range (PhoshBacklight *self, int min, int max, PhoshBacklightScale scale);
 void phosh_backlight_set_name (PhoshBacklight *self, const char *name);
 
 G_END_DECLS
