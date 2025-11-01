@@ -8,17 +8,25 @@
 
 #define G_LOG_DOMAIN "phosh-backlight"
 
+#define _GNU_SOURCE
+
 #include "phosh-config.h"
 
 #include "backlight-priv.h"
 
 #include <gtk/gtk.h>
 
+#include <math.h>
+
 /**
  * PhoshBacklight:
  *
  * A `PhoshMonitor`'s backlight. Derived classes implement the actual
  * backlight handling.
+ *
+ * The backlight's brightness levels are mapped to a logarithmic curve
+ * unless the backlight implementation indicates via it's `scale` that
+ * it does this internally already.
  */
 
 enum {
@@ -61,22 +69,42 @@ phosh_backlight_set_curve (PhoshBacklight *self)
 {
   PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
 
-  priv->brightness.max = priv->level.max;
-  priv->brightness.min = priv->level.min;
+  if (priv->scale == PHOSH_BACKLIGHT_SCALE_NON_LINEAR) {
+    priv->brightness.max = priv->level.max;
+    priv->brightness.min = priv->level.min;
+  } else {
+    /* TODO: allow for display backlight specific curves */
+    priv->brightness.max = log10 (priv->level.max);
+    priv->brightness.min = log10 (priv->level.min);
+  }
 }
 
 
 static double
 phosh_backlight_level_to_brightness (PhoshBacklight *self, int level)
 {
-  return level;
+  PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
+  double brightness;
+
+  if (priv->scale == PHOSH_BACKLIGHT_SCALE_NON_LINEAR)
+    return level;
+
+  brightness = log10 (level);
+  return CLAMP (brightness, priv->brightness.min, priv->brightness.max);
 }
 
 
 static int
 phosh_backlight_brightness_to_level (PhoshBacklight *self, double brightness)
 {
-  return round (brightness);
+  PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
+  int level;
+
+  if (priv->scale == PHOSH_BACKLIGHT_SCALE_NON_LINEAR)
+    return round (brightness);
+
+  level = exp10 (brightness);
+  return CLAMP (level, priv->level.min, priv->level.max);
 }
 
 

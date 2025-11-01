@@ -160,7 +160,6 @@ set_auto_brightness_tracker (PhoshBrightnessManager *self)
     return;
 
   /* TODO: allow for different brightness trackers */
-  /* TODO: take backlight brightness curve into account */
   self->auto_brightness.tracker = PHOSH_AUTO_BRIGHTNESS (phosh_auto_brightness_bucket_new ());
   g_signal_connect_swapped (self->auto_brightness.tracker,
                             "notify::brightness",
