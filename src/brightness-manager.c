@@ -634,3 +634,12 @@ phosh_brightness_manager_get_adjustment (PhoshBrightnessManager *self)
 
   return self->adjustment;
 }
+
+
+gboolean
+phosh_brightness_manager_get_auto_brightness_enabled (PhoshBrightnessManager *self)
+{
+  g_return_val_if_fail (PHOSH_IS_BRIGHTNESS_MANAGER (self), FALSE);
+
+  return self->auto_brightness.enabled;
+}
