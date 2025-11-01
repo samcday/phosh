@@ -387,7 +387,7 @@ btn_seek_backward_clicked_cb (PhoshMediaPlayer *self, GtkButton *button)
   g_return_if_fail (PHOSH_IS_MEDIA_PLAYER (self));
   g_return_if_fail (PHOSH_DBUS_IS_MEDIA_PLAYER2_PLAYER (priv->player));
 
-  g_debug ("seek backward for %ds", SEEK_BACK/SEEK_SECOND);
+  g_debug ("seek backward for %ds", SEEK_BACK / SEEK_SECOND);
   phosh_dbus_media_player2_player_call_seek (priv->player,
                                              SEEK_BACK,
                                              priv->cancel,
@@ -404,7 +404,7 @@ btn_seek_forward_clicked_cb (PhoshMediaPlayer *self, GtkButton *button)
   g_return_if_fail (PHOSH_IS_MEDIA_PLAYER (self));
   g_return_if_fail (PHOSH_DBUS_IS_MEDIA_PLAYER2_PLAYER (priv->player));
 
-  g_debug ("seek forward by %ds", SEEK_FORWARD/SEEK_SECOND);
+  g_debug ("seek forward by %ds", SEEK_FORWARD / SEEK_SECOND);
   phosh_dbus_media_player2_player_call_seek (priv->player,
                                              SEEK_FORWARD,
                                              priv->cancel,

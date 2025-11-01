@@ -190,7 +190,7 @@ phosh_osk_manager_constructed (GObject *object)
 
   G_OBJECT_CLASS (phosh_osk_manager_parent_class)->constructed (object);
 
-  self->proxy = phosh_dbus_osk0_proxy_new_for_bus_sync(
+  self->proxy = phosh_dbus_osk0_proxy_new_for_bus_sync (
     G_BUS_TYPE_SESSION,
     G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START_AT_CONSTRUCTION,
     VIRTBOARD_DBUS_NAME,
@@ -221,7 +221,7 @@ phosh_osk_manager_constructed (GObject *object)
                             self);
   on_visible_changed (self, NULL, self->proxy);
 
-  shell = phosh_shell_get_default();
+  shell = phosh_shell_get_default ();
   g_signal_connect_swapped (shell,
                             "notify::locked",
                             G_CALLBACK (on_shell_locked_changed),

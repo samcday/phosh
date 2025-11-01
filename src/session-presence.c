@@ -26,8 +26,7 @@
  * object path, names and bus names in several places.
  */
 
-typedef struct _PhoshSessionPresence
-{
+typedef struct _PhoshSessionPresence {
   PhoshDBusSessionManagerPresenceProxy parent;
 } PhoshSessionPresence;
 
