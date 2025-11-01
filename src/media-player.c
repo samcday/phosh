@@ -84,6 +84,7 @@ typedef struct _PhoshMediaPlayerPrivate {
   GtkWidget                   *lbl_position;
   GtkWidget                   *lbl_length;
 
+  char                        *url;
   GCancellable                *cancel;
   GCancellable                *fetch_icon_cancel;
   PhoshMprisManager           *manager;
@@ -623,6 +624,12 @@ phosh_media_player_load_icon (PhoshMediaPlayer *self, const char *url)
   PhoshMediaPlayerPrivate *priv = phosh_media_player_get_instance_private (self);
   gboolean has_art = FALSE;
 
+  if (!g_set_str (&priv->url, url)) {
+    g_debug ("Media URL did not change, skippig load");
+    return TRUE;
+  }
+
+  g_debug ("Loading '%s'", url);
   /* Cancel any pending icon loads */
   g_cancellable_cancel (priv->fetch_icon_cancel);
   g_clear_object (&priv->fetch_icon_cancel);
@@ -828,6 +835,8 @@ phosh_media_player_dispose (GObject *object)
 
   g_clear_object (&priv->manager);
   g_clear_object (&priv->player);
+
+  g_clear_pointer (&priv->url, g_free);
 
   G_OBJECT_CLASS (phosh_media_player_parent_class)->dispose (object);
 }
