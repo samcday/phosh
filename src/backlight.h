@@ -21,7 +21,7 @@ typedef enum {
 G_DECLARE_DERIVABLE_TYPE (PhoshBacklight, phosh_backlight, PHOSH, BACKLIGHT, GObject)
 
 int                 phosh_backlight_get_brightness (PhoshBacklight *self);
-void                phosh_backlight_set_brightness (PhoshBacklight *self, int brightness);
+void                phosh_backlight_set_brightness (PhoshBacklight *self, double brightness);
 double              phosh_backlight_get_relative (PhoshBacklight *self);
 void                phosh_backlight_set_relative (PhoshBacklight *self, double val);
 void                phosh_backlight_get_range (PhoshBacklight *self,

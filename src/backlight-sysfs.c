@@ -73,9 +73,9 @@ on_dbus_login_session_brightness_set (GObject      *source_object,
 
 
 static int
-phosh_backlight_sysfs_set_brightness_finish (PhoshBacklight  *backlight,
-                                             GAsyncResult    *result,
-                                             GError         **error)
+phosh_backlight_sysfs_set_level_finish (PhoshBacklight  *backlight,
+                                        GAsyncResult    *result,
+                                        GError         **error)
 {
   PhoshBacklightSysfs *self = PHOSH_BACKLIGHT_SYSFS (backlight);
 
@@ -86,11 +86,11 @@ phosh_backlight_sysfs_set_brightness_finish (PhoshBacklight  *backlight,
 
 
 static void
-phosh_backlight_sysfs_set_brightness (PhoshBacklight      *backlight,
-                                      int                  brightness,
-                                      GCancellable        *cancellable,
-                                      GAsyncReadyCallback  callback,
-                                      gpointer             user_data)
+phosh_backlight_sysfs_set_level (PhoshBacklight      *backlight,
+                                 int                  brightness,
+                                 GCancellable        *cancellable,
+                                 GAsyncReadyCallback  callback,
+                                 gpointer             user_data)
 {
   PhoshBacklightSysfs *self = PHOSH_BACKLIGHT_SYSFS (backlight);
   g_autoptr (GTask) task = NULL;
@@ -99,7 +99,7 @@ phosh_backlight_sysfs_set_brightness (PhoshBacklight      *backlight,
 
   task = g_task_new (self, cancellable, callback, user_data);
   g_task_set_task_data (task, GINT_TO_POINTER (brightness), NULL);
-  g_task_set_source_tag (task, phosh_backlight_sysfs_set_brightness);
+  g_task_set_source_tag (task, phosh_backlight_sysfs_set_level);
 
   if (!self->session_proxy)
     return;
@@ -120,7 +120,7 @@ phosh_backlight_sysfs_update (PhoshBacklightSysfs *self)
 {
   g_autoptr (GError) err = NULL;
   g_autofree char *contents = NULL;
-  int brightness;
+  int level;
 
   if (!g_file_get_contents (self->brightness_path, &contents, NULL, &err)) {
     g_warning ("Backlight %s: Could not get brightness from sysfs: %s",
@@ -129,8 +129,8 @@ phosh_backlight_sysfs_update (PhoshBacklightSysfs *self)
     return;
   }
 
-  brightness = g_ascii_strtoll (contents, NULL, 0);
-  phosh_backlight_backend_update_brightness (PHOSH_BACKLIGHT (self), brightness);
+  level = g_ascii_strtoll (contents, NULL, 0);
+  phosh_backlight_backend_update_level (PHOSH_BACKLIGHT (self), level);
 }
 
 
@@ -299,8 +299,8 @@ phosh_backlight_sysfs_class_init (PhoshBacklightSysfsClass *klass)
   object_class->set_property = phosh_backlight_sysfs_set_property;
   object_class->dispose = phosh_backlight_sysfs_dispose;
 
-  backlight_class->set_brightness = phosh_backlight_sysfs_set_brightness;
-  backlight_class->set_brightness_finish = phosh_backlight_sysfs_set_brightness_finish;
+  backlight_class->set_level = phosh_backlight_sysfs_set_level;
+  backlight_class->set_level_finish = phosh_backlight_sysfs_set_level_finish;
 
   props[PROP_CONNECTOR_NAME] =
     g_param_spec_string ("connector-name", "", "",
