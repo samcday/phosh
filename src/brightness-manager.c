@@ -37,7 +37,7 @@ enum {
 };
 static GParamSpec *props[LAST_PROP];
 
-#define BRIGHTNESS_STEP_AMOUNT(max) ((max) < 20 ? 1 : (max) / 20)
+#define MAX_KEYBOARD_LEVELS 20
 
 struct _PhoshBrightnessManager {
   PhoshDBusBrightnessSkeleton parent;
@@ -395,33 +395,33 @@ static void
 adjust_brightness (PhoshBrightnessManager *self, gboolean up)
 {
   PhoshShell *shell = phosh_shell_get_default ();
-  int min = 0, max = 0, step, brightness;
-  double percentage;
+  int levels;
+  double brightness, step;
 
   if (!self->backlight)
     return;
 
-  phosh_backlight_get_range (self->backlight, &min, &max);
-  step = MAX (1, BRIGHTNESS_STEP_AMOUNT(max - min + 1));
-  brightness = phosh_backlight_get_brightness (self->backlight);
+  levels = phosh_backlight_get_levels (self->backlight);
+  levels = MIN (MAX_KEYBOARD_LEVELS, levels);
+  step = 1.0 / levels;
+  brightness = phosh_backlight_get_relative (self->backlight);
 
   if (up)
     brightness += step;
   else
     brightness -= step;
 
-  brightness = CLAMP (brightness, min, max);
-  phosh_backlight_set_brightness (self->backlight, brightness);
+  brightness = CLAMP (brightness, 0.0, 1.0);
+  phosh_backlight_set_relative (self->backlight, brightness);
 
   if (phosh_shell_get_state (shell) & PHOSH_STATE_SETTINGS)
     return;
 
-  percentage = 100.0 * phosh_backlight_get_relative (self->backlight);
   phosh_shell_show_osd (phosh_shell_get_default (),
                         NULL,
                         "display-brightness-symbolic",
                         NULL,
-                        percentage,
+                        100.0 * brightness,
                         100.0);
 }
 
