@@ -184,6 +184,7 @@ on_ambient_auto_brightness_changed (PhoshBrightnessManager *self,
   }
 
   set_auto_brightness_tracker (self);
+  on_auto_brightness_changed (self);
 }
 
 
