@@ -308,3 +308,14 @@ phosh_backlight_set_name (PhoshBacklight *self, const char *name)
 
   g_set_str (&priv->name, name);
 }
+
+
+int
+phosh_backlight_get_levels (PhoshBacklight *self)
+{
+  PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
+
+  g_return_val_if_fail (PHOSH_IS_BACKLIGHT (self), 1);
+
+  return 1 + priv->max_brightness - priv->min_brightness;
+}

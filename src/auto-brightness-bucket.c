@@ -97,6 +97,10 @@ auto_brightness_bucket_add_ambient_level (PhoshAutoBrightness *auto_brightness, 
   }
 
   self->brightness = buckets[index].brightness;
+
+  if (self->index == index)
+    return;
+
   self->index = index;
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_BRIGHTNESS]);
 }
