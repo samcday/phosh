@@ -131,6 +131,10 @@ phosh_brightness_settings_init (PhoshBrightnessSettings *self)
                                G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
                                transform_auto_brightness_to_icon_name, NULL, NULL, NULL);
 
+  g_object_bind_property (brightness_manager, "auto-brightness-enabled",
+                          self->scale, "has-origin",
+                          G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
+
   g_object_bind_property (brightness_manager, "has-brightness-control",
                           self, "visible",
                           G_BINDING_SYNC_CREATE);
