@@ -29,15 +29,18 @@ enum {
 static GParamSpec *props[PROP_LAST_PROP];
 
 typedef struct _PhoshBacklightPrivate {
-  GObject       parent;
+  GObject  parent;
 
-  char         *name;
+  char    *name;
   PhoshBacklightScale scale;
 
-  gboolean      pending;
-  int           min_brightness;
-  int           max_brightness;
-  int           target_brightness;
+  gboolean pending;
+
+  struct {
+    int min;
+    int max;
+    int target;
+  } brightness;
 
   GCancellable *cancel;
 } PhoshBacklightPrivate;
@@ -75,7 +78,7 @@ phosh_backlight_get_property (GObject    *object,
 
   switch (property_id) {
   case PROP_BRIGHTNESS:
-    g_value_set_int (value, priv->target_brightness);
+    g_value_set_int (value, priv->brightness.target);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -139,15 +142,15 @@ phosh_backlight_backend_update_brightness (PhoshBacklight *self, int brightness)
   PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
   int new_brightness;
 
-  if (priv->target_brightness == brightness)
+  if (priv->brightness.target == brightness)
     return;
 
-  new_brightness = CLAMP (brightness, priv->min_brightness, priv->max_brightness);
+  new_brightness = CLAMP (brightness, priv->brightness.min, priv->brightness.max);
 
   if (brightness != new_brightness)
     g_warning ("Trying to set out-of-range brightness %d on %s", brightness, priv->name);
 
-  priv->target_brightness = new_brightness;
+  priv->brightness.target = new_brightness;
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_BRIGHTNESS]);
 }
 
@@ -160,10 +163,10 @@ phosh_backlight_get_range (PhoshBacklight *self, int *min_brightness, int *max_b
   g_return_if_fail (PHOSH_IS_BACKLIGHT (self));
 
   if (min_brightness)
-    *min_brightness = priv->min_brightness;
+    *min_brightness = priv->brightness.min;
 
   if (max_brightness)
-    *max_brightness = priv->max_brightness;
+    *max_brightness = priv->brightness.max;
 }
 
 
@@ -172,8 +175,8 @@ phosh_backlight_set_range (PhoshBacklight *self, int min, int max, PhoshBackligh
 {
   PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
 
-  priv->min_brightness = min;
-  priv->max_brightness = max;
+  priv->brightness.min = min;
+  priv->brightness.max = max;
   priv->scale = scale;
 }
 
@@ -185,7 +188,7 @@ phosh_backlight_get_brightness (PhoshBacklight *self)
 
   g_return_val_if_fail (PHOSH_IS_BACKLIGHT (self), -1);
 
-  return priv->target_brightness;
+  return priv->brightness.target;
 }
 
 
@@ -211,11 +214,11 @@ on_brightness_set (GObject *source_object, GAsyncResult *res, gpointer user_data
   /* Brightness got updated from the system and we tried to set it at
    * the same time. Let's try to set the brightness the system was
    * setting to make sure we're in the correct state. */
-  if (priv->target_brightness != brightness) {
+  if (priv->brightness.target != brightness) {
     priv->pending = TRUE;
 
     PHOSH_BACKLIGHT_GET_CLASS (self)->set_brightness (self,
-                                                      priv->target_brightness,
+                                                      priv->brightness.target,
                                                       priv->cancel,
                                                       on_brightness_set,
                                                       NULL);
@@ -231,23 +234,23 @@ phosh_backlight_set_brightness (PhoshBacklight *self, int brightness)
 
   g_return_if_fail (PHOSH_IS_BACKLIGHT (self));
 
-  new_brightness = CLAMP (brightness, priv->min_brightness, priv->max_brightness);
+  new_brightness = CLAMP (brightness, priv->brightness.min, priv->brightness.max);
 
   if (brightness != new_brightness)
     g_warning ("Trying to set out-of-range brightness %d on %s", brightness, priv->name);
 
-  if (priv->target_brightness == new_brightness)
+  if (priv->brightness.target == new_brightness)
     return;
 
   g_debug ("Setting target brightness to %d", brightness);
-  priv->target_brightness = new_brightness;
+  priv->brightness.target = new_brightness;
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_BRIGHTNESS]);
 
   if (!priv->pending) {
     priv->pending = TRUE;
 
     PHOSH_BACKLIGHT_GET_CLASS (self)->set_brightness (self,
-                                                      priv->target_brightness,
+                                                      priv->brightness.target,
                                                       priv->cancel,
                                                       on_brightness_set,
                                                       NULL);
@@ -271,7 +274,7 @@ phosh_backlight_set_relative (PhoshBacklight *self, double val)
   g_return_if_fail (PHOSH_IS_BACKLIGHT (self));
   g_return_if_fail (val >= 0.0 && val <= 1.0);
 
-  brightness = priv->min_brightness + ((priv->max_brightness - priv->min_brightness) * val);
+  brightness = priv->brightness.min + ((priv->brightness.max - priv->brightness.min) * val);
   phosh_backlight_set_brightness (self, brightness);
 }
 
@@ -287,8 +290,8 @@ phosh_backlight_get_relative (PhoshBacklight *self)
 {
   PhoshBacklightPrivate *priv = phosh_backlight_get_instance_private (self);
 
-  return 1.0 * (priv->target_brightness - priv->min_brightness) /
-    (priv->max_brightness - priv->min_brightness);
+  return 1.0 * (priv->brightness.target - priv->brightness.min) /
+    (priv->brightness.max - priv->brightness.min);
 }
 
 
@@ -330,5 +333,5 @@ phosh_backlight_get_levels (PhoshBacklight *self)
 
   g_return_val_if_fail (PHOSH_IS_BACKLIGHT (self), 1);
 
-  return 1 + priv->max_brightness - priv->min_brightness;
+  return 1 + priv->brightness.max - priv->brightness.min;
 }
