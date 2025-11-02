@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-28 09:32+0000\n"
-"PO-Revision-Date: 2025-10-28 11:50+0100\n"
+"POT-Creation-Date: 2025-11-01 13:07+0000\n"
+"PO-Revision-Date: 2025-11-02 12:49+0100\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -278,20 +278,20 @@ msgctxt "feedback:enabled"
 msgid "On"
 msgstr "Pornit"
 
-#: src/location-manager.c:269
+#: src/location-manager.c:266
 #, c-format
 msgid "Allow '%s' to access your location information?"
 msgstr "„%s” poate accesa poziția ta geografică?"
 
-#: src/location-manager.c:274
+#: src/location-manager.c:271
 msgid "Geolocation"
 msgstr "Poziția geografică"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "Yes"
 msgstr "Da"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "No"
 msgstr "Nu"
 
@@ -332,12 +332,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Instantaneu de ecran %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:646 src/ui/media-player.ui:208
+#: src/media-player.c:649 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Titlu necunoscut"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:654 src/ui/media-player.ui:196
+#: src/media-player.c:657 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Artist necunoscut"
 
@@ -382,7 +382,7 @@ msgstr "Deschide"
 #. We don't just set the app_info but name and icon separately to
 #. * not overwrite values set by the caller
 #: src/notifications/notification.c:422 src/notifications/notification.c:695
-#: src/notifications/notify-manager.c:1012
+#: src/notifications/notify-manager.c:1009
 msgid "Notification"
 msgstr "Notificare"
 
@@ -597,7 +597,15 @@ msgstr "Dispozitive de intrare"
 
 #: src/ui/audio-settings.ui:136
 msgid "Sound Settings"
-msgstr "Opțiuni sunet"
+msgstr "Opțiuni Sunet"
+
+#: src/ui/brightness-settings.ui:87
+msgid "Automatic Screen Brightness"
+msgstr "Luminozitate automată a ecranului"
+
+#: src/ui/brightness-settings.ui:114
+msgid "Brightness Settings"
+msgstr "Opțiuni Luminozitate"
 
 #: src/ui/bt-status-page.ui:39
 msgid "Enable Bluetooth"
@@ -709,15 +717,15 @@ msgstr "Urgență"
 msgid "Run Command"
 msgstr "Execută comanda"
 
-#: src/ui/settings.ui:137
+#: src/ui/settings.ui:121
 msgid "No notifications"
 msgstr "Nicio notificare"
 
-#: src/ui/settings.ui:166
+#: src/ui/settings.ui:150
 msgid "Notifications"
 msgstr "Notificări"
 
-#: src/ui/settings.ui:175
+#: src/ui/settings.ui:159
 msgid "Clear all"
 msgstr "Șterge tot"
 
