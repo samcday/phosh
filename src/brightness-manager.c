@@ -433,14 +433,13 @@ on_primary_monitor_changed (PhoshBrightnessManager *self, GParamSpec *psepc, Pho
     backlight = monitor->backlight;
 
   /* Fall back to built in display */
-  if (!backlight) {
+  if (!backlight)
     monitor = phosh_shell_get_builtin_monitor (shell);
-    if (monitor)
-      backlight = monitor->backlight;
-  }
+
+  if (monitor)
+    backlight = monitor->backlight;
 
   set_backlight (self, backlight);
-
   phosh_dbus_brightness_set_has_brightness_control (PHOSH_DBUS_BRIGHTNESS (self),
                                                     !!self->backlight);
 }
