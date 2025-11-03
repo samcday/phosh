@@ -41,6 +41,7 @@
 enum {
   PROP_0,
   PROP_AUTO_BRIGHTNESS_ENABLED,
+  PROP_ICON_NAME,
   LAST_PROP,
 };
 static GParamSpec *props[LAST_PROP];
@@ -72,8 +73,9 @@ struct _PhoshBrightnessManager {
     uint   id;
   } transition;
 
-  int             dbus_name_id;
-  double          saved_brightness;
+  const char *icon_name;
+  int         dbus_name_id;
+  double      saved_brightness;
 };
 
 static void phosh_brightness_manager_brightness_init (PhoshDBusBrightnessIface *iface);
@@ -210,6 +212,9 @@ on_ambient_auto_brightness_changed (PhoshBrightnessManager *self,
 
   self->auto_brightness.enabled = enabled;
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_AUTO_BRIGHTNESS_ENABLED]);
+
+  self->icon_name = enabled ? "auto-brightness-symbolic" : "display-brightness-symbolic";
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_ICON_NAME]);
 
   if (self->auto_brightness.enabled) {
     value = self->auto_brightness.offset + 0.5;
@@ -473,7 +478,7 @@ adjust_brightness (PhoshBrightnessManager *self, gboolean up)
 
   phosh_shell_show_osd (phosh_shell_get_default (),
                         NULL,
-                        "display-brightness-symbolic",
+                        self->icon_name,
                         NULL,
                         100.0 * brightness,
                         100.0);
@@ -558,6 +563,9 @@ phosh_brightness_manager_get_property (GObject    *object,
   case PROP_AUTO_BRIGHTNESS_ENABLED:
     g_value_set_boolean (value, self->auto_brightness.enabled);
     break;
+  case PROP_ICON_NAME:
+    g_value_set_string (value, self->icon_name);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     break;
@@ -607,6 +615,15 @@ phosh_brightness_manager_class_init (PhoshBrightnessManagerClass *klass)
     g_param_spec_boolean ("auto-brightness-enabled", "", "",
                           FALSE,
                           G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+  /**
+   * PhoshBrightnessManager:icon-name:
+   *
+   * An icon suitable for display in a brightness slider
+   */
+  props[PROP_ICON_NAME] =
+    g_param_spec_string ("icon-name", "", "",
+                         NULL,
+                         G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 }
@@ -621,6 +638,7 @@ phosh_brightness_manager_init (PhoshBrightnessManager *self)
   PhoshAmbient *ambient = phosh_shell_get_ambient (phosh_shell_get_default ());
 
   self->saved_brightness = -1.0;
+  self->icon_name = "display-brightness-symbolic";
   self->settings_power = g_settings_new (POWER_SCHEMA);
   self->adjustment = g_object_ref_sink (gtk_adjustment_new (0, 0, 1.0, 0.01, 0.01, 0));
   self->value_changed_id = g_signal_connect_swapped (self->adjustment,
