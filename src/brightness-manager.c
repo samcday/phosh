@@ -415,7 +415,10 @@ set_backlight (PhoshBrightnessManager *self, PhoshBacklight *backlight)
                               "notify::brightness",
                               G_CALLBACK (on_backlight_brightness_changed),
                               self);
-    on_backlight_brightness_changed (self, NULL, self->backlight);
+    if (self->auto_brightness.enabled)
+      on_auto_brightness_changed (self);
+    else
+      on_backlight_brightness_changed (self, NULL, self->backlight);
   }
 }
 
