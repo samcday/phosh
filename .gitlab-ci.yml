@@ -1,7 +1,7 @@
 ---
 include:
   - project: 'guidog/meta-phosh'
-    ref: '7aa7dc17d5bccef5b7cfa6ed1d81365e52be5fc6'
+    ref: '992eb10ac05e479d9cff3dc0ee119a029e298e0c'
     file: '/ci/phosh-common-jobs.yml'
   - project: 'Infrastructure/freedesktop-ci-templates'
     ref: 'd03cddbcff35f26861429fc816c00323f48e99af'
@@ -334,6 +334,13 @@ check-markdown:
         paths:
           - "*.md"
           - "docs/*.md"
+
+check-g-style:
+  stage: style-checks
+  variables:
+    GCHECK_DIRS: plugins searchd src tests tools
+  extends:
+    - .phosh-check-g-style
 
 check-meson:
   stage: style-checks
