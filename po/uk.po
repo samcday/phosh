@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-31 18:10+0000\n"
-"PO-Revision-Date: 2025-10-31 21:22+0200\n"
+"POT-Creation-Date: 2025-11-05 16:04+0000\n"
+"PO-Revision-Date: 2025-11-05 19:28+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -276,20 +276,20 @@ msgctxt "feedback:enabled"
 msgid "On"
 msgstr "❙"
 
-#: src/location-manager.c:269
+#: src/location-manager.c:266
 #, c-format
 msgid "Allow '%s' to access your location information?"
 msgstr "Дозволити «%s» доступ до даних щодо вашого місця перебування?"
 
-#: src/location-manager.c:274
+#: src/location-manager.c:271
 msgid "Geolocation"
 msgstr "Геопозиціювання"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "Yes"
 msgstr "Так"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "No"
 msgstr "Ні"
 
@@ -330,12 +330,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Знімок вікна %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:649 src/ui/media-player.ui:208
+#: src/media-player.c:690 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Невідома назва"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:657 src/ui/media-player.ui:196
+#: src/media-player.c:698 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Невідомий виконавець"
 
@@ -380,7 +380,7 @@ msgstr "Відкрити"
 #. We don't just set the app_info but name and icon separately to
 #. * not overwrite values set by the caller
 #: src/notifications/notification.c:422 src/notifications/notification.c:695
-#: src/notifications/notify-manager.c:1012
+#: src/notifications/notify-manager.c:1009
 msgid "Notification"
 msgstr "Сповіщення"
 
@@ -598,11 +598,11 @@ msgid "Sound Settings"
 msgstr "Параметри звуку"
 
 #: src/ui/brightness-settings.ui:87
-msgid "Automatic Screen Brightness"
-msgstr "Автоматична яскравість екрана"
+#| msgid "Automatic Screen Brightness"
+msgid "Automatic Brightness"
+msgstr "Автоматична яскравість"
 
-#: src/ui/brightness-settings.ui:114
-#| msgid "Sound Settings"
+#: src/ui/brightness-settings.ui:120
 msgid "Brightness Settings"
 msgstr "Параметри яскравості"
 
