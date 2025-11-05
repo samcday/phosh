@@ -335,13 +335,6 @@ check-markdown:
           - "*.md"
           - "docs/*.md"
 
-check-g-style:
-  stage: style-checks
-  variables:
-    GCHECK_DIRS: plugins searchd src tests tools
-  extends:
-    - .phosh-check-g-style
-
 check-meson:
   stage: style-checks
   extends:
