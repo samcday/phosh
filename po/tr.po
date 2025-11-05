@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-29 09:19+0000\n"
-"PO-Revision-Date: 2025-10-29 08:00+0300\n"
+"POT-Creation-Date: 2025-11-05 13:50+0000\n"
+"PO-Revision-Date: 2025-11-05 08:00+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
 "Language: tr\n"
@@ -269,20 +269,20 @@ msgctxt "feedback:enabled"
 msgid "On"
 msgstr "Açık"
 
-#: src/location-manager.c:269
+#: src/location-manager.c:266
 #, c-format
 msgid "Allow '%s' to access your location information?"
 msgstr "'%s' konum bilginize erişebilsin mi?"
 
-#: src/location-manager.c:274
+#: src/location-manager.c:271
 msgid "Geolocation"
 msgstr "Coğrafi Konum"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "Yes"
 msgstr "Evet"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "No"
 msgstr "Hayır"
 
@@ -323,12 +323,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Ekran görüntüsü %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:649 src/ui/media-player.ui:208
+#: src/media-player.c:690 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Bilinmeyen Başlık"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:657 src/ui/media-player.ui:196
+#: src/media-player.c:698 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Bilinmeyen Sanatçı"
 
@@ -373,7 +373,7 @@ msgstr "Aç"
 #. We don't just set the app_info but name and icon separately to
 #. * not overwrite values set by the caller
 #: src/notifications/notification.c:422 src/notifications/notification.c:695
-#: src/notifications/notify-manager.c:1012
+#: src/notifications/notify-manager.c:1009
 msgid "Notification"
 msgstr "Bildirim"
 
@@ -576,6 +576,14 @@ msgstr "Girdi Aygıtları"
 msgid "Sound Settings"
 msgstr "Ses Ayarları"
 
+#: src/ui/brightness-settings.ui:87
+msgid "Automatic Brightness"
+msgstr "Kendiliğinden Parlaklık"
+
+#: src/ui/brightness-settings.ui:120
+msgid "Brightness Settings"
+msgstr "Parlaklık Ayarları"
+
 #: src/ui/bt-status-page.ui:39
 msgid "Enable Bluetooth"
 msgstr "Bluetooth’u Etkinleştir"
@@ -686,15 +694,15 @@ msgstr "Acil"
 msgid "Run Command"
 msgstr "Komut Çalıştır"
 
-#: src/ui/settings.ui:137
+#: src/ui/settings.ui:121
 msgid "No notifications"
 msgstr "Bildirim yok"
 
-#: src/ui/settings.ui:166
+#: src/ui/settings.ui:150
 msgid "Notifications"
 msgstr "Bildirimler"
 
-#: src/ui/settings.ui:175
+#: src/ui/settings.ui:159
 msgid "Clear all"
 msgstr "Tümünü temizle"
 
