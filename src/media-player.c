@@ -84,6 +84,7 @@ typedef struct _PhoshMediaPlayerPrivate {
   GtkWidget                   *lbl_position;
   GtkWidget                   *lbl_length;
 
+  char                        *url;
   GCancellable                *cancel;
   GCancellable                *fetch_icon_cancel;
   PhoshMprisManager           *manager;
@@ -617,6 +618,46 @@ phosh_media_player_load_icon_from_file_async (PhoshMediaPlayer *self, GFile *fil
 }
 
 
+static gboolean
+phosh_media_player_load_icon (PhoshMediaPlayer *self, const char *url)
+{
+  PhoshMediaPlayerPrivate *priv = phosh_media_player_get_instance_private (self);
+  gboolean has_art = FALSE;
+
+  if (!g_set_str (&priv->url, url)) {
+    g_debug ("Media URL did not change, skippig load");
+    return TRUE;
+  }
+
+  g_debug ("Loading '%s'", url);
+  /* Cancel any pending icon loads */
+  g_cancellable_cancel (priv->fetch_icon_cancel);
+  g_clear_object (&priv->fetch_icon_cancel);
+
+  if (url && g_strcmp0 (g_uri_peek_scheme (url), "file") == 0) {
+    g_autoptr (GFile) file = g_file_new_for_uri (url);
+
+    phosh_media_player_load_icon_from_file_async (self, file);
+  } else if (url && (g_strcmp0 (g_uri_peek_scheme (url), "http") == 0 ||
+                     g_strcmp0 (g_uri_peek_scheme (url), "https") == 0)) {
+    fetch_icon_async (self, url);
+  } else if (url && g_strcmp0 (g_uri_peek_scheme (url), "data") == 0) {
+    g_autoptr (GdkPixbuf) pixbuf = NULL;
+    g_autoptr (GError) error = NULL;
+
+    pixbuf = phosh_util_data_uri_to_pixbuf (url, &error);
+    if (pixbuf) {
+      phosh_media_player_set_image (self, pixbuf);
+      has_art = TRUE;
+    } else {
+      g_warning_once ("Failed to load album art from base64 string: %s", error->message);
+    }
+  }
+
+  return has_art;
+}
+
+
 static void
 on_metadata_changed (PhoshMediaPlayer *self, GParamSpec *psepc, PhoshDBusMediaPlayer2Player *player)
 {
@@ -670,29 +711,7 @@ on_metadata_changed (PhoshMediaPlayer *self, GParamSpec *psepc, PhoshDBusMediaPl
   priv->track_length = length;
   update_position (self);
 
-  /* Cancel any pending icon loads */
-  g_cancellable_cancel (priv->fetch_icon_cancel);
-  g_clear_object (&priv->fetch_icon_cancel);
-
-  if (url && g_strcmp0 (g_uri_peek_scheme (url), "file") == 0) {
-    g_autoptr (GFile) file = g_file_new_for_uri (url);
-
-    phosh_media_player_load_icon_from_file_async (self, file);
-  } else if (url && (g_strcmp0 (g_uri_peek_scheme (url), "http") == 0 ||
-                     g_strcmp0 (g_uri_peek_scheme (url), "https") == 0)) {
-    fetch_icon_async (self, url);
-  } else if (url && g_strcmp0 (g_uri_peek_scheme (url), "data") == 0) {
-    g_autoptr (GdkPixbuf) pixbuf = NULL;
-    g_autoptr (GError) error = NULL;
-
-    pixbuf = phosh_util_data_uri_to_pixbuf (url, &error);
-    if (pixbuf) {
-      phosh_media_player_set_image (self, pixbuf);
-      has_art = TRUE;
-    } else {
-      g_warning_once ("Failed to load album art from base64 string: %s", error->message);
-    }
-  }
+  has_art = phosh_media_player_load_icon (self, url);
 
   if (!has_art)
     g_object_set (priv->img_art, "icon-name", "audio-x-generic-symbolic", NULL);
@@ -816,6 +835,8 @@ phosh_media_player_dispose (GObject *object)
 
   g_clear_object (&priv->manager);
   g_clear_object (&priv->player);
+
+  g_clear_pointer (&priv->url, g_free);
 
   G_OBJECT_CLASS (phosh_media_player_parent_class)->dispose (object);
 }
