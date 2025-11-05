@@ -27,17 +27,26 @@
 /**
  * PhoshBrightnessManager:
  *
- * Manage backglight brightness
+ * Manage backglight brightness. Handle auto-brightness and maintain a
+ * `GtkAdjustment` that can be used for brightness sliders.
+ *
+ * For auto brightness the `PhoshBrightnessManager` gets the ambient
+ * brightness from the `PhoshAmbient` manager and feeds these values
+ * to a `PhoshAutoBrightness` tracker that calculates the resulting
+ * backlight brightness. Based on other inputs like the currently
+ * applied offset as set by the user the `PhoshBrightnessManager`
+ * then sets the actual brightness on the backlight.
  */
 
 enum {
   PROP_0,
   PROP_AUTO_BRIGHTNESS_ENABLED,
+  PROP_ICON_NAME,
   LAST_PROP,
 };
 static GParamSpec *props[LAST_PROP];
 
-#define BRIGHTNESS_STEP_AMOUNT(max) ((max) < 20 ? 1 : (max) / 20)
+#define MAX_KEYBOARD_LEVELS 20
 
 struct _PhoshBrightnessManager {
   PhoshDBusBrightnessSkeleton parent;
@@ -52,8 +61,10 @@ struct _PhoshBrightnessManager {
   GSettings      *settings_power;
   gboolean        dimmed;
   struct {
-    gboolean             enabled;
+    gboolean enabled;
     PhoshAutoBrightness *tracker;
+    double   base;
+    double   offset;
   } auto_brightness;
 
   struct {
@@ -62,8 +73,9 @@ struct _PhoshBrightnessManager {
     uint   id;
   } transition;
 
-  int             dbus_name_id;
-  double          saved_brightness;
+  const char *icon_name;
+  int         dbus_name_id;
+  double      saved_brightness;
 };
 
 static void phosh_brightness_manager_brightness_init (PhoshDBusBrightnessIface *iface);
@@ -82,6 +94,13 @@ on_transition_step (gpointer user_data)
 
   current = phosh_backlight_get_relative (self->backlight);
   next = current + self->transition.step;
+
+  if (!self->auto_brightness.enabled) {
+    g_debug ("Brightness transition aborted");
+    self->transition.id = 0;
+    self->transition.target = current;
+    return G_SOURCE_REMOVE;
+  }
 
   if ((self->transition.step > 0 && next >= self->transition.target) ||
       (self->transition.step < 0 && next <= self->transition.target)) {
@@ -123,10 +142,28 @@ transition_to_brightness (PhoshBrightnessManager *self, double target)
 }
 
 
+static double
+calc_auto_brightness (PhoshBrightnessManager *self)
+{
+  double new_brightness = self->auto_brightness.base;
+
+  /* Apply any offset the user has set */
+  new_brightness += self->auto_brightness.offset;
+  new_brightness = CLAMP (new_brightness, 0.0, 1.0);
+
+  g_debug ("New auto brightness %.2f (base: %.2f, offset: %.2f)",
+           new_brightness,
+           self->auto_brightness.base,
+           self->auto_brightness.offset);
+
+  return new_brightness;
+}
+
+
 static void
 on_auto_brightness_changed (PhoshBrightnessManager *self)
 {
-  double brightness;
+  double new_brightness;
 
   g_return_if_fail (PHOSH_IS_BRIGHTNESS_MANAGER (self));
 
@@ -136,13 +173,12 @@ on_auto_brightness_changed (PhoshBrightnessManager *self)
   if (!self->auto_brightness.enabled)
     return;
 
-  brightness = phosh_auto_brightness_get_brightness (self->auto_brightness.tracker);
+  new_brightness = phosh_auto_brightness_get_brightness (self->auto_brightness.tracker);
   /* TODO: clamp to 100% as we don't do brightness boosts yet */
-  brightness = MIN (brightness, 1.0);
+  self->auto_brightness.base = CLAMP (new_brightness, 0.0, 1.0);
+  new_brightness = calc_auto_brightness (self);
 
-  g_debug ("New auto brightness %f", brightness);
-
-  transition_to_brightness (self, brightness);
+  transition_to_brightness (self, new_brightness);
 }
 
 
@@ -153,7 +189,6 @@ set_auto_brightness_tracker (PhoshBrightnessManager *self)
     return;
 
   /* TODO: allow for different brightness trackers */
-  /* TODO: take backlight brightness curve into account */
   self->auto_brightness.tracker = PHOSH_AUTO_BRIGHTNESS (phosh_auto_brightness_bucket_new ());
   g_signal_connect_swapped (self->auto_brightness.tracker,
                             "notify::brightness",
@@ -168,15 +203,28 @@ on_ambient_auto_brightness_changed (PhoshBrightnessManager *self,
                                     PhoshAmbient           *ambient)
 {
   gboolean enabled = phosh_ambient_get_auto_brightness (ambient);
+  double value;
 
   g_debug ("Ambient auto-brightness enabled: %d", enabled);
 
-  if (self->auto_brightness.enabled != enabled) {
-    self->auto_brightness.enabled = enabled;
-    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_AUTO_BRIGHTNESS_ENABLED]);
+  if (self->auto_brightness.enabled == enabled)
+    return;
+
+  self->auto_brightness.enabled = enabled;
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_AUTO_BRIGHTNESS_ENABLED]);
+
+  self->icon_name = enabled ? "auto-brightness-symbolic" : "display-brightness-symbolic";
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_ICON_NAME]);
+
+  if (self->auto_brightness.enabled) {
+    value = self->auto_brightness.offset + 0.5;
+    set_auto_brightness_tracker (self);
+    on_auto_brightness_changed (self);
+  } else {
+    value = phosh_backlight_get_relative (self->backlight);
   }
 
-  set_auto_brightness_tracker (self);
+  gtk_adjustment_set_value (self->adjustment, value);
 }
 
 
@@ -294,16 +342,22 @@ phosh_brightness_manager_brightness_init (PhoshDBusBrightnessIface *iface)
 
 
 static void
-on_brightness_changed (PhoshBrightnessManager *self, GParamSpec *pspec, PhoshBacklight *backlight)
+on_backlight_brightness_changed (PhoshBrightnessManager *self,
+                                 GParamSpec             *pspec,
+                                 PhoshBacklight         *backlight)
 {
   double value;
 
   g_assert (self->backlight == backlight);
 
+  /* With auto brightness the slider gives an offset to the auto brightness target */
+  if (self->auto_brightness.enabled)
+    return;
+
   if (self->setting_brightness)
     return;
 
-  value = 100.0 * phosh_backlight_get_relative (self->backlight);
+  value = phosh_backlight_get_relative (self->backlight);
 
   g_signal_handler_block (self->adjustment, self->value_changed_id);
   gtk_adjustment_set_value (self->adjustment, value);
@@ -314,24 +368,35 @@ on_brightness_changed (PhoshBrightnessManager *self, GParamSpec *pspec, PhoshBac
 static void
 on_value_changed (PhoshBrightnessManager *self, GtkAdjustment *adjustment)
 {
-  double value;
+  double value, new_brightness;
 
   g_assert (self->adjustment == adjustment);
 
   if (!self->backlight)
     return;
 
-  value = gtk_adjustment_get_value (self->adjustment) * 0.01;
+  value = gtk_adjustment_get_value (self->adjustment);
 
-  /* Adjustment changed due to slider change, stop any transitions */
-  if (self->transition.id) {
-    g_debug ("Stopping brightness transition due to external change");
+  /* With auto brightness the slider gives an offset to the auto brightness target */
+  if (self->auto_brightness.enabled) {
+    /* TODO: should we go through the brightness curve? */
+    /* TODO: preserve as setting */
+    /* Auto-brightness offset is [-0.5, +0.5] */
+    double offset = CLAMP (value - 0.5, -0.5, 0.5);
+
+    if (G_APPROX_VALUE (offset, self->auto_brightness.offset, FLT_EPSILON))
+      return;
+    self->auto_brightness.offset = offset;
+
+    new_brightness = calc_auto_brightness (self);
+    /* Cancel any ongoing transition, the user likely wants the new brightness right away */
     g_clear_handle_id (&self->transition.id, g_source_remove);
-    self->transition.target = value;
+  } else {
+    new_brightness = value;
   }
 
   self->setting_brightness = TRUE;
-  phosh_backlight_set_relative (self->backlight, value);
+  phosh_backlight_set_relative (self->backlight, new_brightness);
   self->setting_brightness = FALSE;
 }
 
@@ -353,9 +418,12 @@ set_backlight (PhoshBrightnessManager *self, PhoshBacklight *backlight)
 
     g_signal_connect_swapped (self->backlight,
                               "notify::brightness",
-                              G_CALLBACK (on_brightness_changed),
+                              G_CALLBACK (on_backlight_brightness_changed),
                               self);
-    on_brightness_changed (self, NULL, self->backlight);
+    if (self->auto_brightness.enabled)
+      on_auto_brightness_changed (self);
+    else
+      on_backlight_brightness_changed (self, NULL, self->backlight);
   }
 }
 
@@ -370,14 +438,13 @@ on_primary_monitor_changed (PhoshBrightnessManager *self, GParamSpec *psepc, Pho
     backlight = monitor->backlight;
 
   /* Fall back to built in display */
-  if (!backlight) {
+  if (!backlight)
     monitor = phosh_shell_get_builtin_monitor (shell);
-    if (monitor)
-      backlight = monitor->backlight;
-  }
+
+  if (monitor)
+    backlight = monitor->backlight;
 
   set_backlight (self, backlight);
-
   phosh_dbus_brightness_set_has_brightness_control (PHOSH_DBUS_BRIGHTNESS (self),
                                                     !!self->backlight);
 }
@@ -387,33 +454,33 @@ static void
 adjust_brightness (PhoshBrightnessManager *self, gboolean up)
 {
   PhoshShell *shell = phosh_shell_get_default ();
-  int min = 0, max = 0, step, brightness;
-  double percentage;
+  int levels;
+  double brightness, step;
 
   if (!self->backlight)
     return;
 
-  phosh_backlight_get_range (self->backlight, &min, &max);
-  step = MAX (1, BRIGHTNESS_STEP_AMOUNT(max - min + 1));
-  brightness = phosh_backlight_get_brightness (self->backlight);
+  levels = phosh_backlight_get_levels (self->backlight);
+  levels = MIN (MAX_KEYBOARD_LEVELS, levels);
+  step = 1.0 / levels;
+  brightness = phosh_backlight_get_relative (self->backlight);
 
   if (up)
     brightness += step;
   else
     brightness -= step;
 
-  brightness = CLAMP (brightness, min, max);
-  phosh_backlight_set_brightness (self->backlight, brightness);
+  brightness = CLAMP (brightness, 0.0, 1.0);
+  phosh_backlight_set_relative (self->backlight, brightness);
 
   if (phosh_shell_get_state (shell) & PHOSH_STATE_SETTINGS)
     return;
 
-  percentage = 100.0 * phosh_backlight_get_relative (self->backlight);
   phosh_shell_show_osd (phosh_shell_get_default (),
                         NULL,
-                        "display-brightness-symbolic",
+                        self->icon_name,
                         NULL,
-                        percentage,
+                        100.0 * brightness,
                         100.0);
 }
 
@@ -496,6 +563,9 @@ phosh_brightness_manager_get_property (GObject    *object,
   case PROP_AUTO_BRIGHTNESS_ENABLED:
     g_value_set_boolean (value, self->auto_brightness.enabled);
     break;
+  case PROP_ICON_NAME:
+    g_value_set_string (value, self->icon_name);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     break;
@@ -545,6 +615,15 @@ phosh_brightness_manager_class_init (PhoshBrightnessManagerClass *klass)
     g_param_spec_boolean ("auto-brightness-enabled", "", "",
                           FALSE,
                           G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+  /**
+   * PhoshBrightnessManager:icon-name:
+   *
+   * An icon suitable for display in a brightness slider
+   */
+  props[PROP_ICON_NAME] =
+    g_param_spec_string ("icon-name", "", "",
+                         NULL,
+                         G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 }
@@ -559,8 +638,9 @@ phosh_brightness_manager_init (PhoshBrightnessManager *self)
   PhoshAmbient *ambient = phosh_shell_get_ambient (phosh_shell_get_default ());
 
   self->saved_brightness = -1.0;
+  self->icon_name = "display-brightness-symbolic";
   self->settings_power = g_settings_new (POWER_SCHEMA);
-  self->adjustment = g_object_ref_sink (gtk_adjustment_new (0, 0, 100, 10, 10, 0));
+  self->adjustment = g_object_ref_sink (gtk_adjustment_new (0, 0, 1.0, 0.01, 0.01, 0));
   self->value_changed_id = g_signal_connect_swapped (self->adjustment,
                                                      "value-changed",
                                                      G_CALLBACK (on_value_changed),
@@ -625,4 +705,13 @@ phosh_brightness_manager_get_adjustment (PhoshBrightnessManager *self)
   g_return_val_if_fail (PHOSH_IS_BRIGHTNESS_MANAGER (self), NULL);
 
   return self->adjustment;
+}
+
+
+gboolean
+phosh_brightness_manager_get_auto_brightness_enabled (PhoshBrightnessManager *self)
+{
+  g_return_val_if_fail (PHOSH_IS_BRIGHTNESS_MANAGER (self), FALSE);
+
+  return self->auto_brightness.enabled;
 }

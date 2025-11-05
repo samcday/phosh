@@ -79,21 +79,6 @@ phosh_brightness_settings_class_init (PhoshBrightnessSettingsClass *klass)
 
 
 static gboolean
-transform_auto_brightness_to_icon_name (GBinding     *binding,
-                                        const GValue *from_value,
-                                        GValue       *to_value,
-                                        gpointer      data)
-{
-  gboolean enabled = g_value_get_boolean (from_value);
-  const char *icon_name;
-
-  icon_name = enabled ? "auto-brightness-symbolic" : "display-brightness-symbolic";
-  g_value_set_string (to_value, icon_name);
-  return TRUE;
-}
-
-
-static gboolean
 transform_toggle_to_stack_child_name (GBinding     *binding,
                                       const GValue *from_value,
                                       GValue       *to_value,
@@ -126,10 +111,13 @@ phosh_brightness_settings_init (PhoshBrightnessSettings *self)
   g_settings_bind (self->settings, KEY_AMBIENT_ENABLED, self->auto_switch, "active",
                    G_SETTINGS_BIND_GET | G_SETTINGS_BIND_SET);
 
-  g_object_bind_property_full (brightness_manager, "auto-brightness-enabled",
-                               self->image, "icon-name",
-                               G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
-                               transform_auto_brightness_to_icon_name, NULL, NULL, NULL);
+  g_object_bind_property (brightness_manager, "icon-name",
+                          self->image, "icon-name",
+                          G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE);
+
+  g_object_bind_property (brightness_manager, "auto-brightness-enabled",
+                          self->scale, "has-origin",
+                          G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
 
   g_object_bind_property (brightness_manager, "has-brightness-control",
                           self, "visible",

@@ -84,9 +84,15 @@
                     <child>
                       <object class="HdyActionRow">
                         <property name="visible">1</property>
-                        <property name="title" translatable="yes">Automatic Screen Brightness</property>
+                        <property name="title" translatable="yes">Automatic Brightness</property>
                         <property name="activatable">1</property>
                         <signal name="activated" handler="on_auto_brightness_activated" swapped="true"/>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="visible">1</property>
+                            <property name="icon-name">auto-brightness-symbolic</property>
+                          </object>
+                        </child>
                         <child>
                           <object class="GtkSwitch" id="auto_switch">
                             <property name="visible">1</property>
