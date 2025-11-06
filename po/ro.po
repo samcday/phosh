@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-11-01 13:07+0000\n"
-"PO-Revision-Date: 2025-11-02 12:49+0100\n"
+"POT-Creation-Date: 2025-11-06 07:24+0000\n"
+"PO-Revision-Date: 2025-11-06 09:40+0100\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -332,12 +332,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Instantaneu de ecran %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:649 src/ui/media-player.ui:208
+#: src/media-player.c:690 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Titlu necunoscut"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:657 src/ui/media-player.ui:196
+#: src/media-player.c:698 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Artist necunoscut"
 
@@ -600,10 +600,10 @@ msgid "Sound Settings"
 msgstr "Opțiuni Sunet"
 
 #: src/ui/brightness-settings.ui:87
-msgid "Automatic Screen Brightness"
-msgstr "Luminozitate automată a ecranului"
+msgid "Automatic Brightness"
+msgstr "Luminozitate automată"
 
-#: src/ui/brightness-settings.ui:114
+#: src/ui/brightness-settings.ui:120
 msgid "Brightness Settings"
 msgstr "Opțiuni Luminozitate"
 
