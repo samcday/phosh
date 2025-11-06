@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-31 16:04+0000\n"
-"PO-Revision-Date: 2025-10-31 19:09+0100\n"
+"POT-Creation-Date: 2025-11-06 15:52+0000\n"
+"PO-Revision-Date: 2025-11-06 18:42+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian <gnome-si@googlegroups.com>\n"
 "Language: sl\n"
@@ -279,20 +279,20 @@ msgctxt "feedback:enabled"
 msgid "On"
 msgstr "Vključeno"
 
-#: src/location-manager.c:269
+#: src/location-manager.c:266
 #, c-format
 msgid "Allow '%s' to access your location information?"
 msgstr "Želite dovoliti »%s« dostop do podatkov o vaši lokaciji?"
 
-#: src/location-manager.c:274
+#: src/location-manager.c:271
 msgid "Geolocation"
 msgstr "Geolokacija"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "Yes"
 msgstr "Da"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "No"
 msgstr "Ne"
 
@@ -333,12 +333,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "Zaslonska slika iz %s%s.png"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:649 src/ui/media-player.ui:208
+#: src/media-player.c:690 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "Neznan naslov"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:657 src/ui/media-player.ui:196
+#: src/media-player.c:698 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "Neznan izvajalec"
 
@@ -383,7 +383,7 @@ msgstr "Odpri"
 #. We don't just set the app_info but name and icon separately to
 #. * not overwrite values set by the caller
 #: src/notifications/notification.c:422 src/notifications/notification.c:695
-#: src/notifications/notify-manager.c:1012
+#: src/notifications/notify-manager.c:1009
 msgid "Notification"
 msgstr "Obvestilo"
 
@@ -608,10 +608,10 @@ msgid "Sound Settings"
 msgstr "Nastavitve zvoka"
 
 #: src/ui/brightness-settings.ui:87
-msgid "Automatic Screen Brightness"
-msgstr "Samodejna svetlost zaslona"
+msgid "Automatic Brightness"
+msgstr "Samodejna svetlost"
 
-#: src/ui/brightness-settings.ui:114
+#: src/ui/brightness-settings.ui:120
 msgid "Brightness Settings"
 msgstr "Nastavitve svetlosti"
 
