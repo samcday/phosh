@@ -103,8 +103,6 @@ class Phosh:
             timeout -= 1
 
         assert timedout is False
-        self.process.stdout.close()
-        self.process.stderr.close()
 
         # TODO: Check availability on DBus
         time.sleep(2)
