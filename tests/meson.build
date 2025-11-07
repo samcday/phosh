@@ -357,6 +357,7 @@ ruff = find_program('ruff', required: false)
 
 pyfiles = files(
   'integration/__init__.py',
+  'integration/test_dbus.py',
   'integration/test_output.py',
   'mock-mm-nm.py',
 )
