@@ -81,7 +81,16 @@ class Phosh:
         env = env | self.env
 
         # Spawn phoc -E .../run
-        cmd = ["phoc", "-C", phoc_ini, "--socket", self.wl_display, "-E", runscript]
+        cmd = [
+            "phoc",
+            "--no-xwayland",
+            "-C",
+            phoc_ini,
+            "--socket",
+            self.wl_display,
+            "-E",
+            runscript,
+        ]
         print(f"Launching '{' '.join(cmd)}' with '{backend}' backend")
         self.process = subprocess.Popen(
             cmd, env=env, stderr=subprocess.PIPE, stdout=subprocess.PIPE
