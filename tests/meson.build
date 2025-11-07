@@ -9,6 +9,7 @@ endif
 subdir('services')
 subdir('system')
 subdir('user')
+subdir('integration')
 
 screenshot_langs = ['ar_AE.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8', 'uk_UA.UTF-8']
 
@@ -393,4 +394,3 @@ foreach pyfile : pyfiles
   endif
 
 endforeach
-
