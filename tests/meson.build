@@ -355,7 +355,12 @@ flake8 = find_program('flake8', required: false)
 black = find_program('black', required: false)
 ruff = find_program('ruff', required: false)
 
-pyfiles = files('integration/test_output.py', 'mock-mm-nm.py')
+pyfiles = files(
+  'integration/__init__.py',
+  'integration/test_output.py',
+  'mock-mm-nm.py',
+)
+
 foreach pyfile : pyfiles
   if flake8.found()
     test(
