@@ -46,7 +46,8 @@ class Phosh:
     def teardown_nested(self):
         self.process.send_signal(15)
         out = self.process.communicate()
-        if self.process.returncode != -15:
+        # TODO: Older phoc sends -15, drop this later
+        if self.process.returncode not in [0, -15]:
             print(f"Exited with {self.process.returncode}", file=sys.stderr)
             print(f"stdout: {out[0].decode('utf-8')}", file=sys.stderr)
             print(f"stderr: {out[1].decode('utf-8')}", file=sys.stderr)
