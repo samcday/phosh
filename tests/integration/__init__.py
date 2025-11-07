@@ -28,12 +28,13 @@ class Phosh:
     wl_display = None
     process = None
 
-    def __init__(self, topsrcdir, topbuilddir):
+    def __init__(self, topsrcdir, topbuilddir, env={}):
         self.topsrcdir = topsrcdir
         self.topbuilddir = topbuilddir
         self.tmpdir = tempfile.TemporaryDirectory(dir=topbuilddir)
-        self.stdout = ''
-        self.stderr = ''
+        self.stdout = ""
+        self.stderr = ""
+        self.env = env
 
         # Set Wayland socket
         self.wl_display = os.path.join(self.tmpdir.name, "wayland-socket")
@@ -70,6 +71,9 @@ class Phosh:
         env["GSETTINGS_BACKEND"] = "memory"
         backend = self.find_wlr_backend()
         env["WLR_BACKENDS"] = backend
+
+        # Add test's special requirements
+        env = env | self.env
 
         # Spawn phoc -E .../run
         cmd = ["phoc", "-C", phoc_ini, "--socket", self.wl_display, "-E", runscript]
