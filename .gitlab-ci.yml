@@ -204,6 +204,7 @@ integration:native-debian-forky:
     - export NO_AT_BRIDGE=1
     - export TOPSRCDIR="${PWD}"
     - export TOPBUILDDIR="${PWD}/_build"
+    - export WLR_RENDERER=pixman
     - export WLR_BACKENDS=headless
     # Make sure tests can find the plugins and po files
     - "meson install -C _build"
