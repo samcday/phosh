@@ -51,6 +51,11 @@ class Phosh:
             print(f"stdout: {out[0].decode('utf-8')}", file=sys.stderr)
             print(f"stderr: {out[1].decode('utf-8')}", file=sys.stderr)
             return False
+        if os.getenv("SAVE_TEST_LOGS"):
+            with open("log.stdout", "w") as f:
+                f.write(self.stdout)
+            with open("log.stderr", "w") as f:
+                f.write(self.stderr)
         return True
 
     def find_wlr_backend(self):
