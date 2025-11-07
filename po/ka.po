@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-10-28 12:34+0000\n"
-"PO-Revision-Date: 2025-10-29 00:48+0100\n"
+"POT-Creation-Date: 2025-11-07 07:41+0000\n"
+"PO-Revision-Date: 2025-11-07 15:39+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -270,20 +270,20 @@ msgctxt "feedback:enabled"
 msgid "On"
 msgstr "ჩართ"
 
-#: src/location-manager.c:269
+#: src/location-manager.c:266
 #, c-format
 msgid "Allow '%s' to access your location information?"
 msgstr "მივცეთ უფლება %s-ს, მიიღოს ინფორმაცია თქვენი მდებარეობის შესახებ?"
 
-#: src/location-manager.c:274
+#: src/location-manager.c:271
 msgid "Geolocation"
 msgstr "გეოლოკაცია"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "Yes"
 msgstr "დიახ"
 
-#: src/location-manager.c:275
+#: src/location-manager.c:272
 msgid "No"
 msgstr "არა"
 
@@ -324,12 +324,12 @@ msgid "Screenshot from %s%s.png"
 msgstr "ეკრანის ანაბეჭდი %s%s.png-დან"
 
 #. Translators: Used when the title of a song is unknown
-#: src/media-player.c:646 src/ui/media-player.ui:208
+#: src/media-player.c:690 src/ui/media-player.ui:208
 msgid "Unknown Title"
 msgstr "უცნობი სათაური"
 
 #. Translators: Used when the artist of a song is unknown
-#: src/media-player.c:654 src/ui/media-player.ui:196
+#: src/media-player.c:698 src/ui/media-player.ui:196
 msgid "Unknown Artist"
 msgstr "უცნობი შემსრულებელი"
 
@@ -374,7 +374,7 @@ msgstr "გახსნა"
 #. We don't just set the app_info but name and icon separately to
 #. * not overwrite values set by the caller
 #: src/notifications/notification.c:422 src/notifications/notification.c:695
-#: src/notifications/notify-manager.c:1012
+#: src/notifications/notify-manager.c:1009
 msgid "Notification"
 msgstr "გაფრთხილება"
 
@@ -577,6 +577,14 @@ msgstr "შეტანის მოწყობილობები"
 msgid "Sound Settings"
 msgstr "ხმის მორგება"
 
+#: src/ui/brightness-settings.ui:87
+msgid "Automatic Brightness"
+msgstr "ავტომატური სიკაშკაშე"
+
+#: src/ui/brightness-settings.ui:120
+msgid "Brightness Settings"
+msgstr "სიკაშკაშის მორგება"
+
 #: src/ui/bt-status-page.ui:39
 msgid "Enable Bluetooth"
 msgstr "ბლუთუზის ჩართვა"
@@ -687,15 +695,15 @@ msgstr "სასწრაფო"
 msgid "Run Command"
 msgstr "ბრძანების გაშვება"
 
-#: src/ui/settings.ui:137
+#: src/ui/settings.ui:121
 msgid "No notifications"
 msgstr "გაფრთხილების გარეშე"
 
-#: src/ui/settings.ui:166
+#: src/ui/settings.ui:150
 msgid "Notifications"
 msgstr "გაფრთხილებები"
 
-#: src/ui/settings.ui:175
+#: src/ui/settings.ui:159
 msgid "Clear all"
 msgstr "ყველას გასუფთავება"
 
