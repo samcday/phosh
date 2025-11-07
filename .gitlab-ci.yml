@@ -43,7 +43,7 @@ variables:
   # For ci-fairy
   FDO_UPSTREAM_REPO: World/Phosh/phosh
   # screenshot and asan builds on DEBIAN_IMAGE so keep them in sync
-  IMAGE_VERSION: v0.0.2025-09-27
+  IMAGE_VERSION: v0.0.2025-11-06
   DEBIAN_IMAGE: $CI_REGISTRY/world/phosh/phosh/debian:$IMAGE_VERSION
   SCREENSHOT_IMAGE: $CI_REGISTRY/world/phosh/phosh/screenshot:$IMAGE_VERSION
   ASAN_IMAGE: $CI_REGISTRY/world/phosh/phosh/asan:$IMAGE_VERSION
@@ -58,7 +58,7 @@ variables:
   RUST_BINDINGS_BRANCH: main
   LIBPHOSH: libphosh-0.45
 
-.trixie_vars: &trixie_vars
+.forky_vars: &forky_vars
   variables:
     BUILD_OPTS: -Dcallui-i18n=true -Dphoc_tests=enabled -Dsearchd=true ${COMMON_BUILD_OPTS}
 
@@ -117,17 +117,17 @@ commit-log-check:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
 
-build:native-debian-trixie:
+build:native-debian-forky:
   stage: build
   image: ${DEBIAN_IMAGE}
   <<: *build_before_script
-  <<: *trixie_vars
+  <<: *forky_vars
   <<: *build_step
   artifacts:
     paths:
       - _build
 
-build:lib-debian-trixie:
+build:lib-debian-forky:
   stage: build
   image: ${DEBIAN_IMAGE}
   variables:
@@ -142,12 +142,12 @@ build:lib-debian-trixie:
     paths:
       - _build
 
-unit-test:native-debian-trixie:
+unit-test:native-debian-forky:
   stage: test+docs
   image: ${DEBIAN_IMAGE}
   needs:
-    - build:native-debian-trixie
-  <<: *trixie_vars
+    - build:native-debian-forky
+  <<: *forky_vars
   <<: *test_before_script
   <<: *test_step
   artifacts:
@@ -156,25 +156,25 @@ unit-test:native-debian-trixie:
       - _build
       - coverage-*.json
 
-asan-test:native-debian-trixie:
+asan-test:native-debian-forky:
   stage: test+docs
   image: ${ASAN_IMAGE}
   tags: [asan]
   needs: []
-  <<: *trixie_vars
+  <<: *forky_vars
   <<: *test_before_script
   script:
     - meson setup -Dphoc_tests=enabled -Dtools=false -Db_sanitize=address -Dbuildtype=debug -Dsearchd=true _build-asan
     - ${XVFB_RUN} meson test --print-errorlogs -C _build-asan --suite unit --timeout-multiplier 5
   allow_failure: true
 
-screenshot:native-debian-trixie:
+screenshot:native-debian-forky:
   stage: test+docs
   image: ${SCREENSHOT_IMAGE}
   needs:
-    - build:native-debian-trixie
+    - build:native-debian-forky
   <<: *test_before_script
-  <<: *trixie_vars
+  <<: *forky_vars
   script:
     - export LC_ALL=C.UTF-8
     - export G_MESSAGES_DEBUG=all
@@ -192,13 +192,13 @@ screenshot:native-debian-trixie:
       - screenshots/
       - _build/meson-logs/testlog.txt
 
-integration:native-debian-trixie:
+integration:native-debian-forky:
   stage: test+docs
   image: ${DEBIAN_IMAGE}
   needs:
-    - build:native-debian-trixie
+    - build:native-debian-forky
   <<: *test_before_script
-  <<: *trixie_vars
+  <<: *forky_vars
   script:
     - export LC_ALL=C.UTF-8
     - export G_MESSAGES_DEBUG=all
@@ -264,7 +264,7 @@ check-ui:
 check-license-headers:
   stage: test+docs
   image: ${DEBIAN_IMAGE}
-  <<: *trixie_vars
+  <<: *forky_vars
   needs: []
   script:
     # Checks .c and .h files begin with a license header as
@@ -309,11 +309,11 @@ unit-test:native-alpinelinux-edge:
       - _build
   when: manual
 
-build:native-debian-trixie-clang:
+build:native-debian-forky-clang:
   stage: build
   image: ${DEBIAN_IMAGE}
   <<: *build_before_script
-  <<: *trixie_vars
+  <<: *forky_vars
   script:
     - CC=clang CC_LD=lld meson setup ${BUILD_OPTS} _build
     - meson compile -C _build
@@ -369,14 +369,14 @@ coverage:
         path: coverage-report/coverage.xml
   coverage: '/^lines: (\d+\.\d+\%)/'
   needs:
-    - unit-test:native-debian-trixie
-    - screenshot:native-debian-trixie
-    - integration:native-debian-trixie
+    - unit-test:native-debian-forky
+    - screenshot:native-debian-forky
+    - integration:native-debian-forky
 
 abi-compliance-checker:
   image: ${DEBIAN_IMAGE}
   stage: analyze
-  needs: [build:lib-debian-trixie]
+  needs: [build:lib-debian-forky]
   <<: *build_before_script
   script:
     - meson setup --reconfigure -Dabi-check=true _build .
@@ -394,10 +394,10 @@ abi-compliance-checker:
           - src/libphosh.syms.in
     - when: manual
 
-package:deb-debian-trixie:arm64:
+package:deb-debian-forky:arm64:
   stage: package
   variables:
-    PHOSH_DOCKER_IMAGE: debian:trixie
+    PHOSH_DOCKER_IMAGE: debian:forky
     DEB_BUILD_PROFILES: "nodoc nocheck"
     DEB_BUILD_OPTIONS: nocheck
   extends: .phosh-build-debian-package
