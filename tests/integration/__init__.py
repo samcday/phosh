@@ -7,12 +7,17 @@
 # Author: Guido Günther <agx@sigxcpu.org>
 
 
-import re
 import time
 import fcntl
 import os
 import subprocess
+import tempfile
 import sys
+
+
+def set_nonblock(fd):
+    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+    fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
 
 class Phosh:
@@ -26,6 +31,10 @@ class Phosh:
     def __init__(self, topsrcdir, topbuilddir):
         self.topsrcdir = topsrcdir
         self.topbuilddir = topbuilddir
+        self.tmpdir = tempfile.TemporaryDirectory()
+
+        # Set Wayland socket
+        self.wl_display = os.path.join(self.tmpdir.name, "wayland-socket")
 
         if not os.getenv("XDG_RUNTIME_DIR"):
             print(f"'XDG_RUNTIME_DUR' unset, setting to {topbuilddir}")
@@ -57,17 +66,18 @@ class Phosh:
 
         env = os.environ.copy()
         env["GSETTINGS_BACKEND"] = "memory"
-        env["WLR_BACKENDS"] = self.find_wlr_backend()
+        backend = self.find_wlr_backend()
+        env["WLR_BACKENDS"] = backend
 
         # Spawn phoc -E .../run
-        cmd = ["phoc", "-C", phoc_ini, "-E", runscript]
+        cmd = ["phoc", "-C", phoc_ini, "--socket", self.wl_display, "-E", runscript]
+        print(f"Launching '{' '.join(cmd)}' with '{backend}' backend")
         self.process = subprocess.Popen(
             cmd, env=env, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
         for fd in [self.process.stdout.fileno(), self.process.stderr.fileno()]:
-            fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-            fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+            set_nonblock(fd)
 
         stderr_output = ""
         stdout_output = ""
@@ -95,18 +105,6 @@ class Phosh:
         assert timedout is False
         self.process.stdout.close()
         self.process.stderr.close()
-
-        display_re = re.compile(
-            r"Running compositor on wayland display '(?P<display>wayland-([0-9]+))'"
-        )
-        for line in stdout_output.split("\n"):
-            m = display_re.match(line)
-            if m:
-                self.wl_display = m.group("display")
-                break
-        if not self.wl_display:
-            self.teardown_nested()
-            raise Exception("Failed to find Wayland display")
 
         # TODO: Check availability on DBus
         time.sleep(2)
