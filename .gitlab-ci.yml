@@ -201,10 +201,10 @@ integration:native-debian-forky:
   <<: *forky_vars
   script:
     - export LC_ALL=C.UTF-8
-    - export G_MESSAGES_DEBUG=all
     - export NO_AT_BRIDGE=1
     - export TOPSRCDIR="${PWD}"
     - export TOPBUILDDIR="${PWD}/_build"
+    - export WLR_BACKENDS=headless
     # Make sure tests can find the plugins and po files
     - "meson install -C _build"
     - ${XVFB_RUN} dbus-run-session pytest --junitxml=report-integration-${CI_JOB_NAME}.xml -v tests/integration
