@@ -57,10 +57,7 @@ variables:
                     vala
   RUST_BINDINGS_BRANCH: main
   LIBPHOSH: libphosh-0.45
-
-.forky_vars: &forky_vars
-  variables:
-    BUILD_OPTS: -Dcallui-i18n=true -Dphoc_tests=enabled -Dsearchd=true ${COMMON_BUILD_OPTS}
+  BUILD_OPTS: -Dcallui-i18n=true -Dphoc_tests=enabled -Dsearchd=true ${COMMON_BUILD_OPTS}
 
 .test_before_script: &test_before_script
   before_script:
@@ -121,7 +118,6 @@ build:native-debian-forky:
   stage: build
   image: ${DEBIAN_IMAGE}
   <<: *build_before_script
-  <<: *forky_vars
   <<: *build_step
   artifacts:
     paths:
@@ -147,7 +143,6 @@ unit-test:native-debian-forky:
   image: ${DEBIAN_IMAGE}
   needs:
     - build:native-debian-forky
-  <<: *forky_vars
   <<: *test_before_script
   <<: *test_step
   artifacts:
@@ -161,7 +156,6 @@ asan-test:native-debian-forky:
   image: ${ASAN_IMAGE}
   tags: [asan]
   needs: []
-  <<: *forky_vars
   <<: *test_before_script
   script:
     - meson setup -Dphoc_tests=enabled -Dtools=false -Db_sanitize=address -Dbuildtype=debug -Dsearchd=true _build-asan
@@ -174,7 +168,6 @@ screenshot:native-debian-forky:
   needs:
     - build:native-debian-forky
   <<: *test_before_script
-  <<: *forky_vars
   script:
     - export LC_ALL=C.UTF-8
     - export G_MESSAGES_DEBUG=all
@@ -198,7 +191,6 @@ integration:native-debian-forky:
   needs:
     - build:native-debian-forky
   <<: *test_before_script
-  <<: *forky_vars
   script:
     - export LC_ALL=C.UTF-8
     - export NO_AT_BRIDGE=1
@@ -265,7 +257,6 @@ check-ui:
 check-license-headers:
   stage: test+docs
   image: ${DEBIAN_IMAGE}
-  <<: *forky_vars
   needs: []
   script:
     # Checks .c and .h files begin with a license header as
@@ -314,7 +305,6 @@ build:native-debian-forky-clang:
   stage: build
   image: ${DEBIAN_IMAGE}
   <<: *build_before_script
-  <<: *forky_vars
   script:
     - CC=clang CC_LD=lld meson setup ${BUILD_OPTS} _build
     - meson compile -C _build
