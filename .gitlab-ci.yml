@@ -167,10 +167,11 @@ screenshot:native-debian-forky:
   image: ${SCREENSHOT_IMAGE}
   needs:
     - build:native-debian-forky
+  variables:
+    LC_ALL: C.UTF-8
+    G_MESSAGES_DEBUG: all
   <<: *test_before_script
   script:
-    - export LC_ALL=C.UTF-8
-    - export G_MESSAGES_DEBUG=all
     # Make sure tests can find the plugins and po files
     - "meson install -C _build"
     - ${XVFB_RUN} meson test -C _build --print-errorlogs --suite screenshots
@@ -191,13 +192,14 @@ integration:native-debian-forky:
   needs:
     - build:native-debian-forky
   <<: *test_before_script
+  variables:
+    LC_ALL: C.UTF-8
+    NO_AT_BRIDGE: 1
+    WLR_RENDERER: pixman
+    WLR_BACKENDS: headless
   script:
-    - export LC_ALL=C.UTF-8
-    - export NO_AT_BRIDGE=1
     - export TOPSRCDIR="${PWD}"
     - export TOPBUILDDIR="${PWD}/_build"
-    - export WLR_RENDERER=pixman
-    - export WLR_BACKENDS=headless
     # Make sure tests can find the plugins and po files
     - "meson install -C _build"
     - ${XVFB_RUN} dbus-run-session pytest --junitxml=report-integration-${CI_JOB_NAME}.xml -v tests/integration
@@ -289,11 +291,12 @@ unit-test:native-alpinelinux-edge:
   allow_failure: true
   needs:
     - build:native-alpinelinux-edge
+  variables:
+    LC_ALL: C.UTF-8
   before_script:
     - echo "https://alpine.global.ssl.fastly.net/alpine/edge/testing" >> /etc/apk/repositories
     - apk add xvfb-run $ALPINE_EDGE_DEPS
   script:
-    - export LC_ALL=C.UTF-8
     - ${XVFB_RUN} meson test -C _build --suite unit
   artifacts:
     when: always
