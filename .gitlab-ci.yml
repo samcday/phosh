@@ -193,6 +193,8 @@ integration:native-debian-forky:
     - build:native-debian-forky
   <<: *test_before_script
   variables:
+    SID_PKGS: phoc
+    # exports
     LC_ALL: C.UTF-8
     NO_AT_BRIDGE: 1
     WLR_RENDERER: pixman
