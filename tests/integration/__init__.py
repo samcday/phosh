@@ -7,12 +7,16 @@
 # Author: Guido Günther <agx@sigxcpu.org>
 
 
+import dbus
 import time
 import fcntl
 import os
 import subprocess
 import tempfile
 import sys
+from dbus.mainloop.glib import DBusGMainLoop
+
+DBusGMainLoop(set_as_default=True)
 
 
 def set_nonblock(fd):
@@ -107,10 +111,16 @@ class Phosh:
             stderr: {self.stderr}
             stdout: {self.stdout}"""
 
-        print("Phosh ready")
+        bus = dbus.SessionBus()
+        proxy = bus.get_object(
+            "mobi.phosh.Shell.DebugControl", "/mobi/phosh/Shell/DebugControl"
+        )
+        iface = dbus.Interface(proxy, "org.freedesktop.DBus.Properties")
+        props = iface.GetAll("mobi.phosh.Shell.DebugControl", timeout=5)
+        if "LogDomains" not in props:
+            return None
 
-        # TODO: Check availability on DBus
-        time.sleep(2)
+        print("Phosh ready")
         return self
 
     def wait_for_output(
