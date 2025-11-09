@@ -128,6 +128,7 @@ enum {
   PROP_PRIMARY_MONITOR,
   PROP_SHELL_STATE,
   PROP_OVERVIEW_VISIBLE,
+  PROP_LOG_DOMAINS,
   PROP_LAST_PROP
 };
 static GParamSpec *props[PROP_LAST_PROP];
@@ -146,6 +147,7 @@ typedef struct
   PhoshDragSurface *home;
   gboolean          overview_visible;
   GPtrArray *faders;              /* for final fade out */
+  GStrv log_domains;
 
   PhoshOsdWindow   *osd;
   gint              osd_timeoutid;
@@ -479,6 +481,29 @@ set_locked (PhoshShell *self, gboolean locked)
 
 
 static void
+phosh_shell_set_log_domains (PhoshShell *self, const char *const *log_domains)
+{
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+
+  g_return_if_fail (PHOSH_IS_SHELL (self));
+
+  if (!priv->log_domains && !log_domains)
+    return;
+
+  if (priv->log_domains && log_domains &&
+      g_strv_equal ((const char *const *)priv->log_domains, log_domains))
+    return;
+
+  g_strfreev (priv->log_domains);
+  priv->log_domains = g_strdupv ((GStrv)log_domains);
+
+  g_log_writer_default_set_debug_domains (log_domains);
+
+  g_object_notify_by_pspec (G_OBJECT (self), props[PROP_LOG_DOMAINS]);
+}
+
+
+static void
 phosh_shell_set_property (GObject      *object,
                           guint         property_id,
                           const GValue *value,
@@ -501,6 +526,9 @@ phosh_shell_set_property (GObject      *object,
     break;
   case PROP_OVERVIEW_VISIBLE:
     priv->overview_visible = g_value_get_boolean (value);
+    break;
+  case PROP_LOG_DOMAINS:
+    phosh_shell_set_log_domains (self, g_value_get_boxed (value));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -536,6 +564,9 @@ phosh_shell_get_property (GObject    *object,
     break;
   case PROP_OVERVIEW_VISIBLE:
     g_value_set_boolean (value, priv->overview_visible);
+    break;
+  case PROP_LOG_DOMAINS:
+    g_value_set_boxed (value, priv->log_domains);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -620,6 +651,11 @@ phosh_shell_dispose (GObject *object)
 static void
 phosh_shell_finalize (GObject *object)
 {
+  PhoshShell *self = PHOSH_SHELL (object);
+  PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+
+  g_clear_pointer (&priv->log_domains, g_strfreev);
+
   cui_uninit ();
   G_OBJECT_CLASS (phosh_shell_parent_class)->finalize (object);
 }
@@ -1346,6 +1382,16 @@ phosh_shell_class_init (PhoshShellClass *klass)
     g_param_spec_boolean ("overview-visible", "", "",
                           TRUE,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  /**
+   * PhoshShell:log-domains
+   *
+   * The current log domains
+   */
+  props[PROP_LOG_DOMAINS] =
+    g_param_spec_boxed ("log-domains", "", "",
+                        G_TYPE_STRV,
+                        G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
 
   g_object_class_install_properties (object_class, PROP_LAST_PROP, props);
 
@@ -1383,7 +1429,12 @@ static GDebugKey debug_keys[] =
 static void
 phosh_shell_init (PhoshShell *self)
 {
+  const char *messages_debug;
   PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
+
+  messages_debug = g_getenv ("G_MESSAGES_DEBUG");
+  if (messages_debug)
+    priv->log_domains = g_strsplit (messages_debug, " ", -1);
 
   cui_init (TRUE);
   gtk_icon_theme_add_resource_path (gtk_icon_theme_get_default (), "/mobi/phosh/icons");
