@@ -75,7 +75,7 @@ phosh_test_get_shell (GLogLevelFlags *saved_flags)
   /* Drop warnings from the fatal log mask since there's plenty
    * when running without recommended DBus services */
   flags = g_log_set_always_fatal (0);
-  g_log_set_always_fatal(flags & ~G_LOG_LEVEL_WARNING);
+  g_log_set_always_fatal (flags & ~G_LOG_LEVEL_WARNING);
 
   shell = phosh_shell_new ();
   g_assert_true (PHOSH_IS_SHELL (shell));

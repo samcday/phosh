@@ -163,7 +163,8 @@ phosh_test_full_shell_setup (PhoshTestFullShellFixture *fixture, gconstpointer d
 
   /* Run shell in a thread so we can sync call to the DBus interfaces */
   fixture->queue = g_async_queue_new ();
-  fixture->comp_and_shell = g_thread_new ("comp-and-shell-thread", phosh_test_full_shell_thread, fixture);
+  fixture->comp_and_shell = g_thread_new ("comp-and-shell-thread",
+                                          phosh_test_full_shell_thread, fixture);
 }
 
 /**
