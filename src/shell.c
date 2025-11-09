@@ -29,6 +29,7 @@
 #include "background.h"
 #include "brightness-manager.h"
 #include "drag-surface.h"
+#include "debug-control.h"
 #include "shell-priv.h"
 #include "app-tracker.h"
 #include "batteryinfo.h"
@@ -199,6 +200,7 @@ typedef struct
   PhoshConnectivityManager *connectivity_manager;
   PhoshMprisManager *mpris_manager;
   PhoshBrightnessManager *brightness_manager;
+  PhoshDebugControl *debug_control;
 
   /* sensors */
   PhoshSensorProxyManager *sensor_proxy_manager;
@@ -589,6 +591,7 @@ phosh_shell_dispose (GObject *object)
   g_clear_pointer (&priv->notification_banner, phosh_cp_widget_destroy);
 
   /* dispose managers in opposite order of declaration */
+  g_clear_object (&priv->debug_control);
   g_clear_object (&priv->brightness_manager);
   g_clear_object (&priv->mpris_manager);
   g_clear_object (&priv->connectivity_manager);
@@ -825,6 +828,7 @@ setup_idle_cb (PhoshShell *self)
   g_autoptr (GError) err = NULL;
   PhoshShellPrivate *priv = phosh_shell_get_instance_private (self);
 
+  priv->debug_control = phosh_debug_control_new ();
   priv->app_tracker = phosh_app_tracker_new ();
   priv->session_manager = phosh_session_manager_new ();
   priv->mode_manager = phosh_mode_manager_new ();
@@ -907,6 +911,9 @@ setup_idle_cb (PhoshShell *self)
   setup_primary_monitor_signal_handlers (self);
   /* Setup event hooks late so state changes in UI files don't trigger feedback */
   phosh_feedback_manager_setup_event_hooks (priv->feedback_manager);
+
+  /* Export the debug interface late so everything is up when the name appears */
+  phosh_debug_control_set_exported (priv->debug_control, TRUE);
 
   /* Delay signaling to the compositor a bit so that idle handlers get a chance to run and
      the user can unlock right away. Ideally we'd not need this */
