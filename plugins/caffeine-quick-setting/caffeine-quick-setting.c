@@ -9,6 +9,7 @@
 #include "caffeine-quick-setting.h"
 #include "interval-row.h"
 #include "plugin-shell.h"
+#include "status-page.h"
 
 #include <cui-call.h>
 
@@ -38,6 +39,7 @@ static GParamSpec *props[LAST_PROP];
 struct _PhoshCaffeineQuickSetting {
   PhoshQuickSetting        parent;
 
+  PhoshStatusPage         *status_page;
   PhoshStatusIcon         *info;
   guint                    cookie;
 
@@ -181,20 +183,21 @@ on_interval_row_activated (GtkListBox                *listbox,
   uint selected_idx = 0;
   g_autoptr (GList) children = NULL;
 
-  if (self->cur_row == row)
-    return;
+  if (self->cur_row != row) {
+    phosh_caffeine_quick_setting_clear_timer (self);
 
-  phosh_caffeine_quick_setting_clear_timer (self);
+    children = gtk_container_get_children (GTK_CONTAINER (self->listbox));
+    for (GList *child = children; child; child = child->next) {
+      if (child->data == row)
+        break;
 
-  children = gtk_container_get_children (GTK_CONTAINER (self->listbox));
-  for (GList *child = children; child; child = child->next) {
-    if (child->data == row)
-      break;
+      selected_idx++;
+    }
 
-    selected_idx++;
+    g_settings_set_uint (self->settings, CAFFEINE_SELECTED_KEY, selected_idx);
   }
 
-  g_settings_set_uint (self->settings, CAFFEINE_SELECTED_KEY, selected_idx);
+  g_signal_emit_by_name (self->status_page, "done", TRUE);
 }
 
 
@@ -270,6 +273,7 @@ phosh_caffeine_quick_setting_class_init (PhoshCaffeineQuickSettingClass *klass)
                                                "/mobi/phosh/plugins/caffeine-quick-setting/qs.ui");
 
   gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSetting, info);
+  gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSetting, status_page);
   gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSetting, listbox);
   gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSetting, stack);
 
