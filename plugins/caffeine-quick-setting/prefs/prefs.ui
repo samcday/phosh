@@ -3,6 +3,7 @@
   <requires lib="gtk" version="4.0"/>
   <requires lib="libadwaita" version="1.6"/>
   <template class="PhoshCaffeineQuickSettingPrefs" parent="AdwPreferencesDialog">
+    <property name="follows-content-size">True</property>
     <property name="title" translatable="1">Caffeine Quick Setting Preferences</property>
     <child>
       <object class="AdwPreferencesPage">
