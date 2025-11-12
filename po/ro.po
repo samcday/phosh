@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-11-11 05:54+0000\n"
-"PO-Revision-Date: 2025-11-11 12:19+0100\n"
+"POT-Creation-Date: 2025-11-12 09:11+0000\n"
+"PO-Revision-Date: 2025-11-12 11:46+0100\n"
 "Last-Translator: Antonio Marin <gnmer.6qxyg@slmail.me>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -689,6 +689,7 @@ msgid "Authentication required"
 msgstr "Autentificare necesară"
 
 #: src/ui/network-auth-prompt.ui:37
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:50
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:212
 msgid "_Cancel"
 msgstr "_Anulează"
@@ -828,6 +829,64 @@ msgstr "Timpi Cafeină"
 msgid "No caffeine intervals"
 msgstr "Niciun interval Cafeină"
 
+#: plugins/caffeine-quick-setting/prefs/caffeine-quick-setting-prefs.c:251
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:146
+msgid "No timeout (∞)"
+msgstr "Nelimitat (∞)"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:6
+msgid "Caffeine Quick Setting Preferences"
+msgstr "Preferințe pentru Cafeină"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:10
+msgid "Caffeine Duration"
+msgstr "Timpi Cafeină"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:14
+msgid "Manage Caffeine Duration"
+msgstr "Gestionează durata pentru Cafeină"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:15
+msgid "Add or remove custom caffeine intervals"
+msgstr "Adaugă sau elimină intervale pentru Cafeină"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:21
+msgid "Add interval"
+msgstr "Adaugă un interval"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:41
+msgid "Add New Interval"
+msgstr "Adaugă un interval nou"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:58
+#: plugins/emergency-info/prefs/emergency-info-prefs.ui:220
+msgid "_Add"
+msgstr "_Adaugă"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:90
+msgid "Quickstart Intervals"
+msgstr "Intervale rapide"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:102
+msgid "5 m"
+msgstr "5 m"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:113
+msgid "15 m"
+msgstr "15 m"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:124
+msgid "30 m"
+msgstr "30 m"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:135
+msgid "1 h"
+msgstr "1 h"
+
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:163
+msgid "Choose Interval"
+msgstr "Alege intervalul"
+
 #: plugins/dark-mode-quick-setting/dark-mode-quick-setting.c:34
 msgid "Default style"
 msgstr "Aspect prestabilit"
@@ -941,10 +1000,6 @@ msgstr "Adaugă un contact"
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:203
 msgid "Add New Contact"
 msgstr "Adaugă un contact nou"
-
-#: plugins/emergency-info/prefs/emergency-info-prefs.ui:220
-msgid "_Add"
-msgstr "_Adaugă"
 
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:240
 msgid "_Contact Name"
