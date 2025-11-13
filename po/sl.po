@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phosh main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/Phosh/phosh/issues\n"
-"POT-Creation-Date: 2025-11-11 20:33+0000\n"
-"PO-Revision-Date: 2025-11-11 21:36+0100\n"
+"POT-Creation-Date: 2025-11-12 19:32+0000\n"
+"PO-Revision-Date: 2025-11-13 09:03+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian <gnome-si@googlegroups.com>\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && "
-"n%100<=4 ? 2 : 3);\n"
-"X-Generator: Poedit 3.8\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && n"
+"%100<=4 ? 2 : 3);\n"
+"X-Generator: Poedit 2.2.1\n"
 "X-Poedit-SourceCharset: ISO-8859-1\n"
 
 #: data/mobi.phosh.Shell.desktop.in.in:3 data/wayland-sessions/phosh.desktop:3
@@ -697,7 +697,7 @@ msgid "Authentication required"
 msgstr "Zahtevana je overitev"
 
 #: src/ui/network-auth-prompt.ui:37
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:50
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:51
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:212
 msgid "_Cancel"
 msgstr "Pre_kliči"
@@ -838,66 +838,60 @@ msgid "No caffeine intervals"
 msgstr "Brez intervalov kofeina"
 
 #: plugins/caffeine-quick-setting/prefs/caffeine-quick-setting-prefs.c:251
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:146
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:147
 msgid "No timeout (∞)"
 msgstr "Brez časovne omejitve (∞)"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:6
-#, fuzzy
-#| msgid "Caffeine Quick Setting"
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:7
 msgid "Caffeine Quick Setting Preferences"
-msgstr "Hitra nastavitev za Caffeine"
+msgstr "Možnosti hitrih nastavitev za Caffeine"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:10
-#, fuzzy
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:11
 msgid "Caffeine Duration"
-msgstr "Trajanje Kofeina"
+msgstr "Trajanje Caffeine"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:14
-#, fuzzy
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:15
 msgid "Manage Caffeine Duration"
 msgstr "Upravljaj trajanje Caffeine"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:15
-#, fuzzy
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:16
 msgid "Add or remove custom caffeine intervals"
-msgstr "Dodaj ali odstrani intervale kofeina po meri"
+msgstr "Dodajte ali odstranite intervale Caffeine po meri"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:21
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:22
 msgid "Add interval"
 msgstr "Dodaj interval"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:41
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:42
 msgid "Add New Interval"
 msgstr "Dodaj nov interval"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:58
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:59
 #: plugins/emergency-info/prefs/emergency-info-prefs.ui:220
 msgid "_Add"
 msgstr "_Dodaj"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:90
-#, fuzzy
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:91
 msgid "Quickstart Intervals"
 msgstr "Intervali hitrih nastavitev"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:102
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:103
 msgid "5 m"
 msgstr "5 min"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:113
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:114
 msgid "15 m"
 msgstr "15 min"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:124
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:125
 msgid "30 m"
 msgstr "30 min"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:135
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:136
 msgid "1 h"
 msgstr "1 ura"
 
-#: plugins/caffeine-quick-setting/prefs/prefs.ui:163
+#: plugins/caffeine-quick-setting/prefs/prefs.ui:164
 msgid "Choose Interval"
 msgstr "Izberite interval"
 
