@@ -21,6 +21,7 @@
 struct _PhoshCaffeineQuickSettingPrefs {
   AdwPreferencesDialog  parent;
 
+  GtkStack             *stack;
   GtkListBox           *listbox;
   GtkSpinButton        *hours_btn;
   GtkSpinButton        *minutes_btn;
@@ -148,6 +149,7 @@ phosh_caffeine_quick_setting_prefs_class_init (PhoshCaffeineQuickSettingPrefsCla
                                                "/mobi/phosh/plugins/"
                                                "caffeine-quick-setting-prefs/prefs.ui");
 
+  gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSettingPrefs, stack);
   gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSettingPrefs, listbox);
   gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSettingPrefs, add_interval_dialog);
   gtk_widget_class_bind_template_child (widget_class, PhoshCaffeineQuickSettingPrefs, hours_btn);
@@ -258,6 +260,9 @@ on_intervals_changed (PhoshCaffeineQuickSettingPrefs *self)
 
     gtk_list_box_insert (self->listbox, GTK_WIDGET (row), -1);
   }
+
+  gtk_stack_set_visible_child_name (self->stack,
+                                    g_variant_n_children (intervals) ? "listbox" : "empty-state");
 }
 
 
