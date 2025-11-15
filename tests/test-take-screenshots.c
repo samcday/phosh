@@ -260,6 +260,25 @@ run_plugin_prefs (void)
 }
 
 
+static void
+screenshot_plugin_pref (GMainLoop                      *loop,
+                        const char                     *what,
+                        const char                     *where,
+                        int                             num,
+                        struct zwp_virtual_keyboard_v1 *keyboard,
+                        GTimer                         *timer,
+                        guint                           key)
+{
+  phosh_test_keyboard_press_modifiers (keyboard, KEY_LEFTCTRL);
+  phosh_test_keyboard_press_keys (keyboard, timer, key, NULL);
+  phosh_test_keyboard_release_modifiers (keyboard);
+  wait_a_bit (loop, 1000);
+  take_screenshot (what, num++, what);
+  phosh_test_keyboard_press_keys (keyboard, timer, KEY_ESC, NULL);
+  wait_a_bit (loop, 500);
+}
+
+
 static int
 screenshot_plugin_prefs (GMainLoop                      *loop,
                          const char                     *what,
@@ -275,18 +294,10 @@ screenshot_plugin_prefs (GMainLoop                      *loop,
   phosh_test_wait_for_shell_state_wait (waiter, PHOSH_STATE_OVERVIEW, FALSE, WAIT_TIMEOUT);
   /* Give app time to start */
   wait_a_bit (loop, 2000);
-  phosh_test_keyboard_press_modifiers (keyboard, KEY_LEFTCTRL);
-  phosh_test_keyboard_press_keys (keyboard, timer, KEY_T, NULL);
-  phosh_test_keyboard_release_modifiers (keyboard);
-  wait_a_bit (loop, 1000);
-  take_screenshot (what, num++, "plugin-prefs-ticket-box");
-  phosh_test_keyboard_press_keys (keyboard, timer, KEY_ESC, NULL);
-  wait_a_bit (loop, 500);
-  phosh_test_keyboard_press_modifiers (keyboard, KEY_LEFTCTRL);
-  phosh_test_keyboard_press_keys (keyboard, timer, KEY_E, NULL);
-  phosh_test_keyboard_release_modifiers (keyboard);
-  wait_a_bit (loop, 500);
-  take_screenshot (what, num++, "plugin-prefs-emergency-info");
+
+  screenshot_plugin_pref (loop, what, "plugin-prefs-ticket-box", num++, keyboard, timer, KEY_T);
+  screenshot_plugin_pref (loop, what, "plugin-prefs-emergency-info", num++, keyboard, timer, KEY_E);
+
   g_assert_no_errno (kill (pid, SIGTERM));
   g_spawn_close_pid (pid);
 
