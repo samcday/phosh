@@ -297,6 +297,7 @@ screenshot_plugin_prefs (GMainLoop                      *loop,
 
   screenshot_plugin_pref (loop, what, "plugin-prefs-ticket-box", num++, keyboard, timer, KEY_T);
   screenshot_plugin_pref (loop, what, "plugin-prefs-emergency-info", num++, keyboard, timer, KEY_E);
+  screenshot_plugin_pref (loop, what, "plugin-prefs-upcoming-events", num++, keyboard, timer, KEY_U);
 
   g_assert_no_errno (kill (pid, SIGTERM));
   g_spawn_close_pid (pid);
