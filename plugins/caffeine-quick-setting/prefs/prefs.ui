@@ -35,6 +35,9 @@
                       <object class="AdwStatusPage">
                         <property name="title">No caffeine intervals</property>
                         <property name="icon-name">caffeine-quick-setting-symbolic</property>
+                        <style>
+                          <class name="compact"/>
+                        </style>
                       </object>
                     </property>
                   </object>
