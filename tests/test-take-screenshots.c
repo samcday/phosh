@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2021 Purism SPC
+ *               2025 Phosh.mobi e.V.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -26,6 +27,9 @@
 
 #define POP_TIMEOUT 50000000
 #define WAIT_TIMEOUT 30000
+
+
+uint num_toplevels;
 
 
 static void
@@ -260,22 +264,77 @@ run_plugin_prefs (void)
 }
 
 
+static gboolean
+wait_for_num_toplevels (GMainLoop  *loop,
+                        uint        n,
+                        uint        timeout,
+                        GSourceFunc callback,
+                        gpointer    userdata)
+{
+  gboolean found = FALSE;
+  uint sleep = 100;
+
+  while (timeout > 0) {
+    if (callback)
+      (callback) (userdata);
+
+    if (num_toplevels == n) {
+      found = TRUE;
+      break;
+    }
+    wait_a_bit (loop, sleep);
+    timeout -= sleep;
+  }
+
+  return found;
+}
+
+
+typedef struct {
+  struct zwp_virtual_keyboard_v1 *keyboard;
+  uint modifiers;
+  uint key;
+} PhoshTestKbdShortcut;
+
+
+static gboolean
+send_kbd_shortcut_cb (gpointer user_data)
+{
+  PhoshTestKbdShortcut *shortcut = user_data;
+  g_autoptr (GTimer) timer = g_timer_new ();
+
+  if (shortcut->modifiers)
+    phosh_test_keyboard_press_modifiers (shortcut->keyboard, shortcut->modifiers);
+
+  phosh_test_keyboard_press_keys (shortcut->keyboard, timer, shortcut->key, NULL);
+
+  if (shortcut->modifiers)
+    phosh_test_keyboard_release_modifiers (shortcut->keyboard);
+
+  return TRUE;
+}
+
+
 static void
 screenshot_plugin_pref (GMainLoop                      *loop,
                         const char                     *what,
                         const char                     *where,
                         int                             num,
                         struct zwp_virtual_keyboard_v1 *keyboard,
-                        GTimer                         *timer,
                         guint                           key)
 {
-  phosh_test_keyboard_press_modifiers (keyboard, KEY_LEFTCTRL);
-  phosh_test_keyboard_press_keys (keyboard, timer, key, NULL);
-  phosh_test_keyboard_release_modifiers (keyboard);
-  wait_a_bit (loop, 1000);
-  take_screenshot (what, num++, what);
-  phosh_test_keyboard_press_keys (keyboard, timer, KEY_ESC, NULL);
-  wait_a_bit (loop, 500);
+  g_test_message ("Screenshotting '%s'", what);
+  g_debug ("Waiting for prefs app…");
+  g_assert (wait_for_num_toplevels (loop, 1, 5000, NULL, NULL));
+
+  g_debug ("Opening prefs…");
+  g_assert (wait_for_num_toplevels (loop, 2, 5000, send_kbd_shortcut_cb,
+                                    &(PhoshTestKbdShortcut){ keyboard, KEY_LEFTCTRL, key }));
+  g_debug ("Closing prefs…");
+  take_screenshot (what, num++, where);
+
+  g_assert (wait_for_num_toplevels (loop, 1, 5000, send_kbd_shortcut_cb,
+                                    &(PhoshTestKbdShortcut){ keyboard, 0, KEY_ESC }));
 }
 
 
@@ -284,7 +343,6 @@ screenshot_plugin_prefs (GMainLoop                      *loop,
                          const char                     *what,
                          int                             num,
                          struct zwp_virtual_keyboard_v1 *keyboard,
-                         GTimer                         *timer,
                          PhoshTestWaitForShellState     *waiter)
 {
   GPid pid;
@@ -295,9 +353,9 @@ screenshot_plugin_prefs (GMainLoop                      *loop,
   /* Give app time to start */
   wait_a_bit (loop, 2000);
 
-  screenshot_plugin_pref (loop, what, "plugin-prefs-ticket-box", num++, keyboard, timer, KEY_T);
-  screenshot_plugin_pref (loop, what, "plugin-prefs-emergency-info", num++, keyboard, timer, KEY_E);
-  screenshot_plugin_pref (loop, what, "plugin-prefs-upcoming-events", num++, keyboard, timer, KEY_U);
+  screenshot_plugin_pref (loop, what, "plugin-prefs-ticket-box", num++, keyboard, KEY_T);
+  screenshot_plugin_pref (loop, what, "plugin-prefs-emergency-info", num++, keyboard, KEY_E);
+  screenshot_plugin_pref (loop, what, "plugin-prefs-upcoming-events", num++, keyboard, KEY_U);
 
   g_assert_no_errno (kill (pid, SIGTERM));
   g_spawn_close_pid (pid);
@@ -562,6 +620,14 @@ screenshot_emergency_calls (GMainLoop                      *loop,
 
 
 static void
+on_num_toplevels_changed (PhoshToplevelManager *toplevel_manager)
+{
+  num_toplevels = phosh_toplevel_manager_get_num_toplevels (toplevel_manager);
+  g_debug ("Num toplevels: %d", num_toplevels);
+}
+
+
+static void
 test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
 {
   struct zwp_virtual_keyboard_v1 *keyboard;
@@ -575,7 +641,8 @@ test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
   g_autoptr (PhoshTestMprisMock) mpris_mock = NULL;
   g_autoptr (GError) err = NULL;
   g_autoptr (PhoshTestWaitForShellState) waiter = NULL;
-
+  PhoshShell *shell;
+  PhoshToplevelManager *toplevel_manager;
   const char *argv[] = { TEST_TOOLS "/app-buttons", NULL };
   GPid pid;
   int i = 1;
@@ -585,7 +652,14 @@ test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
   g_assert_nonnull (g_async_queue_timeout_pop (fixture->queue, POP_TIMEOUT));
 
   loop = g_main_loop_new (context, FALSE);
-  waiter = phosh_test_wait_for_shell_state_new (phosh_shell_get_default ());
+  shell = phosh_shell_get_default ();
+  waiter = phosh_test_wait_for_shell_state_new (shell);
+
+  toplevel_manager = phosh_shell_get_toplevel_manager (shell);
+  g_signal_connect (toplevel_manager,
+                    "notify::num-toplevels",
+                    G_CALLBACK (on_num_toplevels_changed),
+                    &num_toplevels);
 
   /* Give overview animation time to finish */
   phosh_test_wait_for_shell_state_wait (waiter, PHOSH_STATE_SETTINGS, FALSE, WAIT_TIMEOUT);
@@ -616,7 +690,7 @@ test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
   kill (pid, SIGTERM);
   g_spawn_close_pid (pid);
 
-  i = screenshot_plugin_prefs (loop, what, i, keyboard, timer, waiter);
+  i = screenshot_plugin_prefs (loop, what, i, keyboard, waiter);
 
   show_run_command_dialog (loop, keyboard, timer, waiter, TRUE);
   take_screenshot (what, i++, "run-command");
