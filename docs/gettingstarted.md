@@ -145,6 +145,15 @@ SAVE_TEST_LOGS=1 _build-test/tests/integration/run-pytest -s tests/integration/t
 and `stderr` and `stdout` will be written into `log.stderr` and
 `log.stdout` in the current directory.
 
+#### Running the Screenshot Tests
+
+One testcase brings up different parts of the shell and takes screenshots from them
+to ease finding visual regressions. You can run them locally via
+
+```sh
+PHOSH_TEST_TYPE=doesnotmatter _build-test/tests/test-take-screenshots
+```
+
 ### GTK Inspector
 
 Since phosh is a GTK application you can use
