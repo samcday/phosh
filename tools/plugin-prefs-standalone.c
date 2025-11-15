@@ -18,6 +18,7 @@
 #include <plugin-loader.h>
 
 #include <glib/gi18n.h>
+#include <glib-unix.h>
 
 
 typedef struct _PluginInfo {
@@ -130,6 +131,18 @@ on_app_activated (GtkApplication *app)
 }
 
 
+static gboolean
+on_sigterm (gpointer user_data)
+{
+  GApplication *app = user_data;
+
+  g_debug ("Got SIGTERM, quitting");
+  g_application_quit (app);
+
+  return G_SOURCE_REMOVE;
+}
+
+
 static GActionEntry entries[] =
 {
   { .name = "show-prefs", .parameter_type = "s", .activate = on_activated },
@@ -177,6 +190,8 @@ main (int argc, char *argv[])
                                    entries,
                                    G_N_ELEMENTS (entries),
                                    app);
+
+  g_unix_signal_add (SIGTERM, on_sigterm, app);
   g_application_run (G_APPLICATION (app), argc, argv);
 
   return EXIT_SUCCESS;
