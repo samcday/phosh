@@ -286,7 +286,7 @@ screenshot_plugin_prefs (GMainLoop                      *loop,
   phosh_test_keyboard_press_keys (keyboard, timer, KEY_E, NULL);
   phosh_test_keyboard_release_modifiers (keyboard);
   wait_a_bit (loop, 500);
-  take_screenshot (what, num++, "plugin-prefs-emergncy-info");
+  take_screenshot (what, num++, "plugin-prefs-emergency-info");
   g_assert_no_errno (kill (pid, SIGTERM));
   g_spawn_close_pid (pid);
 
