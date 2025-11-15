@@ -248,10 +248,10 @@ on_osd_finish (GObject      *source_object,
 
 
 static GPid
-run_plugin_prefs (void)
+run_plugin_prefs (const char *arg)
 {
   g_autoptr (GError) err = NULL;
-  const char *argv[] = { TEST_TOOLS "/plugin-prefs", NULL };
+  const char *argv[] = { TEST_TOOLS "/plugin-prefs", arg, NULL };
   gboolean ret;
   GPid pid;
 
@@ -339,23 +339,47 @@ screenshot_plugin_pref (GMainLoop                      *loop,
 
 
 static int
-screenshot_plugin_prefs (GMainLoop                      *loop,
-                         const char                     *what,
-                         int                             num,
-                         struct zwp_virtual_keyboard_v1 *keyboard,
-                         PhoshTestWaitForShellState     *waiter)
+screenshot_lockscreen_plugin_prefs (GMainLoop                      *loop,
+                                    const char                     *what,
+                                    int                             num,
+                                    struct zwp_virtual_keyboard_v1 *keyboard,
+                                    PhoshTestWaitForShellState     *waiter)
 {
   GPid pid;
 
-  pid = run_plugin_prefs ();
+  pid = run_plugin_prefs ("-l");
   /* Wait for overview to close */
   phosh_test_wait_for_shell_state_wait (waiter, PHOSH_STATE_OVERVIEW, FALSE, WAIT_TIMEOUT);
-  /* Give app time to start */
-  wait_a_bit (loop, 2000);
 
   screenshot_plugin_pref (loop, what, "plugin-prefs-ticket-box", num++, keyboard, KEY_T);
   screenshot_plugin_pref (loop, what, "plugin-prefs-emergency-info", num++, keyboard, KEY_E);
   screenshot_plugin_pref (loop, what, "plugin-prefs-upcoming-events", num++, keyboard, KEY_U);
+
+  g_assert_no_errno (kill (pid, SIGTERM));
+  g_spawn_close_pid (pid);
+
+  /* wait for app to quit and overview to be visible again */
+  phosh_test_wait_for_shell_state_wait (waiter, PHOSH_STATE_OVERVIEW, TRUE, WAIT_TIMEOUT);
+
+  return num;
+}
+
+
+static int
+screenshot_quick_setting_plugin_prefs (GMainLoop                      *loop,
+                                       const char                     *what,
+                                       int                             num,
+                                       struct zwp_virtual_keyboard_v1 *keyboard,
+                                       PhoshTestWaitForShellState     *waiter)
+{
+  GPid pid;
+
+  pid = run_plugin_prefs ("-q");
+  /* Wait for overview to close */
+  phosh_test_wait_for_shell_state_wait (waiter, PHOSH_STATE_OVERVIEW, FALSE, WAIT_TIMEOUT);
+
+  screenshot_plugin_pref (loop, what, "plugin-prefs-caffeine", num++, keyboard, KEY_C);
+  screenshot_plugin_pref (loop, what, "plugin-prefs-pomodoro", num++, keyboard, KEY_P);
 
   g_assert_no_errno (kill (pid, SIGTERM));
   g_spawn_close_pid (pid);
@@ -690,7 +714,8 @@ test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
   kill (pid, SIGTERM);
   g_spawn_close_pid (pid);
 
-  i = screenshot_plugin_prefs (loop, what, i, keyboard, waiter);
+  i = screenshot_lockscreen_plugin_prefs (loop, what, i, keyboard, waiter);
+  i = screenshot_quick_setting_plugin_prefs (loop, what, i, keyboard, waiter);
 
   show_run_command_dialog (loop, keyboard, timer, waiter, TRUE);
   take_screenshot (what, i++, "run-command");
