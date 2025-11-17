@@ -14,6 +14,8 @@
 #include "portal-dbus.h"
 #include "shell-priv.h"
 
+#include "gnome-shell-manager.h"
+
 #include "testlib-full-shell.h"
 #include "testlib-calls-mock.h"
 #include "testlib-mpris-mock.h"
@@ -446,11 +448,13 @@ screenshot_end_session_dialog (PhoshScreenShotContext *ctx, const char *what, in
 
 
 static int
-screenshot_osd (PhoshScreenShotContext *ctx, const char *what, int num)
+screenshot_osd_and_check_keybinding (PhoshScreenShotContext *ctx, const char *what, int num)
 {
   g_autoptr (PhoshDBusGnomeShell) proxy = NULL;
   g_autoptr (GError) err = NULL;
   GVariantBuilder builder;
+  gboolean success;
+  uint action;
 
   proxy = phosh_dbus_gnome_shell_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
                                                          G_DBUS_PROXY_FLAGS_NONE,
@@ -482,6 +486,27 @@ screenshot_osd (PhoshScreenShotContext *ctx, const char *what, int num)
   phosh_test_wait_for_shell_state_wait (ctx->waiter, PHOSH_STATE_MODAL_SYSTEM_PROMPT, FALSE,
                                         WAIT_TIMEOUT);
   wait_a_bit (ctx->loop, 500);
+
+  /* Check keybinding registration as we have the proxy */
+  success =
+    phosh_dbus_gnome_shell_call_grab_accelerator_sync (proxy,
+                                                       "XF86AudioMute",
+                                                       PHOSH_SHELL_ACTION_MODE_ALL,
+                                                       PHOSH_SHELL_KEY_BINDING_IGNORE_AUTOREPEAT,
+                                                       &action,
+                                                       NULL,
+                                                       &err);
+  g_assert_no_error (err);
+  g_assert_true (success);
+  g_assert_cmpint (action, >, 0);
+
+  success = phosh_dbus_gnome_shell_call_ungrab_accelerator_sync (proxy,
+                                                                 action,
+                                                                 NULL,
+                                                                 NULL,
+                                                                 &err);
+  g_assert_no_error (err);
+  g_assert_true (success);
 
   return num;
 }
@@ -653,7 +678,8 @@ test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
 
   ctx.loop = g_main_loop_new (context, FALSE);
   shell = phosh_shell_get_default ();
-  ctx.waiter = phosh_test_wait_for_shell_state_new (shell);
+  waiter = phosh_test_wait_for_shell_state_new (shell);
+  ctx.waiter = waiter;
 
   toplevel_manager = phosh_shell_get_toplevel_manager (shell);
   g_signal_connect (toplevel_manager,
@@ -701,7 +727,7 @@ test_take_screenshots (PhoshTestFullShellFixture *fixture, gconstpointer unused)
   take_screenshot (what, i++, "settings");
   toggle_settings (&ctx, FALSE);
 
-  i = screenshot_osd (&ctx, what, i);
+  i = screenshot_osd_and_check_keybinding (&ctx, what, i);
   i = screenshot_portal_access (&ctx, what, i);
   i = screenshot_end_session_dialog (&ctx, what, i);
   i = screenshot_mount_prompt (&ctx, what, i);
