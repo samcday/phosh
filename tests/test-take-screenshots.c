@@ -487,6 +487,8 @@ screenshot_osd (GMainLoop *loop, const char *what, int num, PhoshTestWaitForShel
                                         on_osd_finish,
                                         NULL);
   g_assert_no_error (err);
+  phosh_test_wait_for_shell_state_wait (waiter, PHOSH_STATE_MODAL_SYSTEM_PROMPT, TRUE,
+                                        WAIT_TIMEOUT);
   take_screenshot (what, num++, "osd");
 
   /* wait for OSD to clear */
