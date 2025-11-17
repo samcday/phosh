@@ -12,12 +12,16 @@
 
 import os
 import subprocess
+import dbus
 import dbusmock
 from collections import OrderedDict
 from dbusmock import DBusTestCase
 from dbusmock.templates.networkmanager import (
     InfrastructureMode,
+    MANAGER_IFACE,
     NM80211ApSecurityFlags,
+    SETTINGS_IFACE,
+    SETTINGS_OBJ,
 )
 
 from pathlib import Path
@@ -70,6 +74,7 @@ class PhoshDBusTestCase(DBusTestCase):
                 "phosh-cell-broadcast-manager",
                 "phosh-udev-manager",
                 "phosh-torch-manager",
+                "phosh-vpn-manager",
                 "phosh-wifi-manager",
                 "phosh-wwan-manager",
                 "phosh-wwan-mm",
@@ -130,6 +135,56 @@ class PhoshDBusTestCase(DBusTestCase):
         cbm_channel = 4371
         mm.AddCbm(2, cbm_channel, cbm_text)
         assert self.phosh.wait_for_output(f" Received cbm {cbm_channel}: {cbm_text}")
+
+    def test_vpn(self):
+        self.mocks["networkmanager"][1]
+
+        assert self.phosh.wait_for_output(
+            " VPN present: 0, uuid: (null)\n", ignore_present=True
+        )
+
+        # Add a VPN connection
+        connection = {
+            "connection": {
+                "timestamp": 1441979296,
+                "type": "vpn",
+                "id": "a",
+                "uuid": "11111111-1111-1111-1111-111111111111",
+            },
+            "vpn": {
+                "service-type": "org.freedesktop.NetworkManager.openvpn",
+                "data": {"connection-type": "tls"},
+            },
+        }
+
+        dbuscon = self.get_dbus(True)
+        settings = dbus.Interface(
+            dbuscon.get_object(MANAGER_IFACE, SETTINGS_OBJ), SETTINGS_IFACE
+        )
+        settings.AddConnection(connection)
+        assert self.phosh.wait_for_output(
+            " VPN present: 1, uuid: 11111111-1111-1111-1111-111111111111\n"
+        )
+
+        # Add a wireguard connection with newer timestamp
+        connection = {
+            "connection": {
+                "timestamp": 1441979300,
+                "type": "vpn",
+                "id": "b",
+                "uuid": "22222222-2222-2222-2222-222222222222",
+            },
+            "wireguard": {},
+        }
+
+        dbuscon = self.get_dbus(True)
+        settings = dbus.Interface(
+            dbuscon.get_object(MANAGER_IFACE, SETTINGS_OBJ), SETTINGS_IFACE
+        )
+        settings.AddConnection(connection)
+        assert self.phosh.wait_for_output(
+            " VPN present: 1, uuid: 22222222-2222-2222-2222-222222222222\n"
+        )
 
     def test_wifi(self):
         nm = self.mocks["networkmanager"][1]
