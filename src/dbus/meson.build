@@ -117,6 +117,13 @@ dbus_client_protos = [
 dbus_server_protos = [
   # Sorted by xml filename:
   [
+    'phosh-dbus-debug-control',
+    'mobi.phosh.Shell.DebugControl.xml',
+    'mobi.phosh.Shell',
+    false,
+    false,
+  ],
+  [
     'geoclue-agent-dbus',
     'org.freedesktop.GeoClue2.Agent.xml',
     'org.freedesktop',

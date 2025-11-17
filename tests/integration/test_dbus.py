@@ -15,14 +15,11 @@ import subprocess
 import dbusmock
 from collections import OrderedDict
 from dbusmock import DBusTestCase
-from dbus.mainloop.glib import DBusGMainLoop
 from pathlib import Path
 
 from gi.repository import Gio
 
 from . import Phosh, set_nonblock
-
-DBusGMainLoop(set_as_default=True)
 
 
 class PhoshDBusTestCase(DBusTestCase):
