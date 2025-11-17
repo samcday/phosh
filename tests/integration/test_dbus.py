@@ -15,6 +15,11 @@ import subprocess
 import dbusmock
 from collections import OrderedDict
 from dbusmock import DBusTestCase
+from dbusmock.templates.networkmanager import (
+    InfrastructureMode,
+    NM80211ApSecurityFlags,
+)
+
 from pathlib import Path
 
 from gi.repository import Gio
@@ -132,10 +137,52 @@ class PhoshDBusTestCase(DBusTestCase):
         assert self.phosh.check_for_stdout(" NM Wi-Fi enabled: 0, present: 0")
 
         # Add and enable Wi-Fi
-        nm.AddWiFiDevice(
+        wifi = nm.AddWiFiDevice(
             "wifi0", "wlan0", dbusmock.templates.networkmanager.DeviceState.ACTIVATED
         )
         assert self.phosh.wait_for_output(" NM Wi-Fi enabled: 1, present: 1")
+        assert self.phosh.check_for_stdout(" Wi-Fi device connected at 0")
+
+        nm.AddAccessPoint(
+            wifi,
+            "ap0",
+            "SSID1",
+            "00:de:ad:be:ef:00",
+            InfrastructureMode.NM_802_11_MODE_INFRA,
+            2425,
+            5400,
+            11,  # weak signal
+            NM80211ApSecurityFlags.NM_802_11_AP_SEC_KEY_MGMT_PSK,
+        )
+        assert self.phosh.wait_for_output(" Creating network: SSID1\n")
+
+        nm.AddAccessPoint(
+            wifi,
+            "ap1",
+            "SSID1",
+            "00:de:ad:be:ef:01",
+            InfrastructureMode.NM_802_11_MODE_INFRA,
+            2425,
+            5400,
+            82,  # stronger signal
+            NM80211ApSecurityFlags.NM_802_11_AP_SEC_KEY_MGMT_PSK,
+        )
+        assert self.phosh.wait_for_output(
+            " Adding access point to existing network: SSID1\n"
+        )
+
+        nm.AddAccessPoint(
+            wifi,
+            "ap2",
+            "SSID2",
+            "00:de:ad:be:ef:01",
+            InfrastructureMode.NM_802_11_MODE_INFRA,
+            2425,
+            5400,
+            82,
+            NM80211ApSecurityFlags.NM_802_11_AP_SEC_KEY_MGMT_PSK,
+        )
+        assert self.phosh.wait_for_output(" Creating network: SSID2\n")
 
     def test_bt(self):
         adapter_name = "hci0"
