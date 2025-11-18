@@ -539,7 +539,7 @@ screenshot_portal_access (PhoshScreenShotContext *ctx, const char *what, int num
     g_variant_ref_sink (options),
     NULL,
     on_portal_access_dialog,
-    (gpointer)&success);
+    &success);
   wait_a_bit (ctx->loop, 500);
   take_screenshot (what, num++, "portal-access");
   /* Close dialog */
