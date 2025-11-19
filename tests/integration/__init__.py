@@ -137,9 +137,6 @@ class Phosh:
             assert stderr_msg not in self.stderr
 
         while timeout >= 0:
-            # Phosh still running?
-            if self.process.poll() is not None:
-                return False
 
             out = self.process.stdout.read()
             if out:
@@ -148,6 +145,10 @@ class Phosh:
             out = self.process.stderr.read()
             if out:
                 self.stderr += out.decode("utf-8")
+
+            # Phosh still running?
+            if self.process.poll() is not None:
+                return False
 
             if stdout_msg and stdout_msg in self.stdout:
                 found_stdout = True

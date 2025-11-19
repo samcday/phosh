@@ -12,9 +12,18 @@
 
 import os
 import subprocess
+import dbus
 import dbusmock
 from collections import OrderedDict
 from dbusmock import DBusTestCase
+from dbusmock.templates.networkmanager import (
+    InfrastructureMode,
+    MANAGER_IFACE,
+    NM80211ApSecurityFlags,
+    SETTINGS_IFACE,
+    SETTINGS_OBJ,
+)
+
 from pathlib import Path
 
 from gi.repository import Gio
@@ -65,6 +74,7 @@ class PhoshDBusTestCase(DBusTestCase):
                 "phosh-cell-broadcast-manager",
                 "phosh-udev-manager",
                 "phosh-torch-manager",
+                "phosh-vpn-manager",
                 "phosh-wifi-manager",
                 "phosh-wwan-manager",
                 "phosh-wwan-mm",
@@ -126,16 +136,108 @@ class PhoshDBusTestCase(DBusTestCase):
         mm.AddCbm(2, cbm_channel, cbm_text)
         assert self.phosh.wait_for_output(f" Received cbm {cbm_channel}: {cbm_text}")
 
+    def test_vpn(self):
+        self.mocks["networkmanager"][1]
+
+        assert self.phosh.wait_for_output(
+            " VPN present: 0, uuid: (null)\n", ignore_present=True
+        )
+
+        # Add a VPN connection
+        connection = {
+            "connection": {
+                "timestamp": 1441979296,
+                "type": "vpn",
+                "id": "a",
+                "uuid": "11111111-1111-1111-1111-111111111111",
+            },
+            "vpn": {
+                "service-type": "org.freedesktop.NetworkManager.openvpn",
+                "data": {"connection-type": "tls"},
+            },
+        }
+
+        dbuscon = self.get_dbus(True)
+        settings = dbus.Interface(
+            dbuscon.get_object(MANAGER_IFACE, SETTINGS_OBJ), SETTINGS_IFACE
+        )
+        settings.AddConnection(connection)
+        assert self.phosh.wait_for_output(
+            " VPN present: 1, uuid: 11111111-1111-1111-1111-111111111111\n"
+        )
+
+        # Add a wireguard connection with newer timestamp
+        connection = {
+            "connection": {
+                "timestamp": 1441979300,
+                "type": "vpn",
+                "id": "b",
+                "uuid": "22222222-2222-2222-2222-222222222222",
+            },
+            "wireguard": {},
+        }
+
+        dbuscon = self.get_dbus(True)
+        settings = dbus.Interface(
+            dbuscon.get_object(MANAGER_IFACE, SETTINGS_OBJ), SETTINGS_IFACE
+        )
+        settings.AddConnection(connection)
+        assert self.phosh.wait_for_output(
+            " VPN present: 1, uuid: 22222222-2222-2222-2222-222222222222\n"
+        )
+
     def test_wifi(self):
         nm = self.mocks["networkmanager"][1]
 
         assert self.phosh.check_for_stdout(" NM Wi-Fi enabled: 0, present: 0")
 
         # Add and enable Wi-Fi
-        nm.AddWiFiDevice(
+        wifi = nm.AddWiFiDevice(
             "wifi0", "wlan0", dbusmock.templates.networkmanager.DeviceState.ACTIVATED
         )
         assert self.phosh.wait_for_output(" NM Wi-Fi enabled: 1, present: 1")
+        assert self.phosh.check_for_stdout(" Wi-Fi device connected at 0")
+
+        nm.AddAccessPoint(
+            wifi,
+            "ap0",
+            "SSID1",
+            "00:de:ad:be:ef:00",
+            InfrastructureMode.NM_802_11_MODE_INFRA,
+            2425,
+            5400,
+            11,  # weak signal
+            NM80211ApSecurityFlags.NM_802_11_AP_SEC_KEY_MGMT_PSK,
+        )
+        assert self.phosh.wait_for_output(" Creating network: SSID1\n")
+
+        nm.AddAccessPoint(
+            wifi,
+            "ap1",
+            "SSID1",
+            "00:de:ad:be:ef:01",
+            InfrastructureMode.NM_802_11_MODE_INFRA,
+            2425,
+            5400,
+            82,  # stronger signal
+            NM80211ApSecurityFlags.NM_802_11_AP_SEC_KEY_MGMT_PSK,
+        )
+        assert self.phosh.wait_for_output(
+            " Adding access point to existing network: SSID1\n"
+        )
+
+        nm.AddAccessPoint(
+            wifi,
+            "ap2",
+            "SSID2",
+            "00:de:ad:be:ef:01",
+            InfrastructureMode.NM_802_11_MODE_INFRA,
+            2425,
+            5400,
+            82,
+            NM80211ApSecurityFlags.NM_802_11_AP_SEC_KEY_MGMT_PSK,
+        )
+        assert self.phosh.wait_for_output(" Creating network: SSID2\n")
 
     def test_bt(self):
         adapter_name = "hci0"
