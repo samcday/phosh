@@ -35,7 +35,7 @@ enum {
 };
 static GParamSpec *props[PROP_LAST_PROP];
 
-struct _PhoshStatusPagePlaceholder {
+typedef struct {
   GtkBin        parent;
 
   GtkBox       *toplevel_box;
@@ -45,16 +45,17 @@ struct _PhoshStatusPagePlaceholder {
   GtkLabel     *title_label;
 
   GtkWidget    *extra_widget;
-};
-G_DEFINE_TYPE (PhoshStatusPagePlaceholder, phosh_status_page_placeholder, GTK_TYPE_BIN)
+} PhoshStatusPagePlaceholderPrivate;
+G_DEFINE_TYPE_WITH_PRIVATE (PhoshStatusPagePlaceholder, phosh_status_page_placeholder, GTK_TYPE_BIN)
 
 
 static void
 update_title_visibility (PhoshStatusPagePlaceholder *self)
 {
-  const char *text = gtk_label_get_text (self->title_label);
+  PhoshStatusPagePlaceholderPrivate *priv = phosh_status_page_placeholder_get_instance_private (self);
+  const char *text = gtk_label_get_text (priv->title_label);
 
-  gtk_widget_set_visible (GTK_WIDGET (self->title_label), !gm_str_is_null_or_empty (text));
+  gtk_widget_set_visible (GTK_WIDGET (priv->title_label), !gm_str_is_null_or_empty (text));
 }
 
 
@@ -112,8 +113,9 @@ static void
 phosh_status_page_placeholder_dispose (GObject *object)
 {
   PhoshStatusPagePlaceholder *self = PHOSH_STATUS_PAGE_PLACEHOLDER (object);
+  PhoshStatusPagePlaceholderPrivate *priv = phosh_status_page_placeholder_get_instance_private (self);
 
-  g_clear_pointer (&self->icon_name, g_free);
+  g_clear_pointer (&priv->icon_name, g_free);
 
   G_OBJECT_CLASS (phosh_status_page_placeholder_parent_class)->dispose (object);
 }
@@ -176,9 +178,11 @@ phosh_status_page_placeholder_class_init (PhoshStatusPagePlaceholderClass *klass
   gtk_widget_class_set_template_from_resource (widget_class,
                                                "/mobi/phosh/ui/status-page-placeholder.ui");
 
-  gtk_widget_class_bind_template_child (widget_class, PhoshStatusPagePlaceholder, icon);
-  gtk_widget_class_bind_template_child (widget_class, PhoshStatusPagePlaceholder, title_label);
-  gtk_widget_class_bind_template_child (widget_class, PhoshStatusPagePlaceholder, toplevel_box);
+  gtk_widget_class_bind_template_child_private (widget_class, PhoshStatusPagePlaceholder, icon);
+  gtk_widget_class_bind_template_child_private (widget_class, PhoshStatusPagePlaceholder,
+                                                title_label);
+  gtk_widget_class_bind_template_child_private (widget_class, PhoshStatusPagePlaceholder,
+                                                toplevel_box);
 
   gtk_widget_class_set_css_name (widget_class, "phosh-status-page-placeholder");
 }
@@ -203,15 +207,17 @@ phosh_status_page_placeholder_new (void)
 void
 phosh_status_page_placeholder_set_title (PhoshStatusPagePlaceholder *self, const char *title)
 {
+  PhoshStatusPagePlaceholderPrivate *priv;
   const char *current;
 
   g_return_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self));
+  priv = phosh_status_page_placeholder_get_instance_private (self);
 
-  current = gtk_label_get_label (self->title_label);
+  current = gtk_label_get_label (priv->title_label);
   if (g_strcmp0 (current, title) == 0)
     return;
 
-  gtk_label_set_label (self->title_label, title);
+  gtk_label_set_label (priv->title_label, title);
   update_title_visibility (self);
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_TITLE]);
@@ -221,27 +227,33 @@ phosh_status_page_placeholder_set_title (PhoshStatusPagePlaceholder *self, const
 const char *
 phosh_status_page_placeholder_get_title (PhoshStatusPagePlaceholder *self)
 {
-  g_return_val_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self), NULL);
+  PhoshStatusPagePlaceholderPrivate *priv;
 
-  return gtk_label_get_label (self->title_label);
+  g_return_val_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self), NULL);
+  priv = phosh_status_page_placeholder_get_instance_private (self);
+
+  return gtk_label_get_label (priv->title_label);
 }
 
 
 void
 phosh_status_page_placeholder_set_icon_name (PhoshStatusPagePlaceholder *self, const char *icon_name)
 {
-  g_return_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self));
+  PhoshStatusPagePlaceholderPrivate *priv;
 
-  if (g_strcmp0 (self->icon_name, icon_name) == 0)
+  g_return_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self));
+  priv = phosh_status_page_placeholder_get_instance_private (self);
+
+  if (g_strcmp0 (priv->icon_name, icon_name) == 0)
     return;
 
-  g_free (self->icon_name);
-  self->icon_name = g_strdup (icon_name);
+  g_free (priv->icon_name);
+  priv->icon_name = g_strdup (icon_name);
 
   if (!icon_name)
-    g_object_set (G_OBJECT (self->icon), "icon-name", "image-missing", NULL);
+    g_object_set (G_OBJECT (priv->icon), "icon-name", "image-missing", NULL);
   else
-    g_object_set (G_OBJECT (self->icon), "icon-name", icon_name, NULL);
+    g_object_set (G_OBJECT (priv->icon), "icon-name", icon_name, NULL);
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_ICON_NAME]);
 }
@@ -250,9 +262,12 @@ phosh_status_page_placeholder_set_icon_name (PhoshStatusPagePlaceholder *self, c
 const char *
 phosh_status_page_placeholder_get_icon_name (PhoshStatusPagePlaceholder *self)
 {
-  g_return_val_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self), NULL);
+  PhoshStatusPagePlaceholderPrivate *priv;
 
-  return self->icon_name;
+  g_return_val_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self), NULL);
+  priv = phosh_status_page_placeholder_get_instance_private (self);
+
+  return priv->icon_name;
 }
 
 /**
@@ -265,19 +280,22 @@ phosh_status_page_placeholder_get_icon_name (PhoshStatusPagePlaceholder *self)
 void
 phosh_status_page_placeholder_set_extra_widget (PhoshStatusPagePlaceholder *self, GtkWidget *extra_widget)
 {
+  PhoshStatusPagePlaceholderPrivate *priv;
+
   g_return_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self));
   g_return_if_fail (extra_widget == NULL || GTK_IS_WIDGET (extra_widget));
+  priv = phosh_status_page_placeholder_get_instance_private (self);
 
-  if (self->extra_widget == extra_widget)
+  if (priv->extra_widget == extra_widget)
     return;
 
-  if (self->extra_widget)
-    gtk_container_remove (GTK_CONTAINER (self->toplevel_box), self->extra_widget);
+  if (priv->extra_widget)
+    gtk_container_remove (GTK_CONTAINER (priv->toplevel_box), priv->extra_widget);
 
-  self->extra_widget = extra_widget;
+  priv->extra_widget = extra_widget;
 
-  if (self->extra_widget)
-    gtk_container_add (GTK_CONTAINER (self->toplevel_box), self->extra_widget);
+  if (priv->extra_widget)
+    gtk_container_add (GTK_CONTAINER (priv->toplevel_box), priv->extra_widget);
 
   g_object_notify_by_pspec (G_OBJECT (self), props[PROP_EXTRA_WIDGET]);
 }
@@ -293,7 +311,10 @@ phosh_status_page_placeholder_set_extra_widget (PhoshStatusPagePlaceholder *self
 GtkWidget *
 phosh_status_page_placeholder_get_extra_widget (PhoshStatusPagePlaceholder *self)
 {
-  g_return_val_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self), NULL);
+  PhoshStatusPagePlaceholderPrivate *priv;
 
-  return self->extra_widget;
+  g_return_val_if_fail (PHOSH_IS_STATUS_PAGE_PLACEHOLDER (self), NULL);
+  priv = phosh_status_page_placeholder_get_instance_private (self);
+
+  return priv->extra_widget;
 }

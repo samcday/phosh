@@ -1,0 +1,19 @@
+<!DOCTYPE node PUBLIC
+          "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+          "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="mobi.phosh.shell.qs.Status">
+    <property name="Type" type="s" access="read" />
+    <property name="Title" type="s" access="read" />
+
+    <property name="FooterIcon" type="s" access="read" />
+    <property name="FooterText" type="s" access="read" />
+    <property name="FooterActivatable" type="b" access="read" />
+    <method name="ActivateFooter" />
+
+    <property name="HeaderIcon" type="s" access="read" />
+    <property name="HeaderText" type="s" access="read" />
+    <property name="HeaderActivatable" type="b" access="read" />
+    <method name="ActivateHeader" />
+  </interface>
+</node>
